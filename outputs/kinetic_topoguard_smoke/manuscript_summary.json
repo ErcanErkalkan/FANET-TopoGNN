@@ -1,0 +1,15 @@
+{
+  "experiment_name": "kinetic_topoguard_smoke",
+  "best_model_by_mae": "Kinetic-TopoGuard",
+  "best_model_by_lead": "Kinetic-TopoGuard, Shallow ML",
+  "best_models_by_lead": [
+    "Kinetic-TopoGuard",
+    "Shallow ML"
+  ],
+  "top_mae": 0.38584235097751707,
+  "best_model_by_r2": "Kinetic-TopoGuard",
+  "top_r2": 0.44026632575190106,
+  "best_model_by_risk_f1": "Union-Find detection oracle",
+  "top_risk_f1": 0.7406593406593407,
+  "top_lead_median_ms": 400.0
+}

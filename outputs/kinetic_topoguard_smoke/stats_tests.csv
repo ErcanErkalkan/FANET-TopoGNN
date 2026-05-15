@@ -1,0 +1,3 @@
+reference,candidate,paired_t_pvalue,wilcoxon_pvalue,cohens_d,lead_paired_t_pvalue,lead_wilcoxon_pvalue,lead_cohens_d,risk_f1_paired_t_pvalue,risk_f1_wilcoxon_pvalue,risk_f1_cohens_d,mae_fdr_pvalue,lead_fdr_pvalue,risk_f1_fdr_pvalue
+Kinetic-TopoGuard,Shallow ML,1.0,1.0,0.0,1.0,1.0,0.0,1.0,1.0,0.0,1.0,1.0,1.0
+Kinetic-TopoGuard,Union-Find detection oracle,1.0,1.0,0.0,1.0,1.0,0.0,1.0,1.0,0.0,1.0,1.0,1.0

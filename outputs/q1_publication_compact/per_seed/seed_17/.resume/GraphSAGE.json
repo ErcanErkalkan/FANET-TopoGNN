@@ -1,0 +1,50 @@
+{
+  "task_name": "GraphSAGE",
+  "summary": {
+    "Model": "GraphSAGE",
+    "MAE": 0.38314428102638987,
+    "MSE": 0.4091453524413539,
+    "R2": 0.33690528328242886,
+    "MAE_CI_low": 0.3705965451972766,
+    "MAE_CI_high": 0.39704687220230694,
+    "R2_CI_low": 0.2998688157206682,
+    "R2_CI_high": 0.36759298129503915,
+    "Inference_ms": 0.04684843747781997,
+    "Risk_Precision": 0.28352941176470586,
+    "Risk_Recall": 0.9877049180327869,
+    "Risk_F1": 0.44058500914076776,
+    "Risk_Specificity": 0.36297071129707115,
+    "Risk_Accuracy": 0.49,
+    "seed": 17
+  },
+  "lead_summary": {
+    "Model": "GraphSAGE",
+    "Lead_5th_ms": 0.0,
+    "Lead_median_ms": 500.0,
+    "Lead_IQR_ms": 600.0000000000001,
+    "Lead_95th_ms": 600.0000000000001,
+    "Lead_mean_ms": 379.81987053194484,
+    "Lead_norm_mean": 3.761967585175541,
+    "seed": 17
+  },
+  "network_metrics": {
+    "Connectivity ratio": 0.99125,
+    "PDR (%)": 99.98420398009951,
+    "Avg. end-to-end delay (ms)": 15.503748726477939,
+    "Proactive reroute (%)": 20.209203980099502,
+    "DTN buffered (%)": 0.030783582089552237,
+    "Relay actions": 6584.0,
+    "Model": "GraphSAGE",
+    "seed": 17
+  },
+  "risk_row": {
+    "seed": 17,
+    "Model": "GraphSAGE",
+    "Risk_Precision": 0.28352941176470586,
+    "Risk_Recall": 0.9877049180327869,
+    "Risk_F1": 0.44058500914076776,
+    "Risk_Specificity": 0.36297071129707115,
+    "Risk_Accuracy": 0.49
+  },
+  "config_signature": "99b4bdf576deb58fc76e75ad206cd048e56bb405c58f37d759355ce282573e88"
+}

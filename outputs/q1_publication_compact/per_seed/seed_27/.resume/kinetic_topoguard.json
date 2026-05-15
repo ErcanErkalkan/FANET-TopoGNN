@@ -1,0 +1,50 @@
+{
+  "task_name": "kinetic_topoguard",
+  "summary": {
+    "Model": "Kinetic-TopoGuard",
+    "MAE": 0.3164511759871923,
+    "MSE": 0.39099721878161015,
+    "R2": 0.66784953448505,
+    "MAE_CI_low": 0.30457123983667994,
+    "MAE_CI_high": 0.32667094638579036,
+    "R2_CI_low": 0.6390307857997307,
+    "R2_CI_high": 0.6881839883511945,
+    "Inference_ms": 5.0259623055535485,
+    "Risk_Precision": 0.4432479000646134,
+    "Risk_Recall": 0.997093023255814,
+    "Risk_F1": 0.6136871924854629,
+    "Risk_Specificity": 0.496690031152648,
+    "Risk_Accuracy": 0.6401388888888889,
+    "seed": 27
+  },
+  "lead_summary": {
+    "Model": "Kinetic-TopoGuard",
+    "Lead_5th_ms": 0.0,
+    "Lead_median_ms": 0.0,
+    "Lead_IQR_ms": 600.0000000000001,
+    "Lead_95th_ms": 600.0000000000001,
+    "Lead_mean_ms": 263.9080459770115,
+    "Lead_norm_mean": 2.5953824916417285,
+    "seed": 27
+  },
+  "network_metrics": {
+    "Connectivity ratio": 0.9441666666666667,
+    "PDR (%)": 99.84390547263682,
+    "Avg. end-to-end delay (ms)": 15.715208441036692,
+    "Proactive reroute (%)": 17.633768656716416,
+    "DTN buffered (%)": 0.29390547263681593,
+    "Relay actions": 6756.0,
+    "Model": "Kinetic-TopoGuard",
+    "seed": 27
+  },
+  "risk_row": {
+    "seed": 27,
+    "Model": "Kinetic-TopoGuard",
+    "Risk_Precision": 0.4432479000646134,
+    "Risk_Recall": 0.997093023255814,
+    "Risk_F1": 0.6136871924854629,
+    "Risk_Specificity": 0.496690031152648,
+    "Risk_Accuracy": 0.6401388888888889
+  },
+  "config_signature": "99b4bdf576deb58fc76e75ad206cd048e56bb405c58f37d759355ce282573e88"
+}

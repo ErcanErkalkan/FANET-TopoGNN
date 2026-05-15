@@ -1,0 +1,41 @@
+{
+  "task_name": "stgcn:5",
+  "summary": {
+    "Model": "stgcn:5",
+    "MAE": 0.3352965800737848,
+    "MSE": 0.3857949141916936,
+    "R2": 0.3656548387675518,
+    "MAE_CI_low": 0.32350163788084874,
+    "MAE_CI_high": 0.34489072576300356,
+    "R2_CI_low": 0.3338313221874531,
+    "R2_CI_high": 0.3980584048473556,
+    "Inference_ms": 0.17669531257524795,
+    "Risk_Precision": 0.3385272681578286,
+    "Risk_Recall": 0.9532908704883227,
+    "Risk_F1": 0.49962908011869434,
+    "Risk_Specificity": 0.5335814283182704,
+    "Risk_Accuracy": 0.6176303854875284,
+    "seed": 17
+  },
+  "lead_summary": {
+    "Model": "stgcn:5",
+    "Lead_5th_ms": 0.0,
+    "Lead_median_ms": 300.00000000000006,
+    "Lead_IQR_ms": 600.0000000000001,
+    "Lead_95th_ms": 600.0000000000001,
+    "Lead_mean_ms": 280.9216192937123,
+    "Lead_norm_mean": 2.7839741344927202,
+    "seed": 17
+  },
+  "network_metrics": null,
+  "risk_row": {
+    "seed": 17,
+    "Model": "stgcn:5",
+    "Risk_Precision": 0.3385272681578286,
+    "Risk_Recall": 0.9532908704883227,
+    "Risk_F1": 0.49962908011869434,
+    "Risk_Specificity": 0.5335814283182704,
+    "Risk_Accuracy": 0.6176303854875284
+  },
+  "config_signature": "99b4bdf576deb58fc76e75ad206cd048e56bb405c58f37d759355ce282573e88"
+}

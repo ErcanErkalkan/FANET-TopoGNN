@@ -1,0 +1,72 @@
+% Auto-generated manuscript tables
+% Experiment: kinetic_topoguard_smoke
+
+\begin{table}[t]
+\centering
+\small
+\caption{Overall prediction performance.}
+\label{tab:perf_overall_auto}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrr}
+\toprule
+Model & MAE & MSE & R2 & Latency (ms) \\
+\midrule
+Kinetic-TopoGuard & 0.386 [0.386, 0.386] & 0.546 [0.546, 0.546] & 0.440 [0.440, 0.440] & 4.824 \\
+Union-Find detection oracle & 0.400 [0.400, 0.400] & 0.786 [0.786, 0.786] & 0.194 [0.194, 0.194] & 0.200 \\
+Shallow ML & 0.499 [0.499, 0.499] & 0.694 [0.694, 0.694] & 0.288 [0.288, 0.288] & 0.053 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Early-warning lead-time summary.}
+\label{tab:lead_time_auto}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrr}
+\toprule
+Model & Lead median (ms) & Lead mean (ms) & Lead 95th (ms) \\
+\midrule
+Kinetic-TopoGuard & 400.00 & 308.87 & 600.00 \\
+Shallow ML & 400.00 & 335.06 & 600.00 \\
+Union-Find detection oracle & 0.00 & 0.00 & 0.00 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Network-level performance under the connectivity-aware controller.}
+\label{tab:network_metrics_auto}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrrr}
+\toprule
+Model & Connectivity ratio & PDR (\%) & Delay (ms) & Reroute (\%) & DTN (\%) \\
+\midrule
+Kinetic-TopoGuard & 0.982 & 99.98 & 16.44 & 19.36 & 0.05 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Fragmentation-risk forecasting metrics.}
+\label{tab:risk_metrics_auto}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrr}
+\toprule
+Model & Risk F1 & Risk Recall & Risk Precision \\
+\midrule
+Union-Find detection oracle & 0.741 & 0.746 & 0.736 \\
+Kinetic-TopoGuard & 0.600 & 1.000 & 0.429 \\
+Shallow ML & 0.591 & 0.996 & 0.420 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

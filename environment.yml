@@ -1,0 +1,13 @@
+name: fanet-topognn-q1
+channels:
+  - pytorch
+  - conda-forge
+dependencies:
+  - python=3.12
+  - numpy
+  - pandas
+  - scipy
+  - matplotlib
+  - scikit-learn
+  - pytorch
+  - cpuonly
