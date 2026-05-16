@@ -35,6 +35,7 @@ Official Zenodo documentation:
 
 - <https://help.zenodo.org/docs/github/>
 - <https://help.zenodo.org/docs/github/enable-repository/>
+- <https://help.zenodo.org/docs/github/archive-software/github-upload/>
 
 ## After DOI Minting
 
