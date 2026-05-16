@@ -5,3 +5,7 @@ outputs/*
 # reproducibility and Zenodo archiving.
 !outputs/q1_publication_compact/
 !outputs/q1_publication_compact/**
+
+# Keep transient rerun logs out of public release artefacts.
+outputs/q1_publication_compact/*.log
+outputs/q1_publication_compact/*started_at.txt

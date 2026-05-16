@@ -6,7 +6,7 @@ Repository URL: <https://github.com/ErcanErkalkan/FANET-TopoGNN>
 
 Archived release DOI: <https://doi.org/10.5281/zenodo.20226053>
 
-This repository includes Zenodo metadata in `.zenodo.json` and citation metadata in `CITATION.cff`. The compact manuscript artefact bundle is tracked under `outputs/q1_publication_compact/` so GitHub releases and Zenodo archives include the CSV, JSON, LaTeX, log, per-seed, and figure files used for the manuscript cross-check.
+This repository includes Zenodo metadata in `.zenodo.json` and citation metadata in `CITATION.cff`. The compact manuscript artefact bundle is tracked under `outputs/q1_publication_compact/` so GitHub releases and Zenodo archives include the CSV, JSON, LaTeX, per-seed, and figure files used for the manuscript cross-check. Transient rerun logs are intentionally excluded.
 
 ## Recommended Release
 

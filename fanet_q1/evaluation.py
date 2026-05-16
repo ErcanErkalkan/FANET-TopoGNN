@@ -130,6 +130,12 @@ def predict_generic(model_result, data: list[Snapshot]) -> tuple[np.ndarray, np.
 
 
 def event_warning_leads(run_snaps: list[Snapshot], risk_scores: np.ndarray, dt: float, horizon_steps: int, risk_threshold: float) -> tuple[list[float], list[float]]:
+    """Compute event-based warning lead before physical-adjacency changes.
+
+    The fragmentation-risk target is evaluated separately as future beta0 > 1.
+    This statistic measures how early a risk score crosses threshold before any
+    edge-set change in the current physical graph.
+    """
     flip_indices = [
         idx
         for idx in range(1, len(run_snaps))

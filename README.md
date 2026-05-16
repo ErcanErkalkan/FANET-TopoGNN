@@ -104,7 +104,7 @@ The compact manuscript-facing result bundle is tracked in this repository at:
 outputs/q1_publication_compact/
 ```
 
-This bundle contains the CSV, JSON, LaTeX, per-seed, log, and figure artefacts used for manuscript cross-checking. Other generated output folders remain ignored by default.
+This bundle contains the CSV, JSON, LaTeX, per-seed, and figure artefacts used for manuscript cross-checking. Transient rerun logs are excluded from the public artefact bundle. Other generated output folders remain ignored by default.
 
 ## Zenodo Archiving
 

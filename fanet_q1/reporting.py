@@ -133,7 +133,7 @@ def save_table(df: pd.DataFrame, out_dir: Path, stem: str, floatfmt: str = "%.3f
 def plot_lead_cdf(lead_map: dict[str, list[float]], out_path: Path) -> None:
     plt.figure(figsize=(7, 5))
     if not lead_map:
-        plt.xlabel("Early-warning lead time (ms)")
+        plt.xlabel("Topology-change lead time (ms)")
         plt.ylabel("Empirical CDF")
         plt.grid(alpha=0.3)
         plt.tight_layout()
@@ -144,7 +144,7 @@ def plot_lead_cdf(lead_map: dict[str, list[float]], out_path: Path) -> None:
         arr = np.sort(np.asarray(values if values else [0.0], dtype=float))
         y = np.linspace(0, 1, len(arr))
         plt.plot(arr, y, linewidth=2, label=name)
-    plt.xlabel("Early-warning lead time (ms)")
+    plt.xlabel("Topology-change lead time (ms)")
     plt.ylabel("Empirical CDF")
     plt.grid(alpha=0.3)
     plt.legend()
@@ -227,7 +227,7 @@ def plot_publication_performance(metrics_df: pd.DataFrame, out_path: Path) -> No
 
 def plot_lead_time_summary(leads_df: pd.DataFrame, out_path: Path) -> None:
     fig, ax = plt.subplots(figsize=(7.4, 5.8))
-    _barh_with_ci(ax, leads_df, "Lead_median_ms", "Median early-warning lead time", lower_is_better=False, xlabel="Lead time (ms)")
+    _barh_with_ci(ax, leads_df, "Lead_median_ms", "Median topology-change lead time", lower_is_better=False, xlabel="Lead time (ms)")
     fig.tight_layout()
     _save_figure(fig, out_path, dpi=300)
     plt.close(fig)
@@ -555,7 +555,7 @@ def write_claims_summary(
         lines.append(f"- Best fragmentation-risk F1: {', '.join(models)} with F1={value:.4f}.")
     if best_lead is not None and best_lead[1] > 0.0:
         models, value = best_lead
-        lines.append(f"- Longest median early-warning lead: {', '.join(models)} with {value:.2f} ms.")
+        lines.append(f"- Longest median topology-change lead: {', '.join(models)} with {value:.2f} ms.")
     if best_network is not None:
         models, value = best_network
         lines.append(
@@ -574,7 +574,7 @@ def write_claims_summary(
         if kinetic_risk is not None:
             lines.append(f"- Risk-F1={float(kinetic_risk['Risk_F1_mean']):.4f}.")
         if kinetic_lead is not None:
-            lines.append(f"- Median early-warning lead={float(kinetic_lead['Lead_median_ms_mean']):.2f} ms.")
+            lines.append(f"- Median topology-change lead={float(kinetic_lead['Lead_median_ms_mean']):.2f} ms.")
         if fanet is not None:
             lines.extend(
                 [

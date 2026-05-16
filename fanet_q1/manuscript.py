@@ -98,7 +98,7 @@ def export_manuscript_tables(
         f"% Experiment: {summary['experiment_name']}",
         "",
         _simple_latex_table(perf, "Overall prediction performance.", "tab:perf_overall_auto"),
-        _simple_latex_table(lead, "Early-warning lead-time summary.", "tab:lead_time_auto"),
+        _simple_latex_table(lead, "Topology-change lead-time summary.", "tab:lead_time_auto"),
         _simple_latex_table(network, "Network-level performance under the connectivity-aware controller.", "tab:network_metrics_auto"),
         _simple_latex_table(risk, "Fragmentation-risk forecasting metrics.", "tab:risk_metrics_auto"),
     ]

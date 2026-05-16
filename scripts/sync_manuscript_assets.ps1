@@ -19,8 +19,10 @@ if (-not (Test-Path $sourceDir)) {
 New-Item -ItemType Directory -Force -Path $targetDir | Out-Null
 New-Item -ItemType Directory -Force -Path $targetTableDir | Out-Null
 
-Get-ChildItem -LiteralPath $sourceDir -Filter "*.png" | ForEach-Object {
-    Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $targetDir $_.Name) -Force
+foreach ($pattern in @("*.png", "*.pdf")) {
+    Get-ChildItem -LiteralPath $sourceDir -Filter $pattern | ForEach-Object {
+        Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $targetDir $_.Name) -Force
+    }
 }
 
 foreach ($name in @("manuscript_tables.tex", "claims_summary.md", "manuscript_summary.json")) {

@@ -11,13 +11,13 @@
 - Lowest MAE: Union-Find detection oracle with MAE=0.3045.
 - Highest R2: Shallow ML with R2=0.5594.
 - Best fragmentation-risk F1: Union-Find detection oracle with F1=0.7311.
-- Longest median early-warning lead: FANET-TopoGNN, PI+MLP with 600.00 ms.
+- Longest median topology-change lead: FANET-TopoGNN, PI+MLP with 600.00 ms.
 - Best/tied controller connectivity ratio: GraphSAGE, Kinetic-TopoGuard with 0.8613.
 
 ## Kinetic-TopoGuard status
 - MAE=0.3090, R2=0.4979.
 - Risk-F1=0.5547.
-- Median early-warning lead=233.33 ms.
+- Median topology-change lead=233.33 ms.
 - MAE delta vs FANET-TopoGNN (positive favours Kinetic-TopoGuard): 0.1535 absolute.
 - R2 delta vs FANET-TopoGNN (positive favours Kinetic-TopoGuard): 0.0932 absolute.
 
