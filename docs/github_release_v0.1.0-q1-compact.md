@@ -20,6 +20,8 @@ Repository: `ErcanErkalkan/FANET-TopoGNN`
 
 Repository URL: <https://github.com/ErcanErkalkan/FANET-TopoGNN>
 
+Archived release DOI: <https://doi.org/10.5281/zenodo.20226053>
+
 ### Included artefacts
 
 - `outputs/q1_publication_compact/summary.json`
@@ -52,4 +54,4 @@ This release is intended for Zenodo archival. The repository includes:
 - `CITATION.cff` for citation metadata
 - `docs/zenodo_release.md` with the Zenodo publication checklist
 
-After Zenodo processes this GitHub release, use the minted DOI in the manuscript data-availability statement.
+Zenodo archived DOI: <https://doi.org/10.5281/zenodo.20226053>

@@ -6,6 +6,7 @@ authors:
     given-names: Ercan
     affiliation: "Department of Computer Technologies, Vocational School of Technical Sciences, Marmara University"
 repository-code: "https://github.com/ErcanErkalkan/FANET-TopoGNN"
+doi: "10.5281/zenodo.20226053"
 version: "0.1.0"
 date-released: "2026-05-16"
 abstract: "Executable FANET topology forecasting reproducibility suite with compact manuscript-facing result artefacts."

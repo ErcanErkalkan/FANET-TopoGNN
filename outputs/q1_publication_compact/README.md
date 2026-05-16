@@ -4,6 +4,8 @@ Repository: `ErcanErkalkan/FANET-TopoGNN`
 
 Repository URL: <https://github.com/ErcanErkalkan/FANET-TopoGNN>
 
+Archived release DOI: <https://doi.org/10.5281/zenodo.20226053>
+
 This directory contains the compact manuscript-facing artefacts used to cross-check the reported results. It is intentionally tracked even though other generated `outputs/` folders remain ignored.
 
 ## Reproduce

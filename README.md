@@ -7,6 +7,10 @@ Repository: `ErcanErkalkan/FANET-TopoGNN`
 
 GitHub: <https://github.com/ErcanErkalkan/FANET-TopoGNN>
 
+Zenodo DOI: <https://doi.org/10.5281/zenodo.20226053>
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20226053.svg)](https://doi.org/10.5281/zenodo.20226053)
+
 It creates a reproducible Python research workflow that can:
 
 - simulate dynamic FANET trajectories under Random Waypoint, Gauss-Markov, and mission mobility,
@@ -106,7 +110,9 @@ This bundle contains the CSV, JSON, LaTeX, per-seed, log, and figure artefacts u
 
 Zenodo metadata is included in `.zenodo.json`, and citation metadata is included in `CITATION.cff`.
 
-Use `docs/zenodo_release.md` to enable the repository `ErcanErkalkan/FANET-TopoGNN` in Zenodo, create the release tag, and archive the GitHub release.
+The archived compact manuscript release is available at <https://doi.org/10.5281/zenodo.20226053>.
+
+Use `docs/zenodo_release.md` for the repository `ErcanErkalkan/FANET-TopoGNN` Zenodo archival record and DOI maintenance notes.
 
 ## Notes
 

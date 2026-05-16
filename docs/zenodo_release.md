@@ -4,6 +4,8 @@ Repository: `ErcanErkalkan/FANET-TopoGNN`
 
 Repository URL: <https://github.com/ErcanErkalkan/FANET-TopoGNN>
 
+Archived release DOI: <https://doi.org/10.5281/zenodo.20226053>
+
 This repository includes Zenodo metadata in `.zenodo.json` and citation metadata in `CITATION.cff`. The compact manuscript artefact bundle is tracked under `outputs/q1_publication_compact/` so GitHub releases and Zenodo archives include the CSV, JSON, LaTeX, log, per-seed, and figure files used for the manuscript cross-check.
 
 ## Recommended Release
@@ -29,7 +31,9 @@ Then create a GitHub release from that tag:
 4. Enable the repository `ErcanErkalkan/FANET-TopoGNN`.
 5. Create the GitHub release from `v0.1.0-q1-compact`.
 6. Wait for Zenodo to archive the release and mint a DOI.
-7. Copy the DOI into the manuscript data-availability statement and, if desired, add a DOI badge to `README.md`.
+7. Record the DOI in the manuscript data-availability statement and repository citation metadata.
+
+Current DOI: <https://doi.org/10.5281/zenodo.20226053>
 
 Official Zenodo documentation:
 
@@ -39,12 +43,12 @@ Official Zenodo documentation:
 
 ## After DOI Minting
 
-Update the manuscript with the final DOI:
+Use the following manuscript text with the final DOI:
 
 ```latex
 All data and code are openly available from the GitHub repository
 \path{ErcanErkalkan/FANET-TopoGNN} and the archived Zenodo release
-\url{https://doi.org/<ZENODO_DOI>}.
+\url{https://doi.org/10.5281/zenodo.20226053}.
 ```
 
 If Zenodo does not import all metadata automatically, edit the draft record and copy values from `.zenodo.json`.
