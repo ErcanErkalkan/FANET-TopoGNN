@@ -168,6 +168,7 @@ README.md
 report.md
 risk_metrics.csv
 risk_metrics.tex
+runtime_profile.json
 stats_tests.csv
 stats_tests.tex
 summary.json

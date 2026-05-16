@@ -17,5 +17,8 @@
     "FANET-TopoGNN",
     "PI+MLP"
   ],
-  "output_dir": "outputs\\q1_publication_compact"
+  "output_dir": "outputs\\q1_publication_compact",
+  "runtime_seconds": 4099.0,
+  "runtime_minutes": 68.31666666666666,
+  "cuda_available": false
 }

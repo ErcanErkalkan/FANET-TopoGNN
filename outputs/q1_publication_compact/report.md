@@ -4,6 +4,8 @@
 - Forecast horizon steps: 6
 - Best model by MAE: Union-Find detection oracle
 - Best model by lead: FANET-TopoGNN, PI+MLP
+- Wall-clock runtime: 4099.0 s
+- CUDA available during run: false
 
 ## Accuracy
 - Best MAE model: Union-Find detection oracle

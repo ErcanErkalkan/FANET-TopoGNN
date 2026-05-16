@@ -1,5 +1,6 @@
 {
   "title": "FANET-TopoGNN / Kinetic-TopoGuard Reproducibility Suite",
+  "version": "0.1.3",
   "upload_type": "software",
   "description": "Executable reproducibility suite and compact manuscript-facing benchmark artefacts for Kinetic-TopoGuard: Risk-Aware Topological Connectivity Forecasting in Dynamic Flying Ad Hoc Networks.",
   "creators": [

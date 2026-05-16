@@ -6,6 +6,8 @@
 - Graph policies: adaptive, fixed
 - Radio scenarios: degraded, nominal
 - Forecast horizon steps: 6
+- Recorded wall-clock runtime: 4099.0 s.
+- CUDA available during recorded run: false.
 
 ## Data-supported claims
 - Lowest MAE: Union-Find detection oracle with MAE=0.3045.

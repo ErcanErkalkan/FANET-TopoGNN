@@ -1,0 +1,21 @@
+{
+  "experiment_name": "q1_publication_compact",
+  "runtime_seconds": 4099.0,
+  "runtime_minutes": 68.317,
+  "n_seeds": 3,
+  "total_snapshots": 64800,
+  "forecast_horizon_steps": 6,
+  "graph_policies": [
+    "adaptive",
+    "fixed"
+  ],
+  "radio_scenarios": [
+    "degraded",
+    "nominal"
+  ],
+  "python_version": "3.14.3",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "cuda_available": false,
+  "scope": "Author-recorded end-to-end wall-clock time for the compact benchmark on the local CPU host used for the manuscript cross-check.",
+  "note": "Wall-clock runtime is environment-specific; per-snapshot inference latency is reported in metrics_overall.csv."
+}

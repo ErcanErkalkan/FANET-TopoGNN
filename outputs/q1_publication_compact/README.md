@@ -6,6 +6,8 @@ Repository URL: <https://github.com/ErcanErkalkan/FANET-TopoGNN>
 
 Archived release DOI: <https://doi.org/10.5281/zenodo.20226053>
 
+Release tag: `v0.1.3-consistency-audit`
+
 This directory contains the compact manuscript-facing artefacts used to cross-check the reported results. It is intentionally tracked even though other generated `outputs/` folders remain ignored.
 
 ## Reproduce
@@ -25,6 +27,7 @@ python main.py --config configs/q1_publication_compact.json --resume
 ## Contents
 
 - `summary.json` and `manuscript_summary.json`: compact run summaries.
+- `runtime_profile.json`: recorded wall-clock runtime metadata for the manuscript hardware/runtime claim.
 - `*.csv` and `*.tex`: manuscript-facing tables and aggregate metrics.
 - `figures/`: generated PDF and PNG figure artefacts.
 - `per_seed/`: per-seed tables, figures, and resume artefacts for auditability.

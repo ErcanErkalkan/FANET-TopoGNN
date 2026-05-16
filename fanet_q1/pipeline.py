@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import hashlib
 from pathlib import Path
+import platform
 import re
 import time
 import numpy as np
@@ -115,6 +116,36 @@ def _aggregate_metrics(per_seed_df: pd.DataFrame, group_cols: list[str], metric_
             row[f"{metric}_ci95_high"] = stats["ci95_high"]
         rows.append(row)
     return pd.DataFrame(rows)
+
+
+def _cuda_available() -> bool | None:
+    try:
+        import torch
+    except Exception:
+        return None
+    try:
+        return bool(torch.cuda.is_available())
+    except Exception:
+        return None
+
+
+def _write_runtime_profile(out_path: Path, summary: dict, runtime_seconds: float) -> None:
+    payload = {
+        "experiment_name": summary["experiment_name"],
+        "runtime_seconds": round(float(runtime_seconds), 3),
+        "runtime_minutes": round(float(runtime_seconds) / 60.0, 3),
+        "n_seeds": summary["n_seeds"],
+        "total_snapshots": summary["total_snapshots"],
+        "forecast_horizon_steps": summary["forecast_horizon_steps"],
+        "graph_policies": summary["graph_policies"],
+        "radio_scenarios": summary["radio_scenarios"],
+        "python_version": platform.python_version(),
+        "platform": platform.platform(),
+        "cuda_available": summary.get("cuda_available"),
+        "scope": "End-to-end pipeline wall-clock time for the configured compact benchmark on the local host.",
+        "note": "Wall-clock runtime is environment-specific; per-snapshot inference latency is reported in metrics_overall.csv.",
+    }
+    out_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
 def _canonical_model_name(name: object) -> str:
@@ -575,11 +606,16 @@ def run_experiment(config: ExperimentConfig, resume: bool = False) -> dict:
         "best_models_by_lead": lead_models,
         "output_dir": str(out_dir),
     }
+    runtime_seconds = time.perf_counter() - run_start
+    summary["runtime_seconds"] = float(runtime_seconds)
+    summary["runtime_minutes"] = float(runtime_seconds) / 60.0
+    summary["cuda_available"] = _cuda_available()
     save_summary_json(out_dir / "summary.json", summary)
     write_markdown_report(out_dir / "report.md", summary, metrics_df, leads_df, network_df, risk_df)
     write_claims_summary(out_dir / "claims_summary.md", summary, metrics_df, leads_df, network_df, risk_df, stats_df, dataset_summary_df)
     export_manuscript_tables(out_dir / "manuscript_tables.tex", metrics_df, leads_df, network_df, risk_df, summary)
     export_manuscript_summary(out_dir / "manuscript_summary.json", summary, metrics_df, leads_df)
+    _write_runtime_profile(out_dir / "runtime_profile.json", summary, runtime_seconds)
     write_artifact_manifest(out_dir / "artifact_manifest.txt", out_dir)
-    print(f"[run] completed in {time.perf_counter() - run_start:.1f}s")
+    print(f"[run] completed in {runtime_seconds:.1f}s")
     return summary

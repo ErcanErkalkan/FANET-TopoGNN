@@ -68,9 +68,9 @@ def export_manuscript_tables(
     lead = pd.DataFrame(
         {
             "Model": leads_df["Model"],
-            "Lead median (ms)": leads_df["Lead_median_ms_mean"].map(lambda x: f"{x:.2f}"),
-            "Lead mean (ms)": leads_df["Lead_mean_ms_mean"].map(lambda x: f"{x:.2f}"),
-            "Lead 95th (ms)": leads_df["Lead_95th_ms_mean"].map(lambda x: f"{x:.2f}"),
+            "Topology-change lead median (ms)": leads_df["Lead_median_ms_mean"].map(lambda x: f"{x:.2f}"),
+            "Topology-change lead mean (ms)": leads_df["Lead_mean_ms_mean"].map(lambda x: f"{x:.2f}"),
+            "Topology-change lead 95th (ms)": leads_df["Lead_95th_ms_mean"].map(lambda x: f"{x:.2f}"),
         }
     )
     network = pd.DataFrame(

@@ -1,6 +1,10 @@
 # Keep generated publication/manuscript outputs local by default.
 outputs/*
 
+# Keep Python bytecode out of source-control diffs.
+__pycache__/
+*.py[cod]
+
 # Publish the compact manuscript-facing benchmark artefacts used for
 # reproducibility and Zenodo archiving.
 !outputs/q1_publication_compact/

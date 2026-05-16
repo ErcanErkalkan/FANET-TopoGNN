@@ -11,6 +11,8 @@ Zenodo DOI: <https://doi.org/10.5281/zenodo.20226053>
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20226053.svg)](https://doi.org/10.5281/zenodo.20226053)
 
+Current compact artefact tag: `v0.1.3-consistency-audit`
+
 It creates a reproducible Python research workflow that can:
 
 - simulate dynamic FANET trajectories under Random Waypoint, Gauss-Markov, and mission mobility,
@@ -104,7 +106,7 @@ The compact manuscript-facing result bundle is tracked in this repository at:
 outputs/q1_publication_compact/
 ```
 
-This bundle contains the CSV, JSON, LaTeX, per-seed, and figure artefacts used for manuscript cross-checking. Transient rerun logs are excluded from the public artefact bundle. Other generated output folders remain ignored by default.
+This bundle contains the CSV, JSON, LaTeX, per-seed, figure, and runtime-profile artefacts used for manuscript cross-checking. Transient rerun logs are excluded from the public artefact bundle. Other generated output folders remain ignored by default.
 
 ## Zenodo Archiving
 

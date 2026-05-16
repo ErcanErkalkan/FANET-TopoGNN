@@ -445,9 +445,12 @@ def write_markdown_report(
         f"- Forecast horizon steps: {summary['forecast_horizon_steps']}",
         f"- Best model by MAE: {summary['best_model_by_mae']}",
         f"- Best model by lead: {summary['best_model_by_lead'] if summary['best_model_by_lead'] is not None else 'No positive lead observed in this run'}",
-        "",
-        "## Accuracy",
     ]
+    if "runtime_seconds" in summary:
+        lines.append(f"- Wall-clock runtime: {float(summary['runtime_seconds']):.1f} s")
+    if "cuda_available" in summary and summary["cuda_available"] is not None:
+        lines.append(f"- CUDA available during run: {str(bool(summary['cuda_available'])).lower()}")
+    lines.extend(["", "## Accuracy"])
     if best_mae is not None:
         lines.extend(
             [
@@ -541,9 +544,12 @@ def write_claims_summary(
         f"- Graph policies: {policies}",
         f"- Radio scenarios: {radio_scenarios}",
         f"- Forecast horizon steps: {summary['forecast_horizon_steps']}",
-        "",
-        "## Data-supported claims",
     ]
+    if "runtime_seconds" in summary:
+        lines.append(f"- Recorded wall-clock runtime: {float(summary['runtime_seconds']):.1f} s.")
+    if "cuda_available" in summary and summary["cuda_available"] is not None:
+        lines.append(f"- CUDA available during recorded run: {str(bool(summary['cuda_available'])).lower()}.")
+    lines.extend(["", "## Data-supported claims"])
     if best_mae is not None:
         models, value = best_mae
         lines.append(f"- Lowest MAE: {', '.join(models)} with MAE={value:.4f}.")
