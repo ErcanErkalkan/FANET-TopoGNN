@@ -28,11 +28,11 @@
     "seed": 27
   },
   "network_metrics": {
-    "Connectivity ratio": 0.9441666666666667,
-    "PDR (%)": 99.84390547263682,
-    "Avg. end-to-end delay (ms)": 15.619001052638135,
-    "Proactive reroute (%)": 27.652985074626866,
-    "DTN buffered (%)": 0.29390547263681593,
+    "Connectivity ratio": 0.8173611111111111,
+    "PDR (%)": 99.19723258706468,
+    "Avg. end-to-end delay (ms)": 21.854200840516047,
+    "Proactive reroute (%)": 27.941231343283583,
+    "DTN buffered (%)": 1.5026430348258706,
     "Relay actions": 8073.0,
     "Model": "GAT",
     "seed": 27

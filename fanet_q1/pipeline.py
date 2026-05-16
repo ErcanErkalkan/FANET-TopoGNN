@@ -383,6 +383,7 @@ def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool 
                 risk_scores,
                 boost=config.evaluation["network_radius_boost"],
                 risk_threshold=risk_threshold,
+                sim_config=config.sim,
             )
             network_metrics["Model"] = result.model_name
             network_metrics["seed"] = seed

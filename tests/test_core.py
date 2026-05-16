@@ -160,6 +160,48 @@ class CorePipelineTests(unittest.TestCase):
         self.assertIn("Relay actions", metrics)
         self.assertGreaterEqual(metrics["PDR (%)"], 0.0)
 
+    def test_network_controller_uses_snapshot_adjacency_for_delivery_metrics(self) -> None:
+        adjacency = np.zeros((2, 2), dtype=np.float32)
+        snap = Snapshot(
+            run_id="unit_seed3",
+            split_group_id="unit_seed3",
+            time_index=0,
+            mobility="unit",
+            n_nodes=2,
+            positions=np.asarray([[0.0, 0.0], [1.0, 0.0]], dtype=np.float32),
+            velocities=np.zeros((2, 2), dtype=np.float32),
+            node_features=np.zeros((2, 4), dtype=np.float32),
+            adjacency=adjacency,
+            adjacency_fixed=adjacency,
+            adjacency_adaptive=adjacency,
+            pi=np.zeros(4, dtype=np.float32),
+            stats=np.zeros(17, dtype=np.float32),
+            beta_current=2.0,
+            beta_target=2.0,
+            beta_fixed=2.0,
+            beta_adaptive=2.0,
+            radius=10.0,
+            radius_fixed=10.0,
+            radius_adaptive=10.0,
+            edge_count_fixed=0,
+            edge_count_adaptive=0,
+            link_model="physical",
+            graph_policy="fixed",
+            radio_scenario="unit",
+            is_connected=0,
+            future_time_index=0,
+            frag_within_horizon=1,
+        )
+        metrics = run_network_controller(
+            [snap],
+            np.asarray([1.0], dtype=float),
+            np.asarray([0.0], dtype=float),
+            boost=2.0,
+            risk_threshold=0.5,
+        )
+        self.assertEqual(metrics["Connectivity ratio"], 0.0)
+        self.assertEqual(metrics["PDR (%)"], 0.0)
+
     def test_kinetic_topoguard_fits_and_scores_snapshots(self) -> None:
         config = self._small_config()
         snapshots = build_dataset(config, seed=23)

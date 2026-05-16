@@ -6,7 +6,7 @@
     "FANET-TopoGNN",
     "PI+MLP"
   ],
-  "top_mae": 0.30449074074074073,
+  "top_mae": 0.3044907407407407,
   "best_model_by_r2": "Shallow ML",
   "top_r2": 0.5593507166448851,
   "best_model_by_risk_f1": "Union-Find detection oracle",

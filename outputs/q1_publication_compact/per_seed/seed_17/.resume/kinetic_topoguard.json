@@ -28,11 +28,11 @@
     "seed": 17
   },
   "network_metrics": {
-    "Connectivity ratio": 0.99125,
-    "PDR (%)": 99.98420398009951,
-    "Avg. end-to-end delay (ms)": 15.54506744224523,
-    "Proactive reroute (%)": 15.574751243781094,
-    "DTN buffered (%)": 0.030783582089552237,
+    "Connectivity ratio": 0.8856944444444445,
+    "PDR (%)": 99.54623756218905,
+    "Avg. end-to-end delay (ms)": 21.14641312397955,
+    "Proactive reroute (%)": 16.48973880597015,
+    "DTN buffered (%)": 0.848973880597015,
     "Relay actions": 5664.0,
     "Model": "Kinetic-TopoGuard",
     "seed": 17

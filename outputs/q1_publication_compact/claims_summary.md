@@ -12,7 +12,7 @@
 - Highest R2: Shallow ML with R2=0.5594.
 - Best fragmentation-risk F1: Union-Find detection oracle with F1=0.7311.
 - Longest median early-warning lead: FANET-TopoGNN, PI+MLP with 600.00 ms.
-- Best/tied controller connectivity ratio: FANET-TopoGNN, FANET-TopoGNN (concat), GAT, GCN, GraphSAGE, Kinetic-TopoGuard with 0.9698.
+- Best/tied controller connectivity ratio: GraphSAGE, Kinetic-TopoGuard with 0.8613.
 
 ## Kinetic-TopoGuard status
 - MAE=0.3090, R2=0.4979.

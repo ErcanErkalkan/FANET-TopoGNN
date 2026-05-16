@@ -28,11 +28,11 @@
     "seed": 27
   },
   "network_metrics": {
-    "Connectivity ratio": 0.9441666666666667,
-    "PDR (%)": 99.84390547263682,
-    "Avg. end-to-end delay (ms)": 15.619038424406256,
-    "Proactive reroute (%)": 25.494838308457712,
-    "DTN buffered (%)": 0.29390547263681593,
+    "Connectivity ratio": 0.8169444444444445,
+    "PDR (%)": 99.19368781094528,
+    "Avg. end-to-end delay (ms)": 21.85421694640461,
+    "Proactive reroute (%)": 25.75342039800995,
+    "DTN buffered (%)": 1.5026430348258706,
     "Relay actions": 7874.0,
     "Model": "FANET-TopoGNN",
     "seed": 27

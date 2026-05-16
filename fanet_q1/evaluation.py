@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import copy
+import hashlib
 import json
 from pathlib import Path
 import time
@@ -9,6 +11,7 @@ from scipy.stats import ttest_rel, wilcoxon
 from .dataset import Snapshot, split_by_run
 from .geometry import pairwise_distances
 from .graph_utils import adjacency_from_radius, betti_zero, connected_components, shortest_path_matrix
+from .radio import build_link_adjacency
 from .training import TORCH_AVAILABLE, SnapshotDataset, TemporalWindowDataset, collate_snapshots, collate_temporal
 
 if TORCH_AVAILABLE:
@@ -282,17 +285,91 @@ def _steer_relays_towards_component_midpoints(
     return adjusted
 
 
-def _relay_boosted_adjacency(positions: np.ndarray, radius: float, boost: float, relays: list[int]) -> np.ndarray:
-    distances = pairwise_distances(positions)
-    adj = adjacency_from_radius(distances, radius)
-    boosted_radius = radius * boost
+def _normalise_label(value: object) -> str:
+    return str(value).strip().lower().replace(" ", "_")
+
+
+def _scenario_sim_config(sim_cfg: dict | None, snap: Snapshot) -> dict | None:
+    if sim_cfg is None:
+        return None
+    scenario_cfg = copy.deepcopy(sim_cfg)
+    scenarios = sim_cfg.get("radio_scenarios")
+    if not scenarios:
+        return scenario_cfg
+
+    base_physical = dict(sim_cfg.get("physical_layer", {}))
+    wanted = _normalise_label(snap.radio_scenario)
+    for scenario in scenarios:
+        if not isinstance(scenario, dict):
+            continue
+        name = _normalise_label(scenario.get("name", "default"))
+        if name != wanted:
+            continue
+        if "physical_layer" in scenario and isinstance(scenario["physical_layer"], dict):
+            overrides = dict(scenario["physical_layer"])
+        else:
+            overrides = {key: value for key, value in scenario.items() if key != "name"}
+        physical = dict(base_physical)
+        physical.update(overrides)
+        scenario_cfg.pop("radio_scenarios", None)
+        scenario_cfg["physical_layer"] = physical
+        scenario_cfg["radio_scenario"] = name
+        return scenario_cfg
+    scenario_cfg.pop("radio_scenarios", None)
+    return scenario_cfg
+
+
+def _controller_link_seed(snap: Snapshot) -> int:
+    marker = "_seed"
+    if marker in snap.run_id:
+        try:
+            run_seed = int(snap.run_id.rsplit(marker, 1)[1])
+            return int((run_seed * 1_000_003 + snap.time_index) % (2**63 - 1))
+        except ValueError:
+            pass
+    digest = hashlib.sha256(f"{snap.run_id}:{snap.time_index}:controller".encode("utf-8")).digest()
+    return int.from_bytes(digest[:8], "little") % (2**63 - 1)
+
+
+def _relay_incident_mask(n_nodes: int, relays: list[int]) -> np.ndarray:
+    mask = np.zeros((n_nodes, n_nodes), dtype=bool)
     for relay in relays:
-        reachable = (distances[relay] <= boosted_radius).astype(np.float32)
-        reachable[relay] = 0.0
-        adj[relay, :] = np.maximum(adj[relay, :], reachable)
-        adj[:, relay] = np.maximum(adj[:, relay], reachable)
+        mask[relay, :] = True
+        mask[:, relay] = True
+    np.fill_diagonal(mask, False)
+    return mask
+
+
+def _controlled_physical_adjacency(
+    snap: Snapshot,
+    positions: np.ndarray,
+    boost: float,
+    relays: list[int],
+    sim_cfg: dict | None,
+) -> np.ndarray:
+    base_adj = (snap.adjacency > 0).astype(np.float32)
+    if not relays:
+        return base_adj
+
+    scenario_cfg = _scenario_sim_config(sim_cfg, snap)
+    distances = pairwise_distances(positions)
+    boosted_radius = float(snap.radius) * float(boost)
+    if scenario_cfg is not None:
+        candidate = build_link_adjacency(
+            distances,
+            boosted_radius,
+            np.random.default_rng(_controller_link_seed(snap)),
+            scenario_cfg,
+        )
+    else:
+        candidate = adjacency_from_radius(distances, boosted_radius)
+
+    relay_mask = _relay_incident_mask(base_adj.shape[0], relays)
+    adj = base_adj.copy()
+    adj[relay_mask] = 0.0
+    adj = np.maximum(adj, candidate.astype(np.float32) * relay_mask.astype(np.float32))
     np.fill_diagonal(adj, 0.0)
-    return adj
+    return adj.astype(np.float32)
 
 
 def _relay_shortest_path_pairs(sp: np.ndarray, relays: list[int]) -> int:
@@ -315,6 +392,7 @@ def run_network_controller(
     boost: float,
     risk_threshold: float,
     dtn_delivery_fraction: float = 0.65,
+    sim_config: dict | None = None,
 ) -> dict:
     connected_ticks = 0
     delivered = 0
@@ -324,9 +402,8 @@ def run_network_controller(
     relay_actions = 0
     delays = []
     for snap, _pred, risk in zip(snaps[-len(preds) :], preds, risk_scores):
-        radius = snap.radius
         positions = snap.positions.copy()
-        base_adj = snap.adjacency.copy()
+        base_adj = (snap.adjacency > 0).astype(np.float32)
         relays: list[int] = []
         proactive = risk >= risk_threshold
         if risk >= risk_threshold:
@@ -336,12 +413,9 @@ def run_network_controller(
             relay_actions += len(relays)
             if len(components) > 1 and relays:
                 positions = _steer_relays_towards_component_midpoints(positions, components, relays)
-            if relays:
-                adj = _relay_boosted_adjacency(positions, radius, boost, relays)
-            else:
-                adj = adjacency_from_radius(pairwise_distances(positions), radius * boost)
+            adj = _controlled_physical_adjacency(snap, positions, boost, relays, sim_config)
         else:
-            adj = adjacency_from_radius(pairwise_distances(positions), radius)
+            adj = base_adj
         beta = betti_zero(adj)
         connected_ticks += int(beta == 1)
         sp = shortest_path_matrix(adj)

@@ -167,6 +167,7 @@ per_seed_network_metrics.csv
 per_seed_network_metrics.tex
 per_seed_risk_metrics.csv
 per_seed_risk_metrics.tex
+README.md
 report.md
 rerun_leadfix_started_at.txt
 rerun_leadfix_stderr.log
