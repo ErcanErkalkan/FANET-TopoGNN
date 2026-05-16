@@ -1,2 +1,7 @@
-# Keep generated publication/manuscript outputs local.
-outputs/
+# Keep generated publication/manuscript outputs local by default.
+outputs/*
+
+# Publish the compact manuscript-facing benchmark artefacts used for
+# reproducibility and Zenodo archiving.
+!outputs/q1_publication_compact/
+!outputs/q1_publication_compact/**

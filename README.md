@@ -3,6 +3,10 @@
 This project rebuilds the experimental pipeline described in the manuscript
 `Kinetic-TopoGuard: Risk-Aware Topological Connectivity Forecasting in Dynamic Flying Ad Hoc Networks`.
 
+Repository: `ErcanErkalkan/FANET-TopoGNN`
+
+GitHub: <https://github.com/ErcanErkalkan/FANET-TopoGNN>
+
 It creates a reproducible Python research workflow that can:
 
 - simulate dynamic FANET trajectories under Random Waypoint, Gauss-Markov, and mission mobility,
@@ -89,6 +93,20 @@ The same script copies all generated PNG figures plus `manuscript_tables.tex`, `
 ## Outputs
 
 Each run creates tables, figures, and a `summary.json` file in the configured output folder.
+
+The compact manuscript-facing result bundle is tracked in this repository at:
+
+```text
+outputs/q1_publication_compact/
+```
+
+This bundle contains the CSV, JSON, LaTeX, per-seed, log, and figure artefacts used for manuscript cross-checking. Other generated output folders remain ignored by default.
+
+## Zenodo Archiving
+
+Zenodo metadata is included in `.zenodo.json`, and citation metadata is included in `CITATION.cff`.
+
+Use `docs/zenodo_release.md` to enable the repository `ErcanErkalkan/FANET-TopoGNN` in Zenodo, create the release tag, and archive the GitHub release.
 
 ## Notes
 
