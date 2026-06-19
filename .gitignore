@@ -1,3 +1,6 @@
+# Keep manuscript/paper sources local.
+FANET_TopoGNN/
+
 # Keep generated publication/manuscript outputs local by default.
 outputs/*
 
