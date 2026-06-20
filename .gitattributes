@@ -1,0 +1,29 @@
+# Normalize line endings for reproducible cross-platform releases.
+* text=auto
+
+# Source, configuration, manuscript, and generated text artefacts use LF.
+*.py text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.tex text eol=lf
+*.bib text eol=lf
+*.bbl text eol=lf
+*.bst text eol=lf
+*.cls text eol=lf
+*.cff text eol=lf
+*.csv text eol=lf
+*.txt text eol=lf
+*.puml text eol=lf
+.gitignore text eol=lf
+LICENSE text eol=lf
+
+# Windows PowerShell helper scripts intentionally use CRLF.
+*.ps1 text eol=crlf
+
+# Binary artefacts must never be newline-normalized.
+*.pdf binary
+*.png binary
+*.npz binary

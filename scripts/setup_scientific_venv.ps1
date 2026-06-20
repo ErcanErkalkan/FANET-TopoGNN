@@ -7,6 +7,6 @@ if (-not (Test-Path .venv)) {
 }
 
 .\.venv\Scripts\python -m pip install --upgrade pip
-.\.venv\Scripts\python -m pip install numpy pandas scipy matplotlib scikit-learn
+.\.venv\Scripts\python -m pip install -r requirements.txt
 
 Write-Host "Scientific environment ready at .venv"

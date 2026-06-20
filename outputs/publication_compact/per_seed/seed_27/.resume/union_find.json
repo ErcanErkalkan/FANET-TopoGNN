@@ -1,0 +1,41 @@
+{
+  "task_name": "union_find",
+  "summary": {
+    "Model": "Union-Find detection oracle",
+    "MAE": 0.3273611111111111,
+    "MSE": 0.5768055555555556,
+    "R2": 0.5100061468815797,
+    "MAE_CI_low": 0.3132986111111111,
+    "MAE_CI_high": 0.3419513888888889,
+    "R2_CI_low": 0.47309739072511114,
+    "R2_CI_high": 0.5407532098615866,
+    "Inference_ms": 0.20568600000034273,
+    "Risk_Precision": 0.8102224325603408,
+    "Risk_Recall": 0.8294573643410853,
+    "Risk_F1": 0.8197270768494135,
+    "Risk_Specificity": 0.9219236760124611,
+    "Risk_Accuracy": 0.8954166666666666,
+    "seed": 27
+  },
+  "lead_summary": {
+    "Model": "Union-Find detection oracle",
+    "Lead_5th_ms": 0.0,
+    "Lead_median_ms": 0.0,
+    "Lead_IQR_ms": 0.0,
+    "Lead_95th_ms": 0.0,
+    "Lead_mean_ms": 0.0,
+    "Lead_norm_mean": 0.0,
+    "seed": 27
+  },
+  "network_metrics": null,
+  "risk_row": {
+    "seed": 27,
+    "Model": "Union-Find detection oracle",
+    "Risk_Precision": 0.8102224325603408,
+    "Risk_Recall": 0.8294573643410853,
+    "Risk_F1": 0.8197270768494135,
+    "Risk_Specificity": 0.9219236760124611,
+    "Risk_Accuracy": 0.8954166666666666
+  },
+  "config_signature": "99b4bdf576deb58fc76e75ad206cd048e56bb405c58f37d759355ce282573e88"
+}

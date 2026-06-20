@@ -5,17 +5,33 @@
     "area_size": 1000.0,
     "time_steps": 10000,
     "dt": 0.1,
-    "swarm_sizes": [10, 20, 30, 40, 50],
+    "swarm_sizes": [
+      10,
+      20,
+      30,
+      40,
+      50
+    ],
     "runs_per_setting": 5,
-    "mobility_models": ["rwp", "gm", "mission"],
+    "mobility_models": [
+      "rwp",
+      "gm",
+      "mission"
+    ],
     "base_radius": 300.0,
     "graph_policy": "adaptive",
     "link_model": "physical",
     "adaptive_scale": 1.6,
     "density_threshold": 0.00015,
     "split_seed": 2026,
-    "split_stratify_by": ["mobility", "n_nodes"],
-    "speed_range": [10.0, 30.0],
+    "split_stratify_by": [
+      "mobility",
+      "n_nodes"
+    ],
+    "speed_range": [
+      10.0,
+      30.0
+    ],
     "gauss_markov_alpha": 0.8,
     "gauss_markov_mu": 20.0,
     "gauss_markov_sigma": 5.0,
@@ -45,7 +61,28 @@
     "forecast_horizon_steps": 6
   },
   "training": {
-    "seed_list": [7, 17, 27, 37, 47],
+    "seed_list": [
+      7,
+      17,
+      27,
+      37,
+      47,
+      57,
+      67,
+      77,
+      87,
+      97,
+      107,
+      117,
+      127,
+      137,
+      147,
+      157,
+      167,
+      177,
+      187,
+      197
+    ],
     "epochs": 100,
     "patience": 12,
     "batch_size": 64,
@@ -53,7 +90,9 @@
     "weight_decay": 0.0001,
     "hidden_dim": 64,
     "dropout": 0.15,
-    "temporal_windows": [5],
+    "temporal_windows": [
+      5
+    ],
     "selected_models": [
       "union_find",
       "shallow",

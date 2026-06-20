@@ -1,12 +1,12 @@
-# FANET-TopoGNN compact strict consistency audit artefacts
+# FANET-TopoGNN v0.1.12 publication consistency artefacts
 
 ## Release fields
 
-Tag: `v0.1.3-consistency-audit`
+Tag: `v0.1.12`
 
 Target: `main`
 
-Release title: `FANET-TopoGNN compact strict consistency audit artefacts`
+Release title: `FANET-TopoGNN v0.1.12 publication consistency artefacts`
 
 Pre-release: unchecked
 
@@ -24,16 +24,16 @@ Archived release DOI: <https://doi.org/10.5281/zenodo.20226053>
 
 ### Included artefacts
 
-- `outputs/q1_publication_compact/summary.json`
-- `outputs/q1_publication_compact/runtime_profile.json`
-- `outputs/q1_publication_compact/manuscript_summary.json`
-- `outputs/q1_publication_compact/manuscript_tables.tex`
-- `outputs/q1_publication_compact/claims_summary.md`
-- `outputs/q1_publication_compact/report.md`
-- `outputs/q1_publication_compact/artifact_manifest.txt`
+- `outputs/publication_compact/summary.json`
+- `outputs/publication_compact/runtime_profile.json`
+- `outputs/publication_compact/manuscript_summary.json`
+- `outputs/publication_compact/manuscript_tables.tex`
+- `outputs/publication_compact/claims_summary.md`
+- `outputs/publication_compact/report.md`
+- `outputs/publication_compact/artifact_manifest.txt`
 - Aggregate CSV and LaTeX tables for metrics, risk metrics, topology-change lead time, dataset summary, network metrics, ablations, and statistical tests
-- Generated PDF and PNG figures under `outputs/q1_publication_compact/figures/`
-- Per-seed tables, figures, and resume cache artefacts under `outputs/q1_publication_compact/per_seed/`
+- Generated PDF and PNG figures under `outputs/publication_compact/figures/`
+- Per-seed tables, figures, and resume cache artefacts under `outputs/publication_compact/per_seed/`
 
 ### Consistency cleanup
 
@@ -45,13 +45,13 @@ Archived release DOI: <https://doi.org/10.5281/zenodo.20226053>
 ### Reproducibility command
 
 ```bash
-python main.py --config configs/q1_publication_compact.json
+python main.py --config configs/publication_compact.json
 ```
 
 To continue an interrupted run:
 
 ```bash
-python main.py --config configs/q1_publication_compact.json --resume
+python main.py --config configs/publication_compact.json --resume
 ```
 
 ### Zenodo

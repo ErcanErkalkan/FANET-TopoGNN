@@ -1,9 +1,8 @@
-numpy
-scipy
-networkx
-gudhi
-persim
-h5py
-tqdm
-matplotlib
-torch
+# Base scientific stack used by the default non-deep-learning pipeline.
+# Optional neural/PyG dependencies are intentionally excluded here.
+# Install them with: pip install -e ".[deep]" or pip install -e ".[pyg]"
+numpy>=1.25
+pandas>=2.0
+scipy>=1.11
+matplotlib>=3.7
+scikit-learn>=1.3

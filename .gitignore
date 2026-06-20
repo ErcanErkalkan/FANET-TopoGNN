@@ -1,18 +1,29 @@
-# Keep manuscript/paper sources local.
+# Track manuscript sources and release-facing PDFs.
+# Ignore only transient LaTeX build artefacts.
+paper/*.aux
+paper/*.blg
+paper/*.fdb_latexmk
+paper/*.fls
+paper/*.log
+paper/*.out
+paper/*.spl
+paper/*.synctex.gz
 paper/
 
-# Keep generated publication/manuscript outputs local by default.
+# Keep generated outputs local by default.
 outputs/*
+
+# Publish the compact manuscript-facing benchmark artefacts used for
+# reproducibility and archiving.
+!outputs/publication_compact/
+!outputs/publication_compact/**
+
+# Keep transient rerun logs out of public release artefacts.
+outputs/publication_compact/**/*.log
+outputs/publication_compact/**/*started_at.txt
+outputs/publication_compact/**/*.tmp
 
 # Keep Python bytecode out of source-control diffs.
 __pycache__/
 *.py[cod]
-
-# Publish the compact manuscript-facing benchmark artefacts used for
-# reproducibility and Zenodo archiving.
-!outputs/q1_publication_compact/
-!outputs/q1_publication_compact/**
-
-# Keep transient rerun logs out of public release artefacts.
-outputs/q1_publication_compact/*.log
-outputs/q1_publication_compact/*started_at.txt
+.pytest_cache/

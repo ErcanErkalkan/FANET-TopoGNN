@@ -1,0 +1,50 @@
+{
+  "task_name": "GAT",
+  "summary": {
+    "Model": "GAT",
+    "MAE": 0.5113942471146583,
+    "MSE": 0.6818273765411788,
+    "R2": 0.42079055901038753,
+    "MAE_CI_low": 0.49847859942561223,
+    "MAE_CI_high": 0.5264202196997486,
+    "R2_CI_low": 0.38483824119279986,
+    "R2_CI_high": 0.45329679691047503,
+    "Inference_ms": 0.15816015616110235,
+    "Risk_Precision": 0.3441275167785235,
+    "Risk_Recall": 0.9937015503875969,
+    "Risk_F1": 0.5112163509471586,
+    "Risk_Specificity": 0.2389018691588785,
+    "Risk_Accuracy": 0.4552777777777778,
+    "seed": 27
+  },
+  "lead_summary": {
+    "Model": "GAT",
+    "Lead_5th_ms": 0.0,
+    "Lead_median_ms": 600.0000000000001,
+    "Lead_IQR_ms": 600.0000000000001,
+    "Lead_95th_ms": 600.0000000000001,
+    "Lead_mean_ms": 381.2931034482759,
+    "Lead_norm_mean": 3.772814861315477,
+    "seed": 27
+  },
+  "network_metrics": {
+    "Connectivity ratio": 0.8173611111111111,
+    "PDR (%)": 99.19723258706468,
+    "Avg. end-to-end delay (ms)": 21.854200840516047,
+    "Proactive reroute (%)": 27.941231343283583,
+    "DTN buffered (%)": 1.5026430348258706,
+    "Relay actions": 8073.0,
+    "Model": "GAT",
+    "seed": 27
+  },
+  "risk_row": {
+    "seed": 27,
+    "Model": "GAT",
+    "Risk_Precision": 0.3441275167785235,
+    "Risk_Recall": 0.9937015503875969,
+    "Risk_F1": 0.5112163509471586,
+    "Risk_Specificity": 0.2389018691588785,
+    "Risk_Accuracy": 0.4552777777777778
+  },
+  "config_signature": "99b4bdf576deb58fc76e75ad206cd048e56bb405c58f37d759355ce282573e88"
+}

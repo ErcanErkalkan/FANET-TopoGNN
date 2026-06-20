@@ -1,16 +1,20 @@
 param(
-    [string]$Profile = "q1_publication_compact",
-    [string]$ManuscriptDir = "..\\FANET_TopoGNN"
+    [string]$Profile = "publication_compact",
+    [string]$ManuscriptDir = "paper"
 )
 
 $ErrorActionPreference = "Stop"
 
-Set-Location $PSScriptRoot\..
+Set-Location (Join-Path $PSScriptRoot "..")
 
-$sourceDir = Join-Path (Get-Location) "outputs\$Profile\figures"
-$targetDir = Join-Path (Resolve-Path $ManuscriptDir) "figures\generated"
-$sourceRoot = Join-Path (Get-Location) "outputs\$Profile"
-$targetTableDir = Join-Path (Resolve-Path $ManuscriptDir) "tables\generated"
+$outputsRoot = Join-Path (Get-Location) "outputs"
+$sourceRoot = Join-Path $outputsRoot $Profile
+$sourceDir = Join-Path $sourceRoot "figures"
+$manuscriptRoot = Resolve-Path $ManuscriptDir
+$targetFigureRoot = Join-Path $manuscriptRoot "figures"
+$targetDir = Join-Path $targetFigureRoot "generated"
+$targetTableRoot = Join-Path $manuscriptRoot "tables"
+$targetTableDir = Join-Path $targetTableRoot "generated"
 
 if (-not (Test-Path $sourceDir)) {
     throw "Source figure directory not found: $sourceDir"

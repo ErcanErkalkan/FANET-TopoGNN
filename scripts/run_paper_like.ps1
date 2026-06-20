@@ -13,9 +13,9 @@ $env:PYTHONDONTWRITEBYTECODE = "1"
 if ($ConfigPath) {
     $configToRun = $ConfigPath
 } elseif ($Compact) {
-    $configToRun = "configs/q1_publication_compact.json"
+    $configToRun = "configs/publication_compact.json"
 } else {
-    $configToRun = "configs/q1_publication_compact.json"
+    $configToRun = "configs/publication_compact.json"
 }
 
 $args = @("-u", "main.py", "--config", $configToRun)

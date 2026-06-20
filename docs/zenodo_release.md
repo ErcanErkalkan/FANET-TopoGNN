@@ -6,22 +6,22 @@ Repository URL: <https://github.com/ErcanErkalkan/FANET-TopoGNN>
 
 Archived release DOI: <https://doi.org/10.5281/zenodo.20226053>
 
-This repository includes Zenodo metadata in `.zenodo.json` and citation metadata in `CITATION.cff`. The compact manuscript artefact bundle is tracked under `outputs/q1_publication_compact/` so GitHub releases and Zenodo archives include the CSV, JSON, LaTeX, per-seed, and figure files used for the manuscript cross-check. Transient rerun logs are intentionally excluded.
+This repository includes Zenodo metadata in `.zenodo.json` and citation metadata in `CITATION.cff`. The compact manuscript artefact bundle is tracked under `outputs/publication_compact/` so GitHub releases and Zenodo archives include the CSV, JSON, LaTeX, per-seed, and figure files used for the manuscript cross-check. Transient rerun logs are intentionally excluded.
 
 ## Recommended Release
 
 Use this release tag for the current compact benchmark bundle:
 
 ```bash
-git tag -a v0.1.3-consistency-audit -m "FANET-TopoGNN compact strict consistency audit artefacts"
-git push origin v0.1.3-consistency-audit
+git tag -a v0.1.12 -m "FANET-TopoGNN v0.1.12 publication consistency artefacts"
+git push origin v0.1.12
 ```
 
 Then create a GitHub release from that tag:
 
-- Title: `FANET-TopoGNN compact strict consistency audit artefacts`
-- Target: `v0.1.3-consistency-audit`
-- Notes: `Includes the executable FANET-TopoGNN reproducibility suite and the cross-checked outputs/q1_publication_compact artefacts used for manuscript consistency validation.`
+- Title: `FANET-TopoGNN v0.1.12 publication consistency artefacts`
+- Target: `v0.1.12`
+- Notes: `Includes the executable FANET-TopoGNN reproducibility suite and the cross-checked outputs/publication_compact artefacts used for manuscript consistency validation.`
 
 ## Zenodo Steps
 
@@ -29,7 +29,7 @@ Then create a GitHub release from that tag:
 2. Open the GitHub integration page in Zenodo.
 3. Authorize GitHub access if Zenodo asks for it.
 4. Enable the repository `ErcanErkalkan/FANET-TopoGNN`.
-5. Create the GitHub release from `v0.1.3-consistency-audit`.
+5. Create the GitHub release from `v0.1.12`.
 6. Wait for Zenodo to archive the release and mint a DOI.
 7. Record the DOI in the manuscript data-availability statement and repository citation metadata.
 

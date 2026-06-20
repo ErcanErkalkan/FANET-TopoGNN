@@ -1,6 +1,6 @@
 {
-  "experiment_name": "q1_publication_compact",
-  "output_dir": "outputs/q1_publication_compact",
+  "experiment_name": "publication_compact",
+  "output_dir": "outputs/publication_compact",
   "sim": {
     "area_size": 1000.0,
     "time_steps": 200,

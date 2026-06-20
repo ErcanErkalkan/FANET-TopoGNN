@@ -1,0 +1,41 @@
+{
+  "task_name": "shallow",
+  "summary": {
+    "Model": "Shallow ML (GBR)",
+    "MAE": 0.3469585341692084,
+    "MSE": 0.4237590333844846,
+    "R2": 0.6400185130640581,
+    "MAE_CI_low": 0.335652039746354,
+    "MAE_CI_high": 0.35800867601741304,
+    "R2_CI_low": 0.6157032454266143,
+    "R2_CI_high": 0.6636766535098828,
+    "Inference_ms": 0.028946250002061587,
+    "Risk_Precision": 0.28916000560931143,
+    "Risk_Recall": 0.999031007751938,
+    "Risk_F1": 0.44850462207721586,
+    "Risk_Specificity": 0.013045171339563863,
+    "Risk_Accuracy": 0.2956944444444444,
+    "seed": 27
+  },
+  "lead_summary": {
+    "Model": "Shallow ML (GBR)",
+    "Lead_5th_ms": 0.0,
+    "Lead_median_ms": 600.0000000000001,
+    "Lead_IQR_ms": 200.0000000000001,
+    "Lead_95th_ms": 600.0000000000001,
+    "Lead_mean_ms": 460.28735632183907,
+    "Lead_norm_mean": 4.5572649658086855,
+    "seed": 27
+  },
+  "network_metrics": null,
+  "risk_row": {
+    "seed": 27,
+    "Model": "Shallow ML (GBR)",
+    "Risk_Precision": 0.28916000560931143,
+    "Risk_Recall": 0.999031007751938,
+    "Risk_F1": 0.44850462207721586,
+    "Risk_Specificity": 0.013045171339563863,
+    "Risk_Accuracy": 0.2956944444444444
+  },
+  "config_signature": "99b4bdf576deb58fc76e75ad206cd048e56bb405c58f37d759355ce282573e88"
+}

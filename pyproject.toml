@@ -3,8 +3,8 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "fanet-topognn-q1"
-version = "0.1.0"
+name = "fanet-topognn"
+version = "0.1.12"
 description = "Reproducibility suite for FANET-TopoGNN-style experiments"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -27,4 +27,4 @@ pyg = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["fanet_q1*"]
+include = ["fanet*"]

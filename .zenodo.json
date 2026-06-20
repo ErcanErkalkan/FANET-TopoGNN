@@ -1,12 +1,12 @@
 {
   "title": "FANET-TopoGNN / Kinetic-TopoGuard Reproducibility Suite",
-  "version": "0.1.3",
+  "version": "0.1.12",
   "upload_type": "software",
   "description": "Executable reproducibility suite and compact manuscript-facing benchmark artefacts for Kinetic-TopoGuard: Risk-Aware Topological Connectivity Forecasting in Dynamic Flying Ad Hoc Networks.",
   "creators": [
     {
       "name": "Erkalkan, Ercan",
-      "affiliation": "Department of Computer Technologies, Vocational School of Technical Sciences, Marmara University"
+      "affiliation": "Vocational School of Technical Sciences, Department of Electronics and Automation, Artificial Intelligence Operator Program, Marmara University, Mehmet Genç Campus, 34865 Kartal Istanbul, Turkey"
     }
   ],
   "keywords": [

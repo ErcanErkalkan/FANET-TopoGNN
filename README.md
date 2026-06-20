@@ -1,4 +1,4 @@
-# Kinetic-TopoGuard / FANET-TopoGNN Q1 Reproducibility Suite
+# Kinetic-TopoGuard / FANET-TopoGNN Reproducibility Suite
 
 This project rebuilds the experimental pipeline described in the manuscript
 `Kinetic-TopoGuard: Risk-Aware Topological Connectivity Forecasting in Dynamic Flying Ad Hoc Networks`.
@@ -11,16 +11,16 @@ Zenodo DOI: <https://doi.org/10.5281/zenodo.20226053>
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20226053.svg)](https://doi.org/10.5281/zenodo.20226053)
 
-Current compact artefact tag: `v0.1.3-consistency-audit`
+Current compact artefact tag: `v0.1.12`
 
 It creates a reproducible Python research workflow that can:
 
 - simulate dynamic FANET trajectories under Random Waypoint, Gauss-Markov, and mission mobility,
 - build snapshot datasets with graph statistics, fixed/adaptive connectivity labels, physical-layer link filtering, radio-scenario sweeps, and `H0` persistence-image features,
-- optionally export snapshots as PyTorch Geometric `Data` objects through `fanet_q1.pyg_utils`,
+- optionally export snapshots as PyTorch Geometric `Data` objects through `fanet.pyg_utils`,
 - train Kinetic-TopoGuard plus static, topological, neural GNN, and temporal baselines,
 - include the exact union-find current-topology detection oracle as a non-forecasting baseline,
-- compute Q1-style reporting metrics, confidence intervals, and paired statistical tests,
+- compute compact-reporting metrics, confidence intervals, and paired statistical tests,
 - export publication-ready tables in CSV and LaTeX formats,
 - generate figures for accuracy, lead time, latency, residuals, ablations, and network-level impact.
 - aggregate results across multiple random seeds with confidence intervals and FDR-corrected significance tests.
@@ -41,25 +41,47 @@ scripts\setup_scientific_venv.ps1
 scripts\run_quickstart.ps1
 ```
 
-## Full Deep-Learning Environment
+## Environment Setup
 
-The current machine in this workspace uses Python 3.14. The scientific stack works there, but the full PyTorch path typically requires Python 3.12 or 3.11.
-
-For the full deep-learning environment, use:
+The default reproducibility environment is the base scientific stack used by the non-deep-learning pipeline:
 
 ```bash
 conda env create -f environment.yml
-conda activate fanet-topognn-q1
-python main.py --config configs/q1_publication_compact.json
+conda activate fanet-topognn
+python -m pip install -e .
+python main.py --config configs/publication_compact.json
 ```
 
-If the Q1 publication run is interrupted, resume it with:
+The same base stack can be installed with pip:
 
 ```bash
-python main.py --config configs/q1_publication_compact.json --resume
+python -m pip install -r requirements.txt
+python -m pip install -e .
 ```
 
-On Windows PowerShell, the helper script runs the same current Q1 profile by default:
+Optional neural dependencies are separated from the base stack. Install PyTorch-only components with:
+
+```bash
+python -m pip install -e ".[deep]"
+# or
+python -m pip install -r requirements-deep.txt
+```
+
+Install the PyTorch Geometric adapter stack with:
+
+```bash
+python -m pip install -e ".[pyg]"
+# or
+python -m pip install -r requirements-pyg.txt
+```
+
+If the publication compact run is interrupted, resume it with:
+
+```bash
+python main.py --config configs/publication_compact.json --resume
+```
+
+On Windows PowerShell, the helper script runs the same current compact profile by default:
 
 ```powershell
 scripts\run_paper_like.ps1
@@ -69,8 +91,8 @@ scripts\run_paper_like.ps1 -Resume
 The older `paper_like*` profiles are retained only as legacy exploratory configurations. The manuscript-facing profile is:
 
 ```bash
-python main.py --config configs/q1_publication_compact.json
-python main.py --config configs/q1_publication_compact.json --resume
+python main.py --config configs/publication_compact.json
+python main.py --config configs/publication_compact.json --resume
 ```
 
 To run a legacy profile explicitly, pass it through `-ConfigPath`:
@@ -91,7 +113,7 @@ This profile keeps the larger `paper_like` simulation scale but evaluates only t
 To copy generated figure assets into the manuscript package, run:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\sync_manuscript_assets.ps1 -Profile q1_publication_compact -ManuscriptDir ..\FANET_TopoGNN
+powershell -ExecutionPolicy Bypass -File scripts\sync_manuscript_assets.ps1 -Profile publication_compact -ManuscriptDir paper
 ```
 
 The same script copies all generated PNG figures plus `manuscript_tables.tex`, `claims_summary.md`, and `manuscript_summary.json`.
@@ -103,7 +125,7 @@ Each run creates tables, figures, and a `summary.json` file in the configured ou
 The compact manuscript-facing result bundle is tracked in this repository at:
 
 ```text
-outputs/q1_publication_compact/
+outputs/publication_compact/
 ```
 
 This bundle contains the CSV, JSON, LaTeX, per-seed, figure, and runtime-profile artefacts used for manuscript cross-checking. Transient rerun logs are excluded from the public artefact bundle. Other generated output folders remain ignored by default.
@@ -127,3 +149,7 @@ Use `docs/zenodo_release.md` for the repository `ErcanErkalkan/FANET-TopoGNN` Ze
 - Run-wise train/validation/test splits are grouped by the base `(mobility, N, seed)` identifier, so fixed/adaptive graph-policy and nominal/degraded radio variants of the same underlying trajectory cannot leak across folds. The exported `split_assignments.csv` documents the mapping.
 - The pipeline exports manuscript-facing files such as `manuscript_tables.tex`, `manuscript_summary.json`, `report.md`, and `artifact_manifest.txt`.
 - Resume mode checks per-model cache coverage and the configuration signature before skipping a seed, which makes interrupted or incrementally expanded runs safer to continue without reusing stale artefacts.
+
+## Release archive hygiene
+
+The distributable source archive intentionally excludes the local `.git/` directory. Version, citation, and release metadata are recorded in `pyproject.toml`, `CITATION.cff`, `.zenodo.json`, and the release notes.
