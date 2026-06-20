@@ -4,10 +4,10 @@ import unittest
 
 import numpy as np
 
-from fanet_q1.dataset import Snapshot, build_dataset, to_frame, train_val_test_split
-from fanet_q1.evaluation import evaluate_predictions, event_warning_leads, run_network_controller
-from fanet_q1.pyg_utils import snapshot_to_pyg_data, torch_geometric_available
-from fanet_q1.training import fit_kinetic_topoguard, kinetic_topoguard_feature_vector
+from fanet.dataset import Snapshot, build_dataset, to_frame, train_val_test_split
+from fanet.evaluation import evaluate_predictions, event_warning_leads, run_network_controller
+from fanet.pyg_utils import snapshot_to_pyg_data, torch_geometric_available
+from fanet.training import fit_kinetic_topoguard, kinetic_topoguard_feature_vector
 
 
 class CorePipelineTests(unittest.TestCase):

@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from fanet_q1 import load_config, run_experiment
+from fanet import load_config, run_experiment
 
 
 def parse_args() -> argparse.Namespace:
