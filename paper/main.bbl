@@ -49,23 +49,6 @@ W.~L. Hamilton, R.~Ying, J.~Leskovec, Inductive representation learning on
   Information Processing Systems, NIPS'17, Curran Associates Inc., Red Hook,
   NY, USA, 2017, p. 1025–1035.
 
-\bibitem{hofer2017deep}
-C.~Hofer, R.~Kwitt, M.~Niethammer, A.~Uhl, Deep learning with topological
-  signatures, in: Proceedings of the 31st International Conference on Neural
-  Information Processing Systems, NIPS'17, Curran Associates Inc., Red Hook,
-  NY, USA, 2017, p. 1633–1643.
-
-\bibitem{carriere2020perslay}
-M.~Carrière, F.~Chazal, Y.~Ike, T.~Lacombe, M.~Royer, Y.~Umeda, Perslay: A
-  neural network layer for persistence diagrams and new graph topological
-  signatures, 2020.
-
-\bibitem{luo2023persistent}
-Y.~Luo, K.~Zhou, W.~Zhang, Persistent homology enhanced graph attention network
-  for molecular property prediction, Neurocomputing 527 (2023) 309--322.
-\newblock \href {https://doi.org/10.1016/j.neucom.2022.11.079}
-  {\path{doi:10.1016/j.neucom.2022.11.079}}.
-
 \bibitem{tekdogan2022manetgnn}
 T.~Tekdogan, Analyzing the traffic of manets using graph neural networks, in:
   2022 IEEE International Conference on Machine Learning and Applied Network
@@ -80,6 +63,27 @@ H.~Hu, M.~J. Lee, Graph neural network-based clustering enhancement in vanet
 \newblock \href {https://doi.org/10.1109/ICAIIC54071.2022.9722625}
   {\path{doi:10.1109/ICAIIC54071.2022.9722625}}.
 
+\bibitem{hofer2017deep}
+C.~Hofer, R.~Kwitt, M.~Niethammer, A.~Uhl, Deep learning with topological
+  signatures, in: Proceedings of the 31st International Conference on Neural
+  Information Processing Systems, NIPS'17, Curran Associates Inc., Red Hook,
+  NY, USA, 2017, p. 1633–1643.
+
+\bibitem{carriere2020perslay}
+M.~Carriere, F.~Chazal, Y.~Ike, T.~Lacombe, M.~Royer, Y.~Umeda,
+  \href{https://proceedings.mlr.press/v108/carriere20a.html}{Perslay: A neural
+  network layer for persistence diagrams and new graph topological signatures},
+  in: S.~Chiappa, R.~Calandra (Eds.), Proceedings of the Twenty Third
+  International Conference on Artificial Intelligence and Statistics, Vol. 108
+  of Proceedings of Machine Learning Research, PMLR, 2020, pp. 2786--2796.
+\newline\urlprefix\url{https://proceedings.mlr.press/v108/carriere20a.html}
+
+\bibitem{luo2023persistent}
+Y.~Luo, K.~Zhou, W.~Zhang, Persistent homology enhanced graph attention network
+  for molecular property prediction, Neurocomputing 527 (2023) 309--322.
+\newblock \href {https://doi.org/10.1016/j.neucom.2022.11.079}
+  {\path{doi:10.1016/j.neucom.2022.11.079}}.
+
 \bibitem{pasandideh2023review}
 F.~Pasandideh, J.~P. J.~d. Costa, R.~Kunst, W.~Hardjawana, E.~P. de~Freitas,
   \href{https://onlinelibrary.wiley.com/doi/abs/10.1002/rob.22157}{A systematic
@@ -88,8 +92,7 @@ F.~Pasandideh, J.~P. J.~d. Costa, R.~Kunst, W.~Hardjawana, E.~P. de~Freitas,
 \newblock \href
   {http://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.1002/rob.22157}
   {\path{arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1002/rob.22157}},
-  \href {https://doi.org/10.1002/rob.22157}
-  {\path{doi:10.1002/rob.22157}}.
+  \href {https://doi.org/10.1002/rob.22157} {\path{doi:10.1002/rob.22157}}.
 \newline\urlprefix\url{https://onlinelibrary.wiley.com/doi/abs/10.1002/rob.22157}
 
 \bibitem{su16219239}
@@ -165,14 +168,6 @@ C.~G. Capanema, G.~S. {de Oliveira}, F.~A. Silva, T.~R. Silva, A.~A. Loureiro,
   {\path{doi:10.1016/j.adhoc.2022.103016}}.
 \newline\urlprefix\url{https://www.sciencedirect.com/science/article/pii/S1570870522001883}
 
-\bibitem{li2018deeper}
-Q.~Li, Z.~Han, X.-M. Wu, Deeper insights into graph convolutional networks for
-  semi-supervised learning, in: Proceedings of the Thirty-Second AAAI
-  Conference on Artificial Intelligence and Thirtieth Innovative Applications
-  of Artificial Intelligence Conference and Eighth AAAI Symposium on
-  Educational Advances in Artificial Intelligence, AAAI'18/IAAI'18/EAAI'18,
-  AAAI Press, 2018.
-
 \bibitem{kanatsoulis2024powerful}
 C.~I. Kanatsoulis, A.~Ribeiro, Graph neural networks are more powerful than we
   think, in: ICASSP 2024 - 2024 IEEE International Conference on Acoustics,
@@ -180,29 +175,19 @@ C.~I. Kanatsoulis, A.~Ribeiro, Graph neural networks are more powerful than we
 \newblock \href {https://doi.org/10.1109/ICASSP48485.2024.10447704}
   {\path{doi:10.1109/ICASSP48485.2024.10447704}}.
 
-\bibitem{arevalo2020gmu}
-J.~Arevalo, T.~Solorio, M.~Montes-y G\'{o}mez, F.~A. Gonz\'{a}lez,
-  \href{https://doi.org/10.1007/s00521-019-04559-1}{Gated multimodal networks},
-  Neural Comput. Appl. 32~(14) (2020) 10209–10228.
-\newblock \href {https://doi.org/10.1007/s00521-019-04559-1}
-  {\path{doi:10.1007/s00521-019-04559-1}}.
-\newline\urlprefix\url{https://doi.org/10.1007/s00521-019-04559-1}
-
-\bibitem{tsai2019multimodal}
-Y.-H.~H. Tsai, S.~Bai, P.~P. Liang, J.~Z. Kolter, L.-P. Morency,
-  R.~Salakhutdinov, \href{https://aclanthology.org/P19-1656/}{Multimodal
-  transformer for unaligned multimodal language sequences}, in: A.~Korhonen,
-  D.~Traum, L.~M{\`a}rquez (Eds.), Proceedings of the 57th Annual Meeting of
-  the Association for Computational Linguistics, Association for Computational
-  Linguistics, Florence, Italy, 2019, pp. 6558--6569.
-\newblock \href {https://doi.org/10.18653/v1/P19-1656}
-  {\path{doi:10.18653/v1/P19-1656}}.
-\newline\urlprefix\url{https://aclanthology.org/P19-1656/}
-
 \bibitem{kingma2017adam}
 D.~P. Kingma, J.~Ba, \href{https://arxiv.org/abs/1412.6980}{Adam: A method for
   stochastic optimization} (2017).
 \newblock \href {http://arxiv.org/abs/1412.6980} {\path{arXiv:1412.6980}}.
 \newline\urlprefix\url{https://arxiv.org/abs/1412.6980}
+
+\bibitem{araujo2025multidrone}
+A.~Ara\'ujo, C.~A. Pontes~Pizzino, M.~Couceiro, R.~P. Rocha,
+  \href{https://doi.org/10.5281/zenodo.14701641}{Dataset of a multi-drone
+  system proof of concept for forestry applications}, creative Commons
+  Attribution 4.0 International (2025).
+\newblock \href {https://doi.org/10.5281/zenodo.14701641}
+  {\path{doi:10.5281/zenodo.14701641}}.
+\newline\urlprefix\url{https://doi.org/10.5281/zenodo.14701641}
 
 \end{thebibliography}

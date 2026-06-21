@@ -1,0 +1,9 @@
+\begin{tabular}{lrrrrrrrrrrrrr}
+\toprule
+seed & Model & Risk\_Precision & Risk\_Recall & Risk\_F1 & Risk\_Specificity & Risk\_Accuracy & Risk\_PR\_AUC & Risk\_ROC\_AUC & Risk\_Brier & Risk\_ECE & False\_Alarms & False\_Alarms\_per\_minute & Model\_Backend \\
+\midrule
+167 & Union-Find detection oracle & 0.620 & 0.638 & 0.629 & 0.906 & 0.854 & 0.525 & 0.772 & 0.146 & 0.146 & 545.000 & 45.417 & diagnostic\_reference \\
+167 & Shallow ML (RF) & 0.358 & 0.975 & 0.523 & 0.579 & 0.656 & 0.363 & 0.777 & 0.344 & 0.344 & 2444.000 & 203.667 & scikit\_learn \\
+167 & Kinetic-TopoGuard & 0.307 & 0.999 & 0.470 & 0.459 & 0.563 & 0.744 & 0.930 & 0.110 & 0.149 & 3142.000 & 261.833 & scikit\_learn \\
+\bottomrule
+\end{tabular}

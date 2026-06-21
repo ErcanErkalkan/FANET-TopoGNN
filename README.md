@@ -32,6 +32,16 @@ Risk labels use exact-horizon semantics: `frag_at_horizon = 1` means that the pr
 
 ## Quick Start
 
+Run the bounded smoke profile first. It is designed to finish in roughly 30 seconds on the reference CPU environment and verifies imports, dataset generation, evaluation, and output export:
+
+```bash
+python main.py --config configs/smoke_30s.json
+python scripts/run_smoke_test.py
+pytest -q tests/test_smoke.py
+```
+
+The broader exploratory quickstart remains available as:
+
 ```bash
 python main.py --config configs/quickstart.json
 ```
@@ -87,6 +97,8 @@ python -m pip install -r requirements-pyg.txt
 
 If PyTorch is not installed, the code keeps long runs executable by replacing neural model names with deterministic scikit-learn surrogate estimators that use the corresponding feature family. This fallback is useful for CI, smoke tests, and base-environment reproducibility checks, but it should **not** be described as a real PyTorch GNN or temporal-neural result. For manuscript-facing neural-baseline reruns, install `.[deep]` or `requirements-deep.txt` first.
 
+New `summary.json` and `runtime_profile.json` files record `model_backend`, `torch_available`, `torch_version`, `device`, and `surrogate_used`. Per-seed model tables also record `Model_Backend`. The tracked three-seed compact artifact was freshly rerun with PyTorch 2.11.0 on CPU: all nine neural GNN/temporal task rows are recorded as `pytorch`, `surrogate_used` is false, and `outputs/publication_compact/provenance_rerun.json` records the promotion checks. The shared-host rerun duration is retained for provenance and is not used as an isolated runtime benchmark.
+
 Run the compact manuscript profile with the deep environment when neural rows are intended to be interpreted as neural baselines:
 
 ```bash
@@ -124,11 +136,22 @@ scripts\run_paper_like.ps1 -ConfigPath configs\paper_like.json
 For a submission-oriented 20-seed confirmatory run that preserves the compact benchmark design and includes the proposed Kinetic-TopoGuard model, use:
 
 ```bash
-python main.py --config configs/paper_like_submission.json
-python main.py --config configs/paper_like_submission.json --resume
+python scripts/run_submission_20seed.py
+python scripts/run_submission_20seed.py --resume
 ```
 
-This profile keeps the compact mobility, graph-policy, radio-scenario, split, and horizon design, expands the seed list to 20 independent seeds, and evaluates the same implemented model families as the manuscript-facing compact artefacts.
+The launcher verifies 20 unique seeds and requires exactly the primary Kinetic-TopoGuard model, the selected shallow-ML comparator, and the union-find current-graph diagnostic reference. The profile preserves the compact mobility, graph-policy, radio-scenario, split, and horizon design. The expensive neural family remains in the verified three-seed compact benchmark; the 20-seed profile is deliberately focused on the primary inferential comparison.
+
+For the public real-flight motion transfer test, install the optional ROS bag reader, verify/download the three source bags, derive the aligned 10 Hz trace, and run the frozen-transfer evaluation:
+
+```powershell
+python -m pip install -r requirements-external.txt
+powershell -ExecutionPolicy Bypass -File scripts\download_external_validation.ps1
+python scripts\extract_forestry_trace.py
+python scripts\run_external_validation.py
+```
+
+The source bags remain ignored. The tracked derived trace, checksum manifest, transfer metrics, prediction records, protocol JSON, and trajectory/radius figure document the external evidence. Because the public bags contain motion but no RF or packet ground truth, the study is a real-field-motion transfer test under deterministic radius sensitivity, not a field-measured wireless-network test.
 
 To copy generated figure assets into the manuscript package, run:
 
@@ -142,13 +165,15 @@ The same script copies all generated PNG figures plus `manuscript_tables.tex`, `
 
 Each run creates tables, figures, and a `summary.json` file in the configured output folder.
 
+Expected machine-readable files include `summary.json`, `runtime_profile.json`, `metrics_overall.csv`, `risk_metrics.csv`, `risk_threshold_sensitivity.csv`, `lead_time_summary.csv`, `network_metrics.csv`, and `artifact_manifest.txt`. New risk exports include PR-AUC, ROC-AUC, Brier score, expected calibration error, false alarms per minute, and threshold sensitivity. These values are computed only for new runs; they are not fabricated for legacy caches that lack risk scores.
+
 The compact manuscript-facing result bundle is tracked in this repository at:
 
 ```text
 outputs/publication_compact/
 ```
 
-This bundle contains the CSV, JSON, LaTeX, per-seed, figure, and runtime-profile artefacts used for manuscript cross-checking. Transient rerun logs are excluded from the public artefact bundle. Other generated output folders remain ignored by default.
+This bundle contains the CSV, JSON, LaTeX, per-seed, figure, and runtime-profile artefacts used for manuscript cross-checking. The focused confirmatory outputs are stored under `outputs/paper_like_submission/`, and real-motion transfer outputs under `outputs/external_validation/`. Transient rerun logs are excluded from the public artefact bundle. Other exploratory output folders remain ignored by default.
 
 ## Zenodo Archiving
 
@@ -158,7 +183,13 @@ The archived compact manuscript release is available at <https://doi.org/10.5281
 
 Use `docs/zenodo_release.md` for the repository `ErcanErkalkan/FANET-TopoGNN` Zenodo archival record and DOI maintenance notes.
 
-## Notes
+## Journal submission note
+
+The double-anonymous manuscript PDF and `anonymous_supplementary.zip` exclude author-identifying metadata. The author-identifying `paper/title_page.tex` and public citation/archive metadata remain separate and must be uploaded only in the journal portal fields intended for author information.
+
+The manuscript reports three distinct evidence layers: a backend-verified three-seed compact model-family benchmark, a completed focused 20-seed primary comparison, and a completed real-field-motion transfer test under counterfactual radius graphs. The release does not claim measured RF/packet validation, onboard profiling, hardware-in-the-loop evidence, or deployment readiness.
+
+## Technical notes
 
 - This archive is the curated executable reproducibility release for the manuscript. Source code, configurations, compact output artefacts, citation metadata, and release notes are versioned together so that the reported compact benchmark can be inspected and rerun from the packaged project.
 - `H0` persistent homology is implemented directly from the minimum spanning tree of the point cloud, which is exact for connected-component persistence.

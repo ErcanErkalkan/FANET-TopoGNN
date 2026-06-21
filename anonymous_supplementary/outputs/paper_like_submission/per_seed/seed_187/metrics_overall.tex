@@ -1,0 +1,9 @@
+\begin{tabular}{lrrrrrrrrrrrrrrrrrrrrr}
+\toprule
+Model & MAE & MSE & R2 & MAE\_CI\_low & MAE\_CI\_high & R2\_CI\_low & R2\_CI\_high & Inference\_ms & Risk\_Precision & Risk\_Recall & Risk\_F1 & Risk\_Specificity & Risk\_Accuracy & Risk\_PR\_AUC & Risk\_ROC\_AUC & Risk\_Brier & Risk\_ECE & False\_Alarms & False\_Alarms\_per\_minute & seed & Model\_Backend \\
+\midrule
+Union-Find detection oracle & 0.323 & 0.519 & 0.529 & 0.308 & 0.338 & 0.491 & 0.562 & 0.203 & 0.759 & 0.767 & 0.763 & 0.907 & 0.868 & 0.722 & 0.837 & 0.132 & 0.132 & 483.000 & 40.250 & 187 & diagnostic\_reference \\
+Kinetic-TopoGuard & 0.323 & 0.519 & 0.529 & 0.308 & 0.338 & 0.490 & 0.561 & 5.303 & 0.451 & 1.000 & 0.622 & 0.536 & 0.664 & 0.900 & 0.956 & 0.103 & 0.151 & 2416.000 & 201.333 & 187 & scikit\_learn \\
+Shallow ML (MLP) & 0.423 & 0.479 & 0.565 & 0.412 & 0.436 & 0.545 & 0.583 & 0.030 & 0.402 & 0.990 & 0.571 & 0.437 & 0.590 & 0.364 & 0.714 & 0.410 & 0.410 & 2932.000 & 244.333 & 187 & scikit\_learn \\
+\bottomrule
+\end{tabular}

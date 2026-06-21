@@ -1,0 +1,2 @@
+# Optional dependency for extracting the public ROS1 forestry flight trace.
+rosbags>=0.11

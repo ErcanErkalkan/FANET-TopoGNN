@@ -1,0 +1,125 @@
+{
+  "status": "pass",
+  "checks": [
+    {
+      "check": "compact_summary",
+      "status": "pass",
+      "detail": "summary.json exists"
+    },
+    {
+      "check": "compact_torch_available",
+      "status": "pass",
+      "detail": "True"
+    },
+    {
+      "check": "compact_no_surrogate",
+      "status": "pass",
+      "detail": "False"
+    },
+    {
+      "check": "compact_neural_backends",
+      "status": "pass",
+      "detail": "non-PyTorch entries: {}"
+    },
+    {
+      "check": "confirmatory_summary",
+      "status": "pass",
+      "detail": "summary.json exists"
+    },
+    {
+      "check": "confirmatory_seed_count",
+      "status": "pass",
+      "detail": "configured=20"
+    },
+    {
+      "check": "confirmatory_seed_outputs",
+      "status": "pass",
+      "detail": "completed=[7, 17, 27, 37, 47, 57, 67, 77, 87, 97, 107, 117, 127, 137, 147, 157, 167, 177, 187, 197]"
+    },
+    {
+      "check": "confirmatory_models",
+      "status": "pass",
+      "detail": "['Kinetic-TopoGuard', 'Shallow ML', 'Union-Find detection oracle']"
+    },
+    {
+      "check": "external_validation",
+      "status": "pass",
+      "detail": "derived trace manifest and metrics exist"
+    },
+    {
+      "check": "external_source_doi",
+      "status": "pass",
+      "detail": "10.5281/zenodo.14701641"
+    },
+    {
+      "check": "external_vehicle_count",
+      "status": "pass",
+      "detail": "sources=3"
+    },
+    {
+      "check": "external_source_checksums",
+      "status": "pass",
+      "detail": "['adb55c9c6282b7bbd609cda5361b00f6', 'd9d88fbb378e51bdf6ac57a4ca2be08f', 'ef86998f372689d95a4be696b3d92b88']"
+    },
+    {
+      "check": "external_radius_sensitivity",
+      "status": "pass",
+      "detail": "radii=3"
+    },
+    {
+      "check": "external_clipping_audit",
+      "status": "pass",
+      "detail": "raw and clipped metrics present"
+    },
+    {
+      "check": "external_prediction_rows",
+      "status": "pass",
+      "detail": "rows=107730"
+    },
+    {
+      "check": "elsevier_highlight_count",
+      "status": "pass",
+      "detail": "count=5"
+    },
+    {
+      "check": "elsevier_highlight_length",
+      "status": "pass",
+      "detail": "[65, 59, 56, 59, 58]"
+    },
+    {
+      "check": "perslay_bibliography",
+      "status": "pass",
+      "detail": "['booktitle', 'pages', 'year', 'editor', 'volume', 'series', 'publisher', 'url']"
+    },
+    {
+      "check": "external_dataset_bibliography",
+      "status": "pass",
+      "detail": "Zenodo DOI present"
+    },
+    {
+      "check": "title_page_declarations",
+      "status": "pass",
+      "detail": "required declarations present"
+    },
+    {
+      "check": "metadata_encoding",
+      "status": "pass",
+      "detail": "no common mojibake markers"
+    },
+    {
+      "check": "orcid_consistency",
+      "status": "pass",
+      "detail": "ORCID present in title page, CFF, and Zenodo metadata"
+    },
+    {
+      "check": "portal_metadata_package",
+      "status": "pass",
+      "detail": "metadata and cover-letter files exist"
+    },
+    {
+      "check": "portal_upload_files",
+      "status": "pass",
+      "detail": "['main_anonymized.pdf', 'title_page.pdf', 'anonymous_supplementary.zip', 'graphical_abstract.pdf']"
+    }
+  ]
+}

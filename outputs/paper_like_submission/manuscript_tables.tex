@@ -1,0 +1,75 @@
+% Auto-generated manuscript tables
+% Experiment: paper_like_submission
+
+\begin{table}[t]
+\centering
+\small
+\caption{Overall prediction performance.}
+\label{tab:perf_overall_auto}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrr}
+\toprule
+Model & MAE & MSE & R2 & Latency (ms) \\
+\midrule
+Kinetic-TopoGuard & 0.308 [0.297, 0.318] & 0.386 [0.351, 0.421] & 0.539 [0.480, 0.598] & 6.072 \\
+Union-Find detection oracle & 0.315 [0.303, 0.326] & 0.532 [0.503, 0.562] & 0.366 [0.306, 0.425] & 0.241 \\
+Shallow ML & 0.363 [0.346, 0.380] & 0.411 [0.382, 0.440] & 0.514 [0.473, 0.554] & 0.037 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\par\footnotesize\emph{Note:} Union-Find uses current graph connectivity as a diagnostic reference and is not a future forecasting model.
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Topology-change lead-time summary.}
+\label{tab:lead_time_auto}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrr}
+\toprule
+Model & Topology-change lead median (ms) & Topology-change lead mean (ms) & Topology-change lead 95th (ms) \\
+\midrule
+Shallow ML & 495.00 & 380.22 & 600.00 \\
+Kinetic-TopoGuard & 230.00 & 281.16 & 600.00 \\
+Union-Find detection oracle & 0.00 & 0.00 & 0.00 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\par\footnotesize\emph{Note:} Lead time is capped by the configured forecast horizon; the 600 ms ceiling is not a deployment guarantee.
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Network-level performance under the connectivity-aware controller.}
+\label{tab:network_metrics_auto}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrrr}
+\toprule
+Model & Connectivity ratio & PDR (\%) & Delay (ms) & Reroute (\%) & DTN (\%) \\
+\midrule
+Kinetic-TopoGuard & 0.841 & 99.33 & 21.50 & 18.36 & 1.25 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Fragmentation-risk forecasting metrics.}
+\label{tab:risk_metrics_auto}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrr}
+\toprule
+Model & Risk F1 & Risk Recall & Risk Precision \\
+\midrule
+Union-Find detection oracle & 0.754 & 0.761 & 0.749 \\
+Kinetic-TopoGuard & 0.587 & 0.996 & 0.419 \\
+Shallow ML & 0.503 & 0.976 & 0.343 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\par\footnotesize\emph{Note:} Union-Find is a current-graph diagnostic reference; learned forecasting models are ranked separately.
+\end{table}

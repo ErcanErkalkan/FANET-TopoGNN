@@ -4,7 +4,8 @@ title: "FANET-TopoGNN / Kinetic-TopoGuard Reproducibility Suite"
 authors:
   - family-names: Erkalkan
     given-names: Ercan
-    affiliation: "Vocational School of Technical Sciences, Department of Electronics and Automation, Artificial Intelligence Operator Program, Marmara University, Mehmet Genç Campus, 34865 Kartal Istanbul, Turkey"
+    affiliation: "Vocational School of Technical Sciences, Department of Electronics and Automation, Artificial Intelligence Operator Program, Marmara University, Mehmet Genc Campus, 34865 Kartal Istanbul, Turkiye"
+    orcid: "https://orcid.org/0000-0001-9259-7112"
 repository-code: "https://github.com/ErcanErkalkan/FANET-TopoGNN"
 doi: "10.5281/zenodo.20226053"
 version: "0.1.12"

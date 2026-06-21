@@ -1,0 +1,32 @@
+{
+  "experiment_name": "paper_like_submission",
+  "n_seeds": 20,
+  "total_snapshots": 432000,
+  "graph_policies": [
+    "adaptive",
+    "fixed"
+  ],
+  "radio_scenarios": [
+    "degraded",
+    "nominal"
+  ],
+  "forecast_horizon_steps": 6,
+  "best_model_by_mae": "Kinetic-TopoGuard",
+  "best_model_by_lead": "Shallow ML",
+  "best_models_by_lead": [
+    "Shallow ML"
+  ],
+  "output_dir": "outputs\\paper_like_submission",
+  "model_backend": {
+    "union_find": "diagnostic_reference",
+    "shallow": "scikit_learn",
+    "kinetic_topoguard": "scikit_learn"
+  },
+  "torch_available": true,
+  "torch_version": "2.11.0+cpu",
+  "device": "cpu",
+  "surrogate_used": false,
+  "runtime_seconds": 11700.424943499995,
+  "runtime_minutes": 195.0070823916666,
+  "cuda_available": false
+}

@@ -26,6 +26,7 @@ FANET-TopoGNN & 0.462 [0.389, 0.536] & 0.503 [0.373, 0.634] & 0.405 [0.178, 0.63
 \bottomrule
 \end{tabular}
 \end{adjustbox}
+\par\footnotesize\emph{Note:} Union-Find uses current graph connectivity as a diagnostic reference and is not a future forecasting model.
 \end{table}
 
 \begin{table}[t]
@@ -53,6 +54,7 @@ Union-Find detection oracle & 0.00 & 0.00 & 0.00 \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
+\par\footnotesize\emph{Note:} Lead time is capped by the configured forecast horizon; the 600 ms ceiling is not a deployment guarantee.
 \end{table}
 
 \begin{table}[t]
@@ -101,4 +103,5 @@ PI+MLP & 0.416 & 0.991 & 0.266 \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
+\par\footnotesize\emph{Note:} Union-Find is a current-graph diagnostic reference; learned forecasting models are ranked separately.
 \end{table}
