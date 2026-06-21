@@ -42,7 +42,7 @@ class Snapshot:
     radio_scenario: str
     is_connected: int
     future_time_index: int
-    frag_within_horizon: int
+    frag_at_horizon: int
 
 
 def adaptive_radius(points: np.ndarray, base_radius: float, density_threshold: float, adaptive_scale: float) -> float:
@@ -231,7 +231,7 @@ def simulate_run(sim_cfg: dict, mobility_name: str, n_nodes: int, run_seed: int)
     for idx, item in enumerate(raw_items):
         future_idx = min(idx + horizon, len(raw_items) - 1)
         future_beta = float(raw_items[future_idx]["beta_current"])
-        frag_within_horizon = int(future_beta > 1)
+        frag_at_horizon = int(future_beta > 1)
         stats = graph_stats(item["positions"], item["velocities"], item["adjacency"], item["beta_current"])
         snapshots.append(
             Snapshot(
@@ -262,7 +262,7 @@ def simulate_run(sim_cfg: dict, mobility_name: str, n_nodes: int, run_seed: int)
                 radio_scenario=item["radio_scenario"],
                 is_connected=int(item["beta_current"] == 1),
                 future_time_index=raw_items[future_idx]["time_index"],
-                frag_within_horizon=frag_within_horizon,
+                frag_at_horizon=frag_at_horizon,
             )
         )
     return snapshots
@@ -309,7 +309,7 @@ def to_frame(snapshots: Iterable[Snapshot]) -> pd.DataFrame:
                 "graph_policy": s.graph_policy,
                 "radio_scenario": s.radio_scenario,
                 "is_connected": s.is_connected,
-                "frag_within_horizon": s.frag_within_horizon,
+                "frag_at_horizon": s.frag_at_horizon,
             }
             for s in snapshots
         ]

@@ -3,30 +3,32 @@
   "output_dir": "outputs/paper_like_submission",
   "sim": {
     "area_size": 1000.0,
-    "time_steps": 10000,
+    "time_steps": 200,
     "dt": 0.1,
     "swarm_sizes": [
       10,
       20,
-      30,
-      40,
-      50
+      30
     ],
-    "runs_per_setting": 5,
+    "runs_per_setting": 3,
     "mobility_models": [
       "rwp",
       "gm",
       "mission"
     ],
-    "base_radius": 300.0,
-    "graph_policy": "adaptive",
+    "base_radius": 420.0,
+    "graph_policies": [
+      "fixed",
+      "adaptive"
+    ],
     "link_model": "physical",
-    "adaptive_scale": 1.6,
-    "density_threshold": 0.00015,
+    "adaptive_scale": 1.35,
+    "density_threshold": 2e-05,
     "split_seed": 2026,
     "split_stratify_by": [
       "mobility",
-      "n_nodes"
+      "n_nodes",
+      "link_model"
     ],
     "speed_range": [
       10.0,
@@ -55,7 +57,21 @@
       "noise_floor_dbm": -101.0,
       "sinr_threshold_db": 8.0
     },
-    "pi_resolution": 20,
+    "radio_scenarios": [
+      {
+        "name": "nominal",
+        "path_loss_exponent": 2.35,
+        "shadowing_sigma_db": 3.0,
+        "receiver_sensitivity_dbm": -96.0
+      },
+      {
+        "name": "degraded",
+        "path_loss_exponent": 2.65,
+        "shadowing_sigma_db": 4.5,
+        "receiver_sensitivity_dbm": -92.0
+      }
+    ],
+    "pi_resolution": 16,
     "pi_sigma": 20.0,
     "pi_max_radius": 600.0,
     "forecast_horizon_steps": 6
@@ -96,12 +112,15 @@
     "selected_models": [
       "union_find",
       "shallow",
+      "kinetic_topoguard",
       "GCN",
+      "GAT",
       "GraphSAGE",
       "PI+MLP",
       "FANET-TopoGNN",
       "FANET-TopoGNN (concat)",
       "tgcn:5",
+      "stgcn:5",
       "tgn:5"
     ]
   },

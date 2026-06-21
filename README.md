@@ -28,6 +28,8 @@ It creates a reproducible Python research workflow that can:
 
 The current manuscript-facing method is `Kinetic-TopoGuard`: a kinematic-topological forecaster that combines current connected-component state, velocity-projected link-margin features, `H0` persistence-image features, residual regression, and calibrated risk scoring. The older gated `FANET-TopoGNN` and concat variants are retained as neural topological comparators.
 
+Risk labels use exact-horizon semantics: `frag_at_horizon = 1` means that the projected target snapshot at `t + forecast_horizon_steps` is fragmented (`beta0(t+h) > 1`). It does not mean that any intermediate tick inside `(t, t+h)` fragmented.
+
 ## Quick Start
 
 ```bash
@@ -43,13 +45,17 @@ scripts\run_quickstart.ps1
 
 ## Environment Setup
 
-The default reproducibility environment is the base scientific stack used by the non-deep-learning pipeline:
+The release intentionally separates the lightweight scientific environment from the environment needed for the neural manuscript baselines.
+
+### Base scientific environment
+
+Use the base environment for dataset generation, Kinetic-TopoGuard, union-find, shallow/tabular baselines, smoke tests, table/figure aggregation, and manuscript asset checks. This environment does **not** install PyTorch.
 
 ```bash
 conda env create -f environment.yml
 conda activate fanet-topognn
 python -m pip install -e .
-python main.py --config configs/publication_compact.json
+python main.py --config configs/quickstart.json
 ```
 
 The same base stack can be installed with pip:
@@ -59,7 +65,9 @@ python -m pip install -r requirements.txt
 python -m pip install -e .
 ```
 
-Optional neural dependencies are separated from the base stack. Install PyTorch-only components with:
+### Deep-learning environment for manuscript neural baselines
+
+Install the deep extras before running configurations that include neural GNN or temporal model names such as `GCN`, `GAT`, `GraphSAGE`, `FANET-TopoGNN`, `T-GCN`, `STGCN`, or `TGN`:
 
 ```bash
 python -m pip install -e ".[deep]"
@@ -67,12 +75,23 @@ python -m pip install -e ".[deep]"
 python -m pip install -r requirements-deep.txt
 ```
 
-Install the PyTorch Geometric adapter stack with:
+Install the PyTorch Geometric adapter stack only when exporting snapshots as PyG `Data` objects:
 
 ```bash
 python -m pip install -e ".[pyg]"
 # or
 python -m pip install -r requirements-pyg.txt
+```
+
+### Fallback/surrogate behaviour
+
+If PyTorch is not installed, the code keeps long runs executable by replacing neural model names with deterministic scikit-learn surrogate estimators that use the corresponding feature family. This fallback is useful for CI, smoke tests, and base-environment reproducibility checks, but it should **not** be described as a real PyTorch GNN or temporal-neural result. For manuscript-facing neural-baseline reruns, install `.[deep]` or `requirements-deep.txt` first.
+
+Run the compact manuscript profile with the deep environment when neural rows are intended to be interpreted as neural baselines:
+
+```bash
+python -m pip install -e ".[deep]"
+python main.py --config configs/publication_compact.json
 ```
 
 If the publication compact run is interrupted, resume it with:
@@ -88,9 +107,10 @@ scripts\run_paper_like.ps1
 scripts\run_paper_like.ps1 -Resume
 ```
 
-The older `paper_like*` profiles are retained only as legacy exploratory configurations. The manuscript-facing profile is:
+The older `paper_like*` profiles are retained only as legacy exploratory configurations. The manuscript-facing profile remains `configs/publication_compact.json`; install the deep dependencies first whenever its neural rows will be reported as PyTorch GNN or temporal-neural baselines:
 
 ```bash
+python -m pip install -r requirements-deep.txt
 python main.py --config configs/publication_compact.json
 python main.py --config configs/publication_compact.json --resume
 ```
@@ -101,14 +121,14 @@ To run a legacy profile explicitly, pass it through `-ConfigPath`:
 scripts\run_paper_like.ps1 -ConfigPath configs\paper_like.json
 ```
 
-For a submission-oriented large run with a reduced but stronger baseline set, use:
+For a submission-oriented 20-seed confirmatory run that preserves the compact benchmark design and includes the proposed Kinetic-TopoGuard model, use:
 
 ```bash
 python main.py --config configs/paper_like_submission.json
 python main.py --config configs/paper_like_submission.json --resume
 ```
 
-This profile keeps the larger `paper_like` simulation scale but evaluates only the strongest static, topological, and temporal comparators plus the direct concat ablation.
+This profile keeps the compact mobility, graph-policy, radio-scenario, split, and horizon design, expands the seed list to 20 independent seeds, and evaluates the same implemented model families as the manuscript-facing compact artefacts.
 
 To copy generated figure assets into the manuscript package, run:
 
@@ -140,7 +160,7 @@ Use `docs/zenodo_release.md` for the repository `ErcanErkalkan/FANET-TopoGNN` Ze
 
 ## Notes
 
-- The original repository contents were not available in this workspace beyond the manuscript files, so this suite reconstructs the full experimental pipeline from the paper specification.
+- This archive is the curated executable reproducibility release for the manuscript. Source code, configurations, compact output artefacts, citation metadata, and release notes are versioned together so that the reported compact benchmark can be inspected and rerun from the packaged project.
 - `H0` persistent homology is implemented directly from the minimum spanning tree of the point cloud, which is exact for connected-component persistence.
 - The project now treats the task as future-horizon connectivity forecasting rather than same-timestep regression, which is required for meaningful early-warning analysis.
 - The simulator now implements the manuscript-level radio model: log-distance path loss, log-normal shadowing, Rayleigh/Nakagami fading, asymmetric transmit/receive chains, bidirectional link admission, optional SINR gating, and fixed/adaptive radius policies.

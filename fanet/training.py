@@ -433,8 +433,8 @@ class KineticTopoGuardPredictor:
         base_train = np.asarray([snap.beta_current for snap in train_aligned], dtype=float)
         base_val = np.asarray([snap.beta_current for snap in val_aligned], dtype=float)
         residual_train = y_train - base_train
-        risk_train = np.asarray([snap.frag_within_horizon for snap in train_aligned], dtype=int)
-        risk_val = np.asarray([snap.frag_within_horizon for snap in val_aligned], dtype=int)
+        risk_train = np.asarray([snap.frag_at_horizon for snap in train_aligned], dtype=int)
+        risk_val = np.asarray([snap.frag_at_horizon for snap in val_aligned], dtype=int)
 
         if SKLEARN_AVAILABLE:
             candidates = [

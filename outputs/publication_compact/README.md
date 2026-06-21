@@ -27,7 +27,7 @@ python main.py --config configs/publication_compact.json --resume
 ## Contents
 
 - `summary.json` and `manuscript_summary.json`: compact run summaries.
-- `runtime_profile.json`: recorded wall-clock runtime metadata for the manuscript hardware/runtime claim.
+- `runtime_profile.json`: recorded wall-clock runtime metadata with separate author-recorded runtime and reproducibility-environment sections.
 - `*.csv` and `*.tex`: manuscript-facing tables and aggregate metrics.
 - `figures/`: generated PDF and PNG figure artefacts.
 - `per_seed/`: per-seed tables, figures, and resume artefacts for auditability.

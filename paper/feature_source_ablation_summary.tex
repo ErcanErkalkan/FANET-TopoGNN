@@ -1,0 +1,19 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Feature-source isolation for the topological branch. Values are taken from the released evaluation artefacts. Rows compare shallow snapshot features, PI-only prediction, PI fusion with message passing, and the full Kinetic-TopoGuard design.}
+\label{tab:feature_source_ablation}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{p{0.30\textwidth}p{0.31\textwidth}rrrr}
+\toprule
+Evidence row & Feature source / role & MAE & $R^2$ & Risk $F_1$ & Latency (ms) \\
+\midrule
+Shallow ML & Graph-statistical and geometric snapshot features & 0.350 & 0.559 & 0.443 & 0.028 \\
+PI+MLP & PI features only & 0.450 & 0.327 & 0.416 & 0.032 \\
+FANET-TopoGNN & PI fused with a GCN-style encoder & 0.462 & 0.405 & 0.446 & 0.059 \\
+FANET-TopoGNN (concat) & PI concatenated with learned graph representation & 0.445 & 0.427 & 0.519 & 0.058 \\
+Kinetic-TopoGuard & PI combined with graph-statistical, kinematic-projection, residual, and calibrated-risk features & 0.309 & 0.498 & 0.555 & 4.916 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

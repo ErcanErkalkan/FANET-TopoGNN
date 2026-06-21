@@ -1,0 +1,37 @@
+@startuml
+!pragma layout smetana
+skinparam dpi 300
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 16
+skinparam ArrowColor #3B3B3B
+skinparam ArrowThickness 1.4
+skinparam rectangle {
+  BorderColor #2D2D2D
+  FontColor #111111
+  RoundCorner 12
+}
+
+left to right direction
+
+rectangle "UAV motion\npositions + velocities\nphysical graph" as motion #E8F0FE
+rectangle "Projected\ntopology" as projected #FFF4DE
+rectangle "H0 persistence\nimage features" as persistence #E6F4EA
+rectangle "Motion-conditioned\ntopological AI\nresidual forecast" as ai #EADCF8
+rectangle "Future beta0\nfragmentation state" as beta #FCE8E6
+rectangle "Risk score\nwarning threshold" as risk #DDF2F2
+rectangle "Engineering\nwarning/action\nrelay + routing" as action #EDF6DF
+rectangle "Goal and validation\nshort-horizon fragmentation-risk forecasting;\nimplemented baselines, MAE/R2, risk-F1, lead-time,\nstatistical tests, and network-level metrics" as validation #F5F5F5
+
+motion --> projected
+motion --> persistence
+projected --> ai
+persistence --> ai
+ai --> beta
+ai --> risk
+beta --> action
+risk --> action
+ai --> validation
+
+@enduml

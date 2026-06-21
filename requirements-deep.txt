@@ -1,2 +1,6 @@
+# Deep-learning stack for manuscript-facing neural GNN and temporal baselines.
+# Install this before running publication_compact or paper_like_submission when
+# neural rows should be interpreted as actual PyTorch models rather than base-
+# environment surrogate estimators.
 -r requirements.txt
 torch>=2.1

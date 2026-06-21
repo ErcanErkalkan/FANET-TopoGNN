@@ -16,6 +16,21 @@
   "python_version": "3.14.3",
   "platform": "Windows-11-10.0.26200-SP0",
   "cuda_available": false,
-  "scope": "Author-recorded end-to-end wall-clock time for the compact benchmark on the local CPU host used for the manuscript cross-check.",
-  "note": "Wall-clock runtime is environment-specific; per-snapshot inference latency is reported in metrics_overall.csv."
+  "scope": "Author-recorded end-to-end wall-clock time for the compact benchmark on the local CPU host used for manuscript cross-checking; reproducibility environment metadata is recorded separately below.",
+  "note": "Wall-clock runtime is environment-specific. The author-recorded runtime environment and the distributed reproducibility environment are intentionally separated; per-snapshot inference latency is reported in metrics_overall.csv.",
+  "runtime_context": {
+    "author_recorded_runtime_environment": {
+      "purpose": "Environment used to record the compact benchmark wall-clock runtime bundled with outputs/publication_compact/.",
+      "python_version": "3.14.3",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "cuda_available": false,
+      "scope": "Author-recorded local CPU host used for manuscript cross-checking; this is not asserted to be identical to environment.yml."
+    },
+    "reproducibility_environment": {
+      "purpose": "Reference environment specification distributed for rerunning the package.",
+      "environment_file": "environment.yml",
+      "python_version": "3.12",
+      "scope": "Base scientific environment without PyTorch; use requirements-deep.txt or pip install -e .[deep] for actual PyTorch neural GNN and temporal baselines."
+    }
+  }
 }

@@ -46,7 +46,7 @@ def snapshot_to_pyg_data(snapshot: Snapshot, include_edge_attr: bool = True):
     data.pi = torch.as_tensor(snapshot.pi, dtype=torch.float32)
     data.stats = torch.as_tensor(snapshot.stats, dtype=torch.float32)
     data.beta_current = torch.as_tensor([snapshot.beta_current], dtype=torch.float32)
-    data.frag_within_horizon = torch.as_tensor([snapshot.frag_within_horizon], dtype=torch.long)
+    data.frag_at_horizon = torch.as_tensor([snapshot.frag_at_horizon], dtype=torch.long)
     data.run_id = snapshot.run_id
     data.time_index = int(snapshot.time_index)
     data.mobility = snapshot.mobility

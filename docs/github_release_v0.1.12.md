@@ -25,7 +25,7 @@ Archived release DOI: <https://doi.org/10.5281/zenodo.20226053>
 ### Included artefacts
 
 - `outputs/publication_compact/summary.json`
-- `outputs/publication_compact/runtime_profile.json`
+- `outputs/publication_compact/runtime_profile.json` (separates author-recorded runtime environment from the reference reproducibility environment)
 - `outputs/publication_compact/manuscript_summary.json`
 - `outputs/publication_compact/manuscript_tables.tex`
 - `outputs/publication_compact/claims_summary.md`
@@ -40,6 +40,7 @@ Archived release DOI: <https://doi.org/10.5281/zenodo.20226053>
 - Controller-level connectivity, PDR, delay, reroute, DTN, and relay metrics are computed from the physical-radio snapshot graph.
 - The manuscript graph definition distinguishes the geometric candidate set from the post-filter physical edge set.
 - The lead-time artefacts and table labels describe topology-change lead time rather than direct fragmentation-onset lead.
+- The binary risk label has exact-horizon semantics (`frag_at_horizon`): it records whether `beta0(t+h) > 1`, not whether fragmentation occurred at any intermediate tick in the horizon window.
 - The public artefact bundle contains the CSV, JSON, LaTeX, figure, per-seed, resume-cache, and runtime-profile files used for the manuscript cross-check; transient rerun logs remain excluded.
 
 ### Reproducibility command

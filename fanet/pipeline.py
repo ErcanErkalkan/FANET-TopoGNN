@@ -130,6 +130,22 @@ def _cuda_available() -> bool | None:
 
 
 def _write_runtime_profile(out_path: Path, summary: dict, runtime_seconds: float) -> None:
+    author_env = {
+        "purpose": "Environment used to record this run's wall-clock runtime.",
+        "python_version": platform.python_version(),
+        "platform": platform.platform(),
+        "cuda_available": summary.get("cuda_available"),
+        "scope": "Local host used for the executed run; this is not asserted to be identical to environment.yml.",
+    }
+    reproducibility_env = {
+        "purpose": "Reference environment specification distributed for rerunning the package.",
+        "environment_file": "environment.yml",
+        "python_version": "3.12",
+        "scope": (
+            "Base scientific environment without PyTorch; use requirements-deep.txt "
+            "or pip install -e .[deep] for actual PyTorch neural GNN and temporal baselines."
+        ),
+    }
     payload = {
         "experiment_name": summary["experiment_name"],
         "runtime_seconds": round(float(runtime_seconds), 3),
@@ -139,11 +155,22 @@ def _write_runtime_profile(out_path: Path, summary: dict, runtime_seconds: float
         "forecast_horizon_steps": summary["forecast_horizon_steps"],
         "graph_policies": summary["graph_policies"],
         "radio_scenarios": summary["radio_scenarios"],
-        "python_version": platform.python_version(),
-        "platform": platform.platform(),
-        "cuda_available": summary.get("cuda_available"),
-        "scope": "End-to-end pipeline wall-clock time for the configured compact benchmark on the local host.",
-        "note": "Wall-clock runtime is environment-specific; per-snapshot inference latency is reported in metrics_overall.csv.",
+        "python_version": author_env["python_version"],
+        "platform": author_env["platform"],
+        "cuda_available": author_env["cuda_available"],
+        "runtime_context": {
+            "author_recorded_runtime_environment": author_env,
+            "reproducibility_environment": reproducibility_env,
+        },
+        "scope": (
+            "End-to-end pipeline wall-clock time for the configured benchmark on the local host; "
+            "reproducibility environment metadata is recorded separately below."
+        ),
+        "note": (
+            "Wall-clock runtime is environment-specific. The author-recorded runtime environment and "
+            "the distributed reproducibility environment are intentionally separated; per-snapshot "
+            "inference latency is reported in metrics_overall.csv."
+        ),
     }
     out_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
@@ -327,7 +354,7 @@ def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool 
             beta_adaptive_mean=("beta_adaptive", "mean"),
             beta_current_mean=("beta_current", "mean"),
             connected_ratio=("is_connected", "mean"),
-            frag_rate=("frag_within_horizon", "mean"),
+            frag_rate=("frag_at_horizon", "mean"),
             edge_count_mean=("edge_count", "mean"),
             edge_count_fixed_mean=("edge_count_fixed", "mean"),
             edge_count_adaptive_mean=("edge_count_adaptive", "mean"),

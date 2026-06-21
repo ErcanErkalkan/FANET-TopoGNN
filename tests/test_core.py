@@ -64,6 +64,7 @@ class CorePipelineTests(unittest.TestCase):
         frame = to_frame(snapshots)
         self.assertEqual(set(frame["graph_policy"]), {"fixed", "adaptive"})
         self.assertEqual(set(frame["radio_scenario"]), {"low_shadow", "high_shadow"})
+        self.assertIn("frag_at_horizon", frame.columns)
 
     def test_split_is_run_wise_and_non_empty(self) -> None:
         snapshots = build_dataset(self._small_config(), seed=11)
@@ -122,7 +123,7 @@ class CorePipelineTests(unittest.TestCase):
                 radio_scenario="unit",
                 is_connected=int(beta == 1.0),
                 future_time_index=time_index,
-                frag_within_horizon=int(beta > 1.0),
+                frag_at_horizon=int(beta > 1.0),
             )
 
         run_b = [make_snapshot("run_b", idx, disconnected) for idx in range(4)]
@@ -190,7 +191,7 @@ class CorePipelineTests(unittest.TestCase):
             radio_scenario="unit",
             is_connected=0,
             future_time_index=0,
-            frag_within_horizon=1,
+            frag_at_horizon=1,
         )
         metrics = run_network_controller(
             [snap],

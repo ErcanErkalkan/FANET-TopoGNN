@@ -1,6 +1,11 @@
-# Base scientific stack used by the default non-deep-learning pipeline.
-# Optional neural/PyG dependencies are intentionally excluded here.
-# Install them with: pip install -e ".[deep]" or pip install -e ".[pyg]"
+# Base scientific stack.
+# This file intentionally excludes PyTorch.
+# It supports dataset generation, Kinetic-TopoGuard, union-find, shallow/tabular
+# baselines, smoke tests, and manuscript table/figure aggregation.
+# Configurations containing neural GNN or temporal model names use surrogate
+# estimators in this base environment. Install requirements-deep.txt or
+# pip install -e ".[deep]" before interpreting GCN/GAT/GraphSAGE/FANET-TopoGNN/
+# T-GCN/STGCN/TGN rows as actual PyTorch neural baselines.
 numpy>=1.25
 pandas>=2.0
 scipy>=1.11

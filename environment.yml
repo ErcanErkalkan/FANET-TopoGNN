@@ -1,3 +1,6 @@
+# Base scientific environment; intentionally does not install PyTorch.
+# Use requirements-deep.txt or pip install -e ".[deep]" for manuscript-facing
+# neural GNN/temporal baselines.
 name: fanet-topognn
 channels:
   - conda-forge

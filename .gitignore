@@ -8,7 +8,6 @@ paper/*.log
 paper/*.out
 paper/*.spl
 paper/*.synctex.gz
-paper/
 
 # Keep generated outputs local by default.
 outputs/*

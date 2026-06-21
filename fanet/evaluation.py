@@ -132,7 +132,7 @@ def predict_generic(model_result, data: list[Snapshot]) -> tuple[np.ndarray, np.
 def event_warning_leads(run_snaps: list[Snapshot], risk_scores: np.ndarray, dt: float, horizon_steps: int, risk_threshold: float) -> tuple[list[float], list[float]]:
     """Compute event-based warning lead before physical-adjacency changes.
 
-    The fragmentation-risk target is evaluated separately as future beta0 > 1.
+    The fragmentation-risk target is evaluated separately as the exact-horizon event beta0(t+h) > 1.
     This statistic measures how early a risk score crosses threshold before any
     edge-set change in the current physical graph.
     """
@@ -166,7 +166,7 @@ def event_warning_leads(run_snaps: list[Snapshot], risk_scores: np.ndarray, dt: 
 def evaluate_predictions(model_name: str, test_data: list[Snapshot], preds: np.ndarray, risk_scores: np.ndarray, inference_ms: np.ndarray, dt: float, bootstrap_rounds: int, horizon_steps: int, risk_threshold: float) -> tuple[dict, list[float], list[float]]:
     aligned_test = test_data
     y_true = np.asarray([snap.beta_target for snap in aligned_test], dtype=float)
-    y_risk_true = np.asarray([snap.frag_within_horizon for snap in aligned_test], dtype=int)
+    y_risk_true = np.asarray([snap.frag_at_horizon for snap in aligned_test], dtype=int)
     y_risk_pred = (risk_scores >= risk_threshold).astype(int)
     summary = {
         "Model": model_name,
