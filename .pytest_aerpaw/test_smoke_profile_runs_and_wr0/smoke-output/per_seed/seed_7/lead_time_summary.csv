@@ -1,0 +1,3 @@
+Model,Lead_5th_ms,Lead_median_ms,Lead_IQR_ms,Lead_95th_ms,Lead_mean_ms,Lead_norm_mean,seed
+Density + min-distance heuristics,0.0,0.0,0.0,0.0,0.0,0.0,7
+Current-state persistence baseline,0.0,0.0,0.0,0.0,0.0,0.0,7

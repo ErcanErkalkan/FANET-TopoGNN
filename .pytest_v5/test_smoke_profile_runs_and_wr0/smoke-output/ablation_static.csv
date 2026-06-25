@@ -1,0 +1,3 @@
+Model,MAE_mean,R2_mean,Lead_median_ms_mean
+Current-state persistence baseline,0.0,1.0,0.0
+Density + min-distance heuristics,1.0,-1199999999.0,0.0

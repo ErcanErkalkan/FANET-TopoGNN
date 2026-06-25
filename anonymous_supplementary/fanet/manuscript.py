@@ -27,7 +27,7 @@ def _simple_latex_table(df: pd.DataFrame, caption: str, label: str, note: str | 
         "\\small",
         f"\\caption{{{caption}}}",
         f"\\label{{{label}}}",
-        "\\begin{adjustbox}{max width=\\textwidth}",
+        "\\begin{adjustbox}{max width=\\linewidth}",
         f"\\begin{{tabular}}{{{align}}}",
         "\\toprule",
     ]

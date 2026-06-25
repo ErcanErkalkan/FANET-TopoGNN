@@ -1,4 +1,8 @@
-\documentclass[preprint]{elsarticle}
+\ifdefined\journalfinal
+  \documentclass[final,5p,times,twocolumn]{elsarticle}
+\else
+  \documentclass[preprint]{elsarticle}
+\fi
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
@@ -8,8 +12,6 @@
 \usepackage{float}
 \usepackage{multirow}
 \usepackage{tabularx}
-\usepackage{ltablex}
-\usepackage{longtable}
 \usepackage{array, booktabs, ragged2e}
 \usepackage{pdflscape}
 \usepackage{algorithm}
@@ -52,20 +54,15 @@
 \fi
 
 \begin{abstract}
-Unmanned aerial vehicle (UAV) networks can fragment within short control horizons because motion changes pairwise distance, radio margin, and multi-hop component structure. This paper proposes Kinetic-TopoGuard, a motion-conditioned topological artificial intelligence framework that combines horizon projection, zero-dimensional persistence-image descriptors, residual forecasting, and calibrated risk scoring. The method forecasts the future number of connected components and converts that estimate into an interpretable fragmentation warning for relay, routing, and delay-tolerant connectivity management. A verified PyTorch compact benchmark evaluates tabular, graph, topological, and temporal baselines under fixed/adaptive topology control and nominal/degraded radio conditions. In a focused 20-seed simulation, Kinetic-TopoGuard reduces mean absolute error from 0.363 to 0.308 and raises fragmentation-risk $F_1$ from 0.503 to 0.587 relative to the validation-selected shallow comparator. Transfer to a public 399-second three-UAV forestry flight trace yields mean absolute errors of 0.152--0.219 across three predeclared communication-radius sensitivities, compared with 0.709--1.542 for the shallow comparator. The field dataset contains motion but no radio or packet ground truth; consequently, the external study supports mobility-source transfer, not field-measured wireless-network or deployment readiness.
+Unmanned aerial vehicle (UAV) networks can fragment within short control horizons because motion changes pairwise distance, radio margin, and multi-hop component structure. This paper proposes Kinetic-TopoGuard, a motion-conditioned topological artificial intelligence framework that combines horizon projection, zero-dimensional persistence-image descriptors, residual forecasting, and calibrated risk scoring. The method forecasts the future number of connected components and converts that estimate into an interpretable fragmentation warning for relay, routing, and delay-tolerant connectivity management. A verified PyTorch compact benchmark evaluates tabular, graph, topological, and temporal baselines under fixed/adaptive topology control and nominal/degraded radio conditions. In a focused 20-seed simulation, Kinetic-TopoGuard reduces mean absolute error from 0.363 to 0.308 and raises fragmentation-risk $F_1$ from 0.503 to 0.587 relative to the validation-selected shallow comparator. Transfer to a public 399-second three-UAV forestry flight trace yields mean absolute errors of 0.152--0.219 across predeclared communication-radius sensitivities, compared with 0.709--1.542 for the shallow comparator. Public AERPAW aerial cellular traces raise LTE link-state $F_1$ from 0.828/0.679 threshold baselines to 0.961/0.980 and reduce iPerf throughput MAE from 223.0 to \SI{75.2}{Mbps}; a measured UAV-to-UAV 60 GHz channel dataset raises held-out link-viability $F_1$ from 0.731 to 0.923 and calibrates the external forestry $\beta_0$ labels. These real-data studies support mobility-source, aerial RF/KPI, and peer-to-peer RF transfer, but they do not provide synchronized multi-hop FANET packet-delivery ground truth.
 \end{abstract}
 
-
-\begin{graphicalabstract}
-  \centering
-  \includegraphics[width=0.98\linewidth]{figures/plantuml/graphical_abstract.pdf}
-\end{graphicalabstract}
 
 \begin{highlights}
 \item Topological artificial intelligence forecasts fragmentation risk.
 \item Motion projection improves short-horizon topology encoding.
 \item Twenty seeds support the primary forecasting comparison.
-\item Real three-drone motion provides an external transfer test.
+\item Real motion, AERPAW, and UAV-to-UAV RF data test transfer.
 \item Backend records verify the implemented neural comparisons.
 \end{highlights}
 
@@ -102,15 +99,15 @@ Recent graph-learning architectures such as GCN~\cite{kipf2016semi}, GAT~\cite{v
 
 
 \begin{enumerate}
-    \item \textbf{Engineering-AI problem formalisation.} Short-horizon $\beta_0$ estimation is formulated as an interpretable fragmentation-risk forecasting task for UAV networked systems, with explicit separation between simulated radio evidence and real-flight motion transfer.
+    \item \textbf{Engineering-AI problem formalisation.} Short-horizon $\beta_0$ estimation is formulated as an interpretable fragmentation-risk forecasting task for UAV networked systems, with explicit separation between simulated radio evidence, real-flight motion transfer, and measured aerial cellular RF evidence.
     
     \item \textbf{Motion-conditioned topological AI pipeline.} Kinetic-TopoGuard combines the current $\beta_0$ state, velocity-based horizon projection, projected link-margin and component summaries, $H_0$ persistence-image features, residual regression, and validation-calibrated risk scoring. The contribution is the integrated forecasting and decision-support pipeline rather than a claim that each individual component is new.
       
     \item \textbf{Reproducible and backend-verified benchmark.} A Python simulator, executable configurations, manuscript-facing artefacts, and a fresh provenance rerun are released. The machine-readable record distinguishes nine verified PyTorch neural tasks from scikit-learn models and the union--find diagnostic reference.\footnote{\ifanonymous The anonymized code and data package will be made available for double-anonymized submission and permanently archived after formal release.\else Code and data: \url{https://github.com/ercanerkalkan/FANET-TopoGNN}\fi}
     
-    \item \textbf{Expanded and external evidence.} A focused 20-seed simulation tests the primary Kinetic-TopoGuard-versus-shallow comparison, while a frozen-model transfer test uses synchronized motion from a public three-UAV forestry experiment under predeclared radius sensitivities. Raw out-of-domain extrapolation and physically clipped $\beta_0$ metrics are both archived.
+    \item \textbf{Expanded and external evidence.} A focused 20-seed simulation tests the primary Kinetic-TopoGuard-versus-shallow comparison, a frozen-model transfer test uses synchronized motion from a public three-UAV forestry experiment under predeclared radius sensitivities, a measured UAV-to-UAV 60 GHz channel dataset calibrates peer-to-peer link viability, and a separate AERPAW check uses measured LTE/5G KPI and iPerf throughput traces from aerial cellular experiments. Raw out-of-domain extrapolation and physically clipped $\beta_0$ metrics are both archived.
 
-    \item \textbf{Decision-support evaluation.} The $\beta_0$ predictor is embedded into a minimal connectivity-aware controller that performs relay repositioning and route reconfiguration. Controller-level connectivity, packet-delivery, delay, reroute, buffering, and relay-action metrics are reported as engineering decision-support outcomes rather than as a field-deployment claim.
+    \item \textbf{Decision-support evaluation.} The $\beta_0$ predictor is embedded into a minimal connectivity-aware controller that performs relay repositioning and route reconfiguration. Controller-level connectivity, packet-delivery, delay, reroute, buffering, relay-action, and false-alarm operating-point metrics are reported as engineering decision-support outcomes rather than as a field-deployment claim.
 
 \end{enumerate}
 
@@ -202,13 +199,11 @@ where $p_i^{t} \in \mathbb{R}^2$ denotes the position of UAV $i$. These position
 \end{equation}
 where $r_c(t)$ denotes the fixed or adaptive geometric communication-radius policy at time $t$. In the reported setup, the actual undirected communication graph is the physical-radio graph $G_t=(V_t,E_t)$ obtained after applying bidirectional received-power filtering to the candidate set:
 \begin{equation}
-(i,j)\in E_t
-\;\Longleftrightarrow\;
-(i,j)\in C_t
-\;\land\;
-P_{\mathrm{rx},\,i\to j}(t)\ge\Gamma_{\mathrm{dBm}}
-\;\land\;
-P_{\mathrm{rx},\,j\to i}(t)\ge\Gamma_{\mathrm{dBm}}.
+\begin{aligned}
+(i,j)\in E_t \;\Longleftrightarrow\;& (i,j)\in C_t\\
+&{}\land P_{\mathrm{rx},\,i\to j}(t)\ge\Gamma_{\mathrm{dBm}}\\
+&{}\land P_{\mathrm{rx},\,j\to i}(t)\ge\Gamma_{\mathrm{dBm}}.
+\end{aligned}
 \label{eq:adjacency}
 \end{equation}
 Thus, the distance threshold supplies admissible candidate links, whereas $E_t$ denotes the post-filter physical adjacency used for $\beta_0$ labels, risk targets, controller evaluation, and reported benchmark metrics.
@@ -391,9 +386,12 @@ and feeds the result into the same two-layer regression head used for the neural
 
 The gated FANET-TopoGNN variant is retained as a second comparator that tests whether a learned fusion gate is preferable to direct concatenation. It first projects the GCN and persistence-image embeddings to a shared latent dimension, computes a sigmoid gate, and forms
 \begin{equation}
-  z_{\mathrm{gate}} = g \odot \tilde{z}_{\text{GCN}} + (1-g) \odot \tilde{z}_{\text{PI}},
-  \qquad
-  g=\sigma\!\left(W_g[\tilde{z}_{\text{GCN}}\|\tilde{z}_{\text{PI}}]+b_g\right).
+\begin{aligned}
+  z_{\mathrm{gate}} &= g \odot \tilde{z}_{\text{GCN}}
+    + (1-g) \odot \tilde{z}_{\text{PI}},\\
+  g &= \sigma\!\left(W_g[\tilde{z}_{\text{GCN}}\|
+    \tilde{z}_{\text{PI}}]+b_g\right).
+\end{aligned}
 \end{equation}
 The fused representation is then passed to a two-layer MLP trained with mean-squared error against $\beta_0(t+h)$. As with the concat variant, this model is a retained FANET-TopoGNN baseline: it evaluates adaptive neural fusion of structural and topological embeddings, but it does not use the motion-conditioned projected summaries or calibrated risk objective that define Kinetic-TopoGuard.
 
@@ -457,7 +455,7 @@ These descriptors enrich the evaluation in three ways. The giant-component ratio
 %------------------------------------------------------------
 \subsection{Training Protocol and Hyperparameters}
 
-The executed manuscript tables use the publication-oriented compact profile \texttt{configs/publication\_compact.json}. The separate \texttt{configs/paper\_like\_submission.json} profile expands the seed set to 20 for a larger confirmatory run while retaining only the model families and metrics implemented in the released pipeline. Aggregate metrics are computed over the released seed set used by the selected profile, with exact configuration files, per-seed logs, confidence-interval computations, and resume-cache artefacts included in the repository. Key hyperparameters are listed in Table~\ref{tab:train_hyper}.
+The executed manuscript tables use the released compact profile. The confirmatory profile expands the seed set to 20 while retaining only the model families and metrics implemented in the released pipeline. Aggregate metrics are computed over the released seed set used by the selected profile, with exact configuration files, per-seed logs, confidence-interval computations, and resume-cache artefacts included in the repository. Key hyperparameters are listed in Table~\ref{tab:train_hyper}.
 
 \paragraph{Optimiser and learning rate.}
 The Adam optimiser~\cite{kingma2017adam} is employed with an initial learning rate of $10^{-3}$ and weight decay $10^{-4}$.
@@ -483,6 +481,7 @@ The recorded compact wall-clock measurement was obtained in the author-recorded 
   \centering
   \caption{Key training hyperparameters for the reported evaluation.}
   \label{tab:train_hyper}
+  \begin{adjustbox}{width=\linewidth}
   \begin{tabular}{ll}
     \toprule
     \textbf{Parameter} & \textbf{Value} \\
@@ -494,11 +493,12 @@ The recorded compact wall-clock measurement was obtained in the author-recorded 
     Epochs & 18 (early stopping, patience~5) \\
     Dropout & 0.15 \\
     Seeds (reported compact run) & $\{7,17,27\}$ \\
-    Seeds (expanded submission profile) & 20 seeds, \texttt{configs/paper\_like\_submission.json} \\
+    Seeds (expanded submission profile) & 20 seeds \\
     Hidden size (MLP) & 48 \\
     Temporal windows & $\{5\}$ \\
     \bottomrule
   \end{tabular}
+  \end{adjustbox}
 \end{table}
 
 %------------------------------------------------------------
@@ -550,13 +550,13 @@ where $\tau^-$ and $\tau^+$ denote left and right limits with respect to $\tau$.
 
 For each event $\tau_k \in \mathcal{T}_{\mathrm{flip}}$, let $\mathcal{W}_k$ be the set of prediction times in the preceding forecast window at which the current graph is still connected and the model's risk score exceeds the selected risk threshold:
 \[
-\mathcal{W}_k =
-\bigl\{
-t_{\mathrm{pred}}:
-\tau_k - h\Delta t_{\mathrm{sim}} \le t_{\mathrm{pred}} < \tau_k,\;
-\beta_0(t_{\mathrm{pred}})\le 1,\;
-s_{\mathrm{risk}}(t_{\mathrm{pred}})\ge \tau_{\mathrm{frag}}
+\begin{aligned}
+\mathcal{W}_k = \bigl\{t_{\mathrm{pred}}:\;&
+\tau_k-h\Delta t_{\mathrm{sim}}\le t_{\mathrm{pred}}<\tau_k,\\
+&\beta_0(t_{\mathrm{pred}})\le 1,\\
+&s_{\mathrm{risk}}(t_{\mathrm{pred}})\ge\tau_{\mathrm{frag}}
 \bigr\}.
+\end{aligned}
 \]
 
 The event-level warning time is then
@@ -569,7 +569,7 @@ The event-level warning time is then
 \end{cases}
 \]
 
-The simulator operates on discrete time steps of length $\Delta t_{\mathrm{sim}}=\SI{0.1}{\second}$. The implementation searches the preceding forecast window for each physical-adjacency flip and records the earliest qualifying warning; if no qualifying warning exists, the event contributes zero. The reported summaries include the median, interquartile range, selected percentiles, and empirical CDF of $\Delta t_k$. Interpretation of this metric is concentrated in the Early-Warning Behaviour subsection of Section~\ref{sec:results}.
+The simulator operates on discrete time steps of length $\Delta t_{\mathrm{sim}}=\SI{0.1}{\second}$. For each edge change in the physical graph, the implementation searches the preceding forecast window and records the earliest qualifying warning; if no qualifying warning exists, the event contributes zero. The reported summaries include the median, interquartile range, selected percentiles, and empirical CDF of $\Delta t_k$. Interpretation of this metric is concentrated in the Early-Warning Behaviour subsection of Section~\ref{sec:results}.
 
 %------------------------------------------------------------
 \subsection{Flying-Network Simulator}
@@ -599,6 +599,7 @@ Each $(t,\text{run},\text{model},N)$ tuple yields UAV coordinates, persistence i
   \centering
   \caption{Simulation configuration (mirroring \texttt{SimulationConfig}).}
   \label{tab:sim_params}
+  \begin{adjustbox}{width=\linewidth}
   \begin{tabular}{llc}
     \toprule
     \textbf{Category} & \textbf{Parameter} & \textbf{Value} \\ \midrule
@@ -621,6 +622,7 @@ Each $(t,\text{run},\text{model},N)$ tuple yields UAV coordinates, persistence i
     Forecast & Horizon & 6 steps (\SI{0.6}{\second}) \\
     \bottomrule
   \end{tabular}
+  \end{adjustbox}
 \end{table}
 
 \begin{table}[t]
@@ -669,7 +671,7 @@ Compared with RWP/GM, this mission-based pattern produces connectivity dynamics 
 Training, validation, and test splits are constructed using disjoint sets of random seeds and mobility initialisations to prevent temporal or spatial leakage. Assignments occur at the base trajectory level: all fixed/adaptive graph-policy and nominal/degraded radio variants from a given $(N,\text{mobility},\text{seed})$ combination are assigned to the same fold. The PI construction parameters $\epsilon_{\max}$, $\sigma$, and $w(b,d)$ are fixed by the released compact configuration, while model selection decisions that are learned from data, such as the shallow-regressor family, use the validation split. The test split remains untouched until the final evaluation. The released logs document the mapping from seeds to folds for full transparency.
 
 \paragraph{Statistical-power status and expanded-seed protocol.}
-The compact neural-baseline evidence uses three random seeds. This supports backend verification, table generation, and model diagnostics, but does not provide strong inferential power across the full neural family. A separate focused 20-seed confirmatory profile in \path{configs/paper_like_submission.json} preserves the compact mobility, graph-policy, radio-scenario, split, and horizon design while evaluating the primary Kinetic-TopoGuard model, the validation-selected shallow-ML comparator, and the union--find current-graph diagnostic reference. This focused profile tests the primary Kinetic-TopoGuard-versus-shallow comparison with greater seed coverage; it does not convert every three-seed neural comparison into a 20-seed claim.
+The canonical compact run uses seeds 7, 17, and 27. To test whether its neural-family ordering is specific to those seeds, \path{configs/publication_neural_extension.json} executes the same nine PyTorch neural tasks and Kinetic-TopoGuard on seeds 37 and 47, and \path{scripts/build_neural_seed_extension.py} aggregates all five seeds. A separate focused 20-seed confirmatory profile in \path{configs/paper_like_submission.json} preserves the compact mobility, graph-policy, radio-scenario, split, and horizon design while evaluating the primary Kinetic-TopoGuard model, the validation-selected shallow-ML comparator, and the union--find current-graph diagnostic reference. Thus, the full neural family has five-seed backend-verified stability evidence, while the primary learned comparison has 20-seed confirmatory inference.
 
 %------------------------------------------------------------
 \subsection{Physical-Layer Realism and Unidirectional Links}
@@ -677,8 +679,10 @@ The compact neural-baseline evidence uses three random seeds. This supports back
 
 To approximate realistic propagation conditions, a log-distance path-loss model with log-normal shadowing is incorporated:
 \[
-PL(d)\,[\mathrm{dB}] = PL(d_0) + 10 n \log_{10}(d/d_0) + X_\sigma,
-\quad X_\sigma \sim \mathcal{N}(0,\sigma^2),
+\begin{aligned}
+PL(d)\,[\mathrm{dB}] &= PL(d_0)+10n\log_{10}(d/d_0)+X_\sigma,\\
+X_\sigma &\sim \mathcal{N}(0,\sigma^2).
+\end{aligned}
 \]
 where $n$ is the path-loss exponent and $\sigma$ is the shadowing standard deviation. The reported results use two radio scenarios: a nominal setting with $n=2.35$, $\sigma=\SI{3.0}{dB}$, and receiver sensitivity \SI{-96}{dBm}; and a degraded setting with $n=2.65$, $\sigma=\SI{4.5}{dB}$, and receiver sensitivity \SI{-92}{dBm}. Small-scale fading follows a Rayleigh model (Nakagami-$m$ with $m=1$).
 
@@ -715,6 +719,22 @@ The source dataset does not contain packet-reception or radio-link ground truth.
 Kinetic-TopoGuard and the selected shallow comparator are fitted only on the synthetic compact train/validation partitions for seeds 7, 17, and 27, then applied to the measured trace without refitting or calibration on field samples. The union--find row remains a current-graph diagnostic reference. The resulting experiment tests transfer across mobility source, swarm size, and environment while deliberately leaving packet-level, measured-RF, and onboard validation outside the supported claim.
 
 %------------------------------------------------------------
+\subsection{Measured Aerial Cellular RF and Throughput Protocol}
+\label{subsec:aerpaw_protocol}
+
+To narrow the real-wireless evidence gap without overstating FANET deployment readiness, a second external check uses AERPAW Dataset-22 and Dataset-23~\cite{aerpawDataset22,aerpawDataset23}. Dataset-22 records Android-based 4G LTE key performance indicators (KPIs) along a semi-circular UAV trajectory around a private AERPAW base station. Dataset-23 records two UAV sweeps with 4G LTE KPIs, 5G NR KPIs, and application-layer iPerf throughput. The local pipeline uses 2{,}021 Dataset-22 LTE rows, 2{,}300 Dataset-23 LTE rows, 796 Dataset-23 NR rows, and 1{,}214 Dataset-23 iPerf rows after parsing the public CSV files.
+
+The LTE task predicts the measured serving/connection state from RSRP, RSRQ, RSSI, altitude, and local flight geometry. A training-selected RSRP threshold is the transparent baseline; a balanced logistic RF/KPI model is the learned comparator. Both Dataset-22 and Dataset-23 LTE logs use a final-30\%-by-time holdout. The throughput task aligns Dataset-23 iPerf samples to connected LTE rows by nearest timestamp within \SI{1.5}{s}, then compares a training-mean baseline with a random-forest RF/KPI regressor on interleaved \SI{5}{s} time blocks. This protocol uses measured aerial cellular links and throughput, but it is not synchronized inter-UAV FANET packet-link validation.
+
+%------------------------------------------------------------
+\subsection{Measured UAV-to-UAV RF Channel Protocol}
+\label{subsec:uav_to_uav_rf_protocol}
+
+To close the peer-to-peer RF part of the external-data gap, the released pipeline also integrates the public WiNES/Northeastern UAV-to-UAV \SI{60}{GHz} experimental channel-model dataset~\cite{winesUavToUav60GHz}. The source file contains 6{,}896 cleaned beam-scan rows with measured UAV separation, altitude, link direction, transmit/receive beam identifiers, MCS, SNR, RSSI, received power, and path loss. The local script verifies the raw CSV SHA-256 checksum and materialises all derived metrics under \path{outputs/uav_to_uav_mmwave_validation/}.
+
+The measured RF task defines link viability as post-equalisation SNR of at least \SI{5}{dB} and received power at least \SI{-88}{dBm}. Models are trained on measured links below \SI{33}{m} and tested on held-out longer-distance rows to avoid random-row leakage across nearby beam measurements. A logistic RF model is compared against a training-prior baseline and a random forest. The measured distance-success curves are then interpolated onto the synchronized three-UAV forestry trace; for each snapshot, the three pairwise success probabilities are converted into an expected $\beta_0$ and a fragmentation probability. This produces a measured UAV-to-UAV RF-calibrated topology check, while still not claiming packet-level MAC or routing validation.
+
+%------------------------------------------------------------
 \subsection{Benchmarking Persistence-Image Latency}
 
 The current pipeline records model inference latency directly in the evaluation outputs, but does not yet expose a standalone benchmark for persistence-image construction. This manuscript therefore reports end-to-end predictor latency and overall wall-clock runtime. A dedicated persistence-module micro-benchmark is deferred to future work.
@@ -741,7 +761,10 @@ Hidden dimensions, dropout rates, and learning-rate schedules are matched as clo
 \paragraph{Tabular and shallow non-GNN regression models.}
 Shallow snapshot-level regressors operating on hand-crafted graph and geometry features are also evaluated:
 \[
-x_t = \bigl[\rho_t, d_{\min}(t), \bar{d}(t), d_{\max}(t), |C_{\max}(t)|, \text{avg.\ clustering coefficient}\bigr].
+\begin{aligned}
+x_t = \bigl[&\rho_t,d_{\min}(t),\bar{d}(t),d_{\max}(t),\\
+&|C_{\max}(t)|,\text{avg.\ clustering coefficient}\bigr].
+\end{aligned}
 \]
 On top of $x_t$, the released shallow selector trains exactly the following candidate estimators:
 \begin{itemize}
@@ -793,7 +816,7 @@ At present, the reproducibility suite reports per-snapshot host-side inference l
 \label{sec:results}
 %=========================================================
 
-The calibrated evaluation uses the repository configuration named \path{publication_compact.json}. It covers 64{,}800 labelled snapshots, fixed/adaptive graph policies, and nominal/degraded radio scenarios. The results should be read as a reproducible study rather than as a claim of universal superiority.
+The calibrated evaluation uses the released compact configuration. It covers 64{,}800 labelled snapshots, fixed/adaptive graph policies, and nominal/degraded radio scenarios. The results should be read as a reproducible study rather than as a claim of universal superiority.
 
 \subsection{Dataset, Graph Policy, and Radio Sensitivity}
 
@@ -821,7 +844,7 @@ The automatically generated manuscript tables are included below without manual 
 
 Table~\ref{tab:perf_overall_auto} reports scalar forecasting performance. Following the reference definition in Section~\ref{sec:method}, learned models are ranked separately from the exact-graph diagnostic row. Kinetic-TopoGuard has the lowest learned MAE (0.309) and the strongest learned risk-$F_1$ (0.555); the remaining regression-fit values are reported in the same table for completeness.
 
-Figure~\ref{fig:publication_perf_compact} gives the same performance comparison with 95\% confidence intervals, Fig.~\ref{fig:mae_compact} isolates the MAE ranking, and Fig.~\ref{fig:residual_compact} shows residual distributions. A separate regression-fit-only plot is omitted because the values are already included in Table~\ref{tab:perf_overall_auto}.
+Figure~\ref{fig:publication_perf_compact} gives the same performance comparison with 95\% confidence intervals, and Fig.~\ref{fig:mae_compact} isolates the MAE ranking. Residual distributions are archived in the generated outputs; a separate regression-fit-only plot is omitted because the values are already included in Table~\ref{tab:perf_overall_auto}.
 
 \begin{figure}[p]
   \centering
@@ -837,19 +860,12 @@ Figure~\ref{fig:publication_perf_compact} gives the same performance comparison 
   \label{fig:mae_compact}
 \end{figure}
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/generated/residual_boxplot.pdf}
-  \caption{Residual distributions across evaluated models. The distribution confirms that the evaluation contains meaningful model differences and that topological fusion should be interpreted against strong non-deep baselines.}
-  \label{fig:residual_compact}
-\end{figure}
-
 \subsection{Focused 20-Seed Confirmation}
 \label{subsec:confirmatory_results}
 
 The focused confirmatory profile contains 432{,}000 labelled snapshots across 20 seeds. Table~\ref{tab:confirmatory_metrics} separates the primary learned comparison from the union--find current-graph diagnostic. Kinetic-TopoGuard has lower MAE than the validation-selected shallow comparator in all 20 seeds. Its aggregate MAE is 0.308 [95\% CI: 0.297, 0.318], compared with 0.363 [0.346, 0.380] for Shallow ML. The paired MAE difference remains significant after false-discovery-rate correction ($p=2.17\times10^{-7}$; Cohen's $d=1.84$). The corresponding risk-$F_1$ values are 0.587 [0.562, 0.612] and 0.503 [0.469, 0.538] ($p_{\mathrm{FDR}}=6.18\times10^{-5}$). Kinetic-TopoGuard also improves PR-AUC (0.871 versus 0.298) and Brier score (0.105 versus 0.529), while $R^2$ is closer (0.539 versus 0.514).
 
-\begin{table}[H]
+\begin{table}[t]
   \centering
   \caption{Focused 20-seed confirmation. Confidence intervals are computed across the 20 executed seeds. Union--find is an instantaneous diagnostic reference rather than a learned future forecaster.}
   \label{tab:confirmatory_metrics}
@@ -872,7 +888,7 @@ The extracted public trace contains 3{,}990 synchronized samples per vehicle ove
   \label{fig:external_trace}
 \end{figure}
 
-\begin{table}[H]
+\begin{table}[t]
   \centering
   \caption{Frozen-model transfer from synthetic training to measured three-UAV motion. Regression outputs are clipped to the physically feasible interval $[1,N]$ for headline MAE; the clip rate and all raw predictions are archived. Values are mean $\pm$ standard deviation over training seeds 7, 17, and 27.}
   \label{tab:external_metrics}
@@ -885,11 +901,50 @@ Kinetic-TopoGuard yields clipped MAE values of 0.166, 0.219, and 0.152 across q2
 
 The clip-rate column exposes domain-shift behaviour rather than hiding it. Kinetic-TopoGuard requires clipping for 21.4\%, 4.2\%, and 0\% of predictions across q25--q75. Shallow ML requires clipping for 66.7\% in every scenario because the MLP selected in two seeds extrapolates far outside the training range; its archived raw MAE is approximately 4{,}601--4{,}602 before clipping. The union--find diagnostic remains strongest in this slowly evolving three-node trace, but it uses current graph state and therefore does not establish forecast-model superiority. Overall, the experiment supports transfer across mobility source, swarm size, and physical environment, while the absence of measured radio links keeps the conclusion below field-network validation.
 
+\subsection{Measured Aerial Cellular RF and Throughput Validation}
+\label{subsec:aerpaw_results}
+
+Table~\ref{tab:aerpaw_cellular} reports the measured AERPAW cellular check. On the Dataset-22 LTE holdout, the balanced logistic RF/KPI model raises link-state $F_1$ from 0.828 for the training-selected RSRP threshold to 0.961. On the Dataset-23 LTE holdout, the same model raises $F_1$ from 0.679 to 0.980. For Dataset-23 iPerf throughput, the RF/KPI random forest reduces MAE from 223.0 to \SI{75.2}{Mbps} on interleaved held-out time blocks, with $R^2=0.713$. The Dataset-23 NR log is retained in the protocol manifest as additional measured 5G context rather than as a separate supervised target.
+
+\begin{table}[H]
+  \centering
+  \caption{Measured AERPAW aerial cellular validation. LTE rows test serving/connection-state classification against an RSRP-threshold baseline. The iPerf row tests throughput regression against a training-mean baseline.}
+  \label{tab:aerpaw_cellular}
+  \begin{adjustbox}{width=\linewidth}
+    \input{tables/generated/aerpaw_cellular_table.tex}
+  \end{adjustbox}
+\end{table}
+
+This result addresses part of the gap exposed by the forestry trace: the manuscript now contains measured aerial RF/KPI and application-throughput evidence, not only measured motion. The scope is still deliberately bounded. AERPAW Dataset-22 and Dataset-23 are UAV-to-cellular-infrastructure experiments around a base station; they do not provide synchronized peer-to-peer inter-UAV reception labels, MAC contention traces, or multi-hop FANET packet delivery ground truth.
+
+\subsection{Measured UAV-to-UAV RF-Calibrated Topology Validation}
+\label{subsec:uav_to_uav_rf_results}
+
+Table~\ref{tab:uav_to_uav_mmwave} reports the peer-to-peer RF validation. On held-out longer-distance UAV-to-UAV \SI{60}{GHz} rows, the logistic RF model raises link-viability $F_1$ from 0.731 for the training-prior baseline to 0.923, with PR-AUC increasing from 0.576 to 0.985. The same measured success curves are then mapped onto the public forestry trace. At the \SI{7}{dB} SNR operating point, the measured RF calibration yields mean expected $\beta_0=1.915$ and mean fragmentation probability 0.676 across 3{,}990 synchronized snapshots; lower and stricter SNR thresholds bracket this value as shown in the table. This turns the forestry check from a pure radius-threshold sensitivity into a measured peer-to-peer RF-calibrated topology sensitivity.
+
+\begin{table}[H]
+  \centering
+  \caption{Measured UAV-to-UAV \SI{60}{GHz} RF validation and RF-calibrated external topology sensitivity. The first two rows test held-out link viability; the remaining rows apply measured distance-success curves to the public forestry trace.}
+  \label{tab:uav_to_uav_mmwave}
+  \begin{adjustbox}{width=\linewidth}
+    \input{tables/generated/uav_to_uav_mmwave_table.tex}
+  \end{adjustbox}
+\end{table}
+
 \subsection{Early-Warning Behaviour}
 
 The forecast horizon is six simulation steps with $\Delta t_{\mathrm{sim}}=\SI{0.1}{s}$, so the maximum reported median topology-change lead is \SI{600}{ms}. Table~\ref{tab:lead_time_auto} and Fig.~\ref{fig:lead_summary_compact} show a clear ceiling effect: FANET-TopoGNN and PI+MLP reach the \SI{600}{ms} median ceiling, while Shallow ML and T-GCN reach \SI{566.67}{ms}. Kinetic-TopoGuard has a positive but substantially shorter median lead of \SI{233.33}{ms}, indicating a more conservative warning behaviour. Its advantage, where present, is not longer warning time; it is the combination of learned MAE and learned risk $F_1$ in Table~\ref{tab:risk_metrics_auto}. The \SI{600}{ms} median lead is bounded by the selected forecast horizon and should not be interpreted as a general deployment-level lead-time guarantee.
 
-A positive lead is therefore treated as a minimum feasibility condition rather than as a sufficient contribution. Because long lead can be obtained by early or frequent warnings, useful early warning must be judged by timeliness and correctness together. In the current evaluation, Kinetic-TopoGuard's risk score has very high recall but modest precision; future experiments should report precision-adjusted useful lead and lead--false-alarm trade-off curves before claiming a decisive early-warning advantage. The empirical CDF in Fig.~\ref{fig:lead_cdf_compact} should therefore be interpreted as a capped topology-change warning trade-off plot, not as evidence of lead-time superiority.
+A positive lead is therefore treated as a minimum feasibility condition rather than as a sufficient contribution. Because long lead can be obtained by early or frequent warnings, useful early warning must be judged by timeliness and correctness together. The 20-seed threshold sweep is therefore converted into deployable operating points instead of leaving threshold choice as a qualitative limitation. Table~\ref{tab:operating_point} selects the highest mean $F_1$ threshold satisfying each false-alarm budget: $\tau_{\mathrm{frag}}=0.6$ keeps false alarms below 25 per minute with $F_1=0.754$, while $\tau_{\mathrm{frag}}=0.7$ keeps false alarms below 10 per minute with $F_1=0.701$. The empirical CDF in Fig.~\ref{fig:lead_cdf_compact} should therefore be interpreted together with this threshold/false-alarm selection, not as stand-alone evidence of lead-time superiority.
+
+\begin{table}[t]
+  \centering
+  \caption{Operating-point selection from the 20-seed threshold sweep. The deployable and strict policies are selected by maximizing mean $F_1$ subject to the stated false-alarm budget.}
+  \label{tab:operating_point}
+  \begin{adjustbox}{width=\linewidth}
+    \input{tables/generated/operating_point_table.tex}
+  \end{adjustbox}
+\end{table}
 
 \begin{figure}[H]
   \centering
@@ -918,7 +973,16 @@ The results support a component-level interpretation of the topological branch w
 
 Figure~\ref{fig:risk_compact} shows the risk-$F_1$ comparison. Kinetic-TopoGuard is the strongest learned risk forecaster, and Table~\ref{tab:feature_source_ablation} shows that PI-only prediction is not sufficient on its own. The retained fusion ablation in Fig.~\ref{fig:fusion_ablation_compact} shows that concat outperforms the adaptive gated FANET-TopoGNN variant on MAE, $R^2$, and risk $F_1$; therefore no gated-fusion superiority claim is made.
 
-The paired statistical summary in Fig.~\ref{fig:statistical_compact} reinforces the same cautious conclusion for the full compact model family. Those neural comparisons retain three-seed uncertainty and are interpreted as backend-verified model diagnostics. The stronger seed-level inference is restricted to the focused Kinetic-TopoGuard-versus-shallow comparison in Table~\ref{tab:confirmatory_metrics}. Separate \texttt{stats\_tests.csv} and \texttt{stats\_tests.tex} files under the compact and 20-seed output directories provide the exact paired tests and false-discovery-rate-adjusted values.
+The paired statistical summary in Fig.~\ref{fig:statistical_compact} is supplemented by the five-seed extension in Table~\ref{tab:neural_seed_extension}. Across seeds 7, 17, 27, 37, and 47, all nine neural rows retain verified PyTorch backends and Kinetic-TopoGuard keeps the lowest MAE (0.309). GraphSAGE is the lowest-MAE neural comparator at 0.406, while the concat TopoGNN variant has the highest neural risk $F_1$ at 0.505. The stronger seed-level inference remains the focused 20-seed Kinetic-TopoGuard-versus-shallow comparison in Table~\ref{tab:confirmatory_metrics}; separate output files preserve the exact seed-level rows and adjusted tests.
+
+\begin{table}[t]
+  \centering
+  \caption{Representative rows from the five-seed neural-family extension. Seeds 37 and 47 are newly executed with the same compact settings and aggregated with seeds 7, 17, and 27; the complete nine-model table and seed-level CSV are included in the supplementary artefact.}
+  \label{tab:neural_seed_extension}
+  \begin{adjustbox}{width=\linewidth}
+    \input{tables/generated/neural_seed_extension_table.tex}
+  \end{adjustbox}
+\end{table}
 
 \begin{figure}[H]
   \centering
@@ -951,7 +1015,9 @@ To address the fact that $\beta_0$ gives only a coarse partition count, the repo
   \centering
   \caption{Complementary structural-resilience diagnostics. Values are means over a representative every-tenth-tick subset of the released simulation profile. Future-fragmented horizons show a smaller giant connected component, more articulation-point bottlenecks, and lower algebraic connectivity.}
   \label{tab:robustness_descriptors}
-  \input{robustness_descriptors_summary.tex}
+  \begin{adjustbox}{width=\linewidth}
+    \input{robustness_descriptors_summary.tex}
+  \end{adjustbox}
 \end{table}
 
 The diagnostic pattern is consistent with the interpretation of $\beta_0$ as an interpretable but incomplete fragmentation signal. When the future horizon remains connected, the largest component contains almost all UAVs on average, articulation-point density is low, and the Laplacian spectral margin is positive. When the future horizon is fragmented, the giant-component ratio falls, the articulation-point ratio rises, and $\lambda_2$ approaches zero. These results do not replace the primary $\beta_0(t+h)$ forecasting task, but they enrich the networking interpretation: a controller can use $\beta_0$ for the split/no-split warning, giant-component ratio for fragmentation severity, articulation points for relay-bottleneck identification, and $\lambda_2$ as a continuous pre-fragmentation robustness margin. The manuscript therefore avoids treating $\beta_0$ as a complete description of resilience and explicitly identifies multi-metric structural forecasting as the next methodological extension.
@@ -1002,7 +1068,7 @@ The defensible conclusion is metric-specific. Kinetic-TopoGuard is best interpre
 \subsection{Limitations}
 \label{subsec:limitations}
 
-Several limitations remain. First, the external study uses real three-UAV motion from one forestry experiment, but its graph labels are counterfactual radius thresholds rather than measured RF links. The evidence therefore does not cover packet reception, MAC contention, interference under traffic, hardware-in-the-loop execution, onboard profiling, or operational deployment. Second, the focused 20-seed profile strengthens only the primary Kinetic-TopoGuard-versus-shallow comparison; the wider neural-baseline family remains a three-seed compact diagnostic. Third, the current topological branch models only $H_0$ and computes persistence-image features snapshot by snapshot via pairwise distances and a minimum spanning tree, so incremental updates and large-swarm scaling remain future work. Fourth, the feature-source isolation in Table~\ref{tab:feature_source_ablation} is not a complete equal-learner factorial ablation over all kinematic, graph-statistical, and persistence-image combinations. Fifth, giant-component ratio, articulation-point ratio, and algebraic connectivity are analysed diagnostically rather than forecast jointly with $\beta_0$. Sixth, the external clip-rate results expose substantial unconstrained extrapolation for selected shallow regressors and some q25 Kinetic-TopoGuard predictions; physically constrained objectives or count models should be evaluated in future transfer studies. Finally, the controller uses a deliberately simple decision layer, and differences among the strongest predictors are modest. Broader multi-site flight traces with measured links, horizon sweeps, packet-level network simulation, and tighter routing/relay integration are required before deployment-oriented conclusions.
+Several limitations remain. First, the external evidence now has three bounded real-data layers: a three-UAV forestry motion trace whose original graph labels are counterfactual radius thresholds, measured UAV-to-UAV \SI{60}{GHz} RF channel rows that calibrate peer-to-peer link viability, and AERPAW aerial cellular RF/KPI traces that measure UAV-to-base-station links and throughput. The evidence therefore still does not cover synchronized multi-hop FANET packet-delivery logs, MAC contention, interference under operational traffic, hardware-in-the-loop execution, onboard profiling, or deployment. Second, the full neural family is evaluated over five seeds, while the larger 20-seed confirmatory inference is reserved for the primary Kinetic-TopoGuard-versus-shallow comparison. Third, the current topological branch models only $H_0$ and computes persistence-image features snapshot by snapshot via pairwise distances and a minimum spanning tree, so incremental updates and large-swarm scaling remain future work. Fourth, the feature-source isolation in Table~\ref{tab:feature_source_ablation} is not a complete equal-learner factorial ablation over all kinematic, graph-statistical, and persistence-image combinations. Fifth, giant-component ratio, articulation-point ratio, and algebraic connectivity are analysed diagnostically rather than forecast jointly with $\beta_0$. Sixth, the external clip-rate results expose substantial unconstrained extrapolation for selected shallow regressors and some q25 Kinetic-TopoGuard predictions; physically constrained objectives or count models should be evaluated in future transfer studies. Finally, the controller uses a deliberately simple decision layer, and differences among the strongest predictors are modest. Broader multi-site flight traces with synchronized peer-to-peer packet labels, horizon sweeps, packet-level network simulation, and tighter routing/relay integration are required before deployment-oriented conclusions.
 
 %=========================================================
 \section{Reproducibility}
@@ -1023,21 +1089,36 @@ The focused 20-seed profile contains Kinetic-TopoGuard, the validation-selected 
 
 The external field-motion transfer study is reproduced with
 \begin{quote}
-\small\ttfamily python -m pip install -r requirements-external.txt\\
+{\ifdefined\journalfinal\scriptsize\else\small\fi\ttfamily
+python -m pip install -r requirements-external.txt\\
 scripts\textbackslash download\_external\_validation.ps1\\
 python scripts/extract\_forestry\_trace.py\\
-python scripts/run\_external\_validation.py
+python scripts/run\_external\_validation.py}
 \end{quote}
-If compact or 20-seed execution is interrupted, rerun its launcher with \path{--resume}; the pipeline verifies per-model cache coverage before skipping a seed. The trace extraction is deterministic and verifies source checksums before replacing its derived files. Each benchmark run exports manuscript-facing artefacts under the selected output directory, including \path{summary.json}, \path{runtime_profile.json}, \path{claims_summary.md}, \path{report.md}, \path{manuscript_tables.tex}, tables, and figures. The runtime profile separates the author-recorded runtime environment from the distributed reproducibility environment so that wall-clock claims are not conflated with the reference rerun specification. Compact values were cross-checked against \path{outputs/publication_compact/}. Confirmatory and field-transfer values were checked against \path{outputs/paper_like_submission/} and \path{outputs/external_validation/}, respectively. Plotted figures are copied under \path{figures/generated/}.
+The measured AERPAW cellular check is reproduced with
+\begin{quote}
+{\ifdefined\journalfinal\scriptsize\else\small\fi\ttfamily
+python -m pip install -r requirements-external.txt\\
+scripts\textbackslash download\_aerpaw\_cellular\_validation.ps1\\
+python scripts/run\_aerpaw\_cellular\_validation.py}
+\end{quote}
+The measured UAV-to-UAV RF calibration, operating-point selection, and static digital-twin dashboard are reproduced with
+\begin{quote}
+{\ifdefined\journalfinal\scriptsize\else\small\fi\ttfamily
+python scripts/run\_uav\_to\_uav\_mmwave\_validation.py\\
+python scripts/select\_operating\_point.py\\
+python scripts/build\_digital\_twin\_dashboard.py}
+\end{quote}
+The neural-extension profile executes the two additional PyTorch seeds, and the supplied aggregation script combines them with the three compact seeds. If a configured run is interrupted, \path{--resume} verifies per-model cache coverage before skipping completed tasks. Exact paths and commands are retained in the anonymous supplementary notes and package manifest, while manuscript-facing figures are copied under \path{figures/generated/}.
 
 %=========================================================
 \section{Conclusion and Future Work}
 \label{sec:conclusion}
 %=========================================================
 
-Kinetic-TopoGuard has been introduced as a kinematic-topological algorithm for forecasting the future number of connected components in dynamic flying ad hoc networks. The backend-verified compact benchmark gives a metric-specific result: the method has the lowest learned MAE (0.309) and highest learned fragmentation-risk $F_1$ (0.555) among the evaluated compact models. More importantly, the focused 20-seed study preserves the learned ranking against Shallow ML, with MAE 0.308 versus 0.363 and risk $F_1$ 0.587 versus 0.503. These results support the value of combining motion-conditioned margins, $H_0$ persistence summaries, graph statistics, residual regression, and risk calibration, while the high recall/false-alarm trade-off prevents a blanket early-warning superiority claim.
+Kinetic-TopoGuard has been introduced as a kinematic-topological algorithm for forecasting the future number of connected components in dynamic flying ad hoc networks. The backend-verified compact benchmark gives a metric-specific result: the method has the lowest learned MAE (0.309) and highest learned fragmentation-risk $F_1$ (0.555) among the evaluated compact models. The added five-seed neural extension preserves the MAE ordering against all nine PyTorch neural comparators, and the focused 20-seed study preserves the learned ranking against Shallow ML, with MAE 0.308 versus 0.363 and risk $F_1$ 0.587 versus 0.503. The false-alarm issue is handled by explicit operating-point selection: $\tau_{\mathrm{frag}}=0.6$ keeps false alarms below 25 per minute with $F_1=0.754$, while $\tau_{\mathrm{frag}}=0.7$ keeps false alarms below 10 per minute with $F_1=0.701$. These results support the value of combining motion-conditioned margins, $H_0$ persistence summaries, graph statistics, residual regression, and risk calibration, while still preventing a blanket early-warning superiority claim.
 
-The public three-UAV forestry trace adds measured-motion transfer evidence: Kinetic-TopoGuard remains below 0.22 MAE across the three radius sensitivities after physical output clipping and outperforms the shallow comparator, but the source contains no measured communication links. The next validation step is therefore multi-site flight testing with synchronized RF/packet labels, hardware-in-the-loop or onboard profiling, horizon and threshold sweeps, and packet-level MAC/interference studies. Future work should also incorporate physically constrained count prediction, richer temporal-topological hybrids, and multi-task forecasting of $\beta_0$, giant-component ratio, articulation-point ratio, and algebraic connectivity.
+The public three-UAV forestry trace adds measured-motion transfer evidence: Kinetic-TopoGuard remains below 0.22 MAE across the three radius sensitivities after physical output clipping and outperforms the shallow comparator. The measured UAV-to-UAV \SI{60}{GHz} channel check adds peer-to-peer RF link evidence, raising held-out link-viability $F_1$ from 0.731 to 0.923 and producing RF-calibrated expected-$\beta_0$ sensitivities on the same forestry trace. The AERPAW cellular check adds measured aerial RF/KPI and iPerf evidence, improving LTE link-state and throughput prediction over simple baselines, while remaining UAV-to-infrastructure rather than FANET packet validation. The next validation step is therefore multi-site flight testing with synchronized peer-to-peer packet labels, hardware-in-the-loop or onboard profiling, horizon and threshold sweeps, and packet-level MAC/interference studies. Future work should also incorporate physically constrained count prediction, richer temporal-topological hybrids, and multi-task forecasting of $\beta_0$, giant-component ratio, articulation-point ratio, and algebraic connectivity.
 
 %=========================================================
 \clearpage
@@ -1062,6 +1143,7 @@ The public GitHub repository is \path{ErcanErkalkan/FANET-TopoGNN} at \url{https
   \item \path{outputs/publication_compact/}: cross-checked compact artefacts used in the reported evaluation, including tables, figures, \path{claims_summary.md}, \path{report.md}, \path{summary.json}, \path{runtime_profile.json}, \path{stats_tests.csv}, and \path{artifact_manifest.txt}.
   \item \path{outputs/paper_like_submission/}: completed output directory for the focused 20-seed confirmatory run.
   \item \path{outputs/external_validation/}: completed real-flight-motion transfer metrics, predictions, protocol, and figures.
+  \item \path{outputs/aerpaw_cellular_validation/}: completed AERPAW aerial cellular RF/KPI and throughput metrics, protocol, and figures.
   \item \path{environment.yml}, \path{requirements.txt}, and \path{pyproject.toml}: aligned base environment specifications for the non-deep scientific stack; \path{requirements-deep.txt} or the \texttt{deep} extra is required for manuscript-facing PyTorch neural baselines.
 \end{itemize}
 

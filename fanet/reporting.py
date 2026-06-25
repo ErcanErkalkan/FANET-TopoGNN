@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 from pathlib import Path
 import textwrap
 import matplotlib.pyplot as plt
@@ -23,7 +24,7 @@ plt.rcParams.update(
 
 MODEL_COLORS = {
     "Density + min-distance heuristics": "#7f7f7f",
-    "Union-Find detection oracle": "#4d4d4d",
+    "Current-state persistence baseline": "#4d4d4d",
     "GCN": "#2f6db3",
     "GAT": "#8c564b",
     "GraphSAGE": "#3b7a57",
@@ -35,7 +36,7 @@ MODEL_COLORS = {
 
 MODEL_SHORT_LABELS = {
     "Density + min-distance heuristics": "Heuristic",
-    "Union-Find detection oracle": "Union-Find",
+    "Current-state persistence baseline": "Persistence",
     "Kinetic-TopoGuard": "Kinetic",
     "Shallow ML": "Shallow",
     "GraphSAGE": "GraphSAGE",
@@ -419,7 +420,15 @@ def plot_residual_box(residual_map: dict[str, np.ndarray], out_path: Path) -> No
     fig, ax = plt.subplots(figsize=(7.8, 5.8))
     labels = list(residual_map)
     data = [residual_map[label] for label in labels]
-    ax.boxplot(data, labels=_wrapped_labels(labels, width=25), showfliers=False, vert=False)
+    boxplot_params = inspect.signature(ax.boxplot).parameters
+    boxplot_kwargs: dict[str, object] = {"showfliers": False}
+    label_key = "tick_labels" if "tick_labels" in boxplot_params else "labels"
+    boxplot_kwargs[label_key] = _wrapped_labels(labels, width=25)
+    if "orientation" in boxplot_params:
+        boxplot_kwargs["orientation"] = "horizontal"
+    else:
+        boxplot_kwargs["vert"] = False
+    ax.boxplot(data, **boxplot_kwargs)
     ax.axvline(0.0, linestyle="--", color="black", linewidth=1)
     ax.set_xlabel("Residual")
     ax.grid(axis="x", alpha=0.25)

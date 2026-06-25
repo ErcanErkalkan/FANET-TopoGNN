@@ -1,0 +1,20 @@
+{
+  "experiment_name": "smoke_30s",
+  "best_model_by_mae": "Current-state persistence baseline",
+  "best_model_by_lead": null,
+  "best_models_by_lead": [],
+  "top_mae": 0.0,
+  "best_model_by_r2": "Current-state persistence baseline",
+  "top_r2": 1.0,
+  "best_model_by_risk_f1": "Current-state persistence baseline",
+  "top_risk_f1": 1.0,
+  "top_lead_median_ms": 0.0,
+  "model_backend": {
+    "heuristic": "deterministic_heuristic",
+    "union_find": "deterministic_persistence_baseline"
+  },
+  "torch_available": true,
+  "torch_version": "2.11.0+cpu",
+  "device": "cpu",
+  "surrogate_used": false
+}

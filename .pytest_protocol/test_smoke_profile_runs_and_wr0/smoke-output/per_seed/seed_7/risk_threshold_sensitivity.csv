@@ -1,0 +1,19 @@
+Threshold,Risk_Precision,Risk_Recall,Risk_F1,Risk_Specificity,Risk_Accuracy,False_Alarms,False_Alarms_per_minute,Alert_Events,True_Alert_Events,False_Alert_Events,Alert_Event_Precision,False_Alert_Events_per_minute,seed,Model,Model_Backend,Split
+0.1,1.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,7,Density + min-distance heuristics,deterministic_heuristic,test_sensitivity_only
+0.2,1.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,7,Density + min-distance heuristics,deterministic_heuristic,test_sensitivity_only
+0.3,1.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,7,Density + min-distance heuristics,deterministic_heuristic,test_sensitivity_only
+0.4,1.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,7,Density + min-distance heuristics,deterministic_heuristic,test_sensitivity_only
+0.5,1.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,7,Density + min-distance heuristics,deterministic_heuristic,test_sensitivity_only
+0.6,1.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,7,Density + min-distance heuristics,deterministic_heuristic,test_sensitivity_only
+0.7,1.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,7,Density + min-distance heuristics,deterministic_heuristic,test_sensitivity_only
+0.8,1.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,7,Density + min-distance heuristics,deterministic_heuristic,test_sensitivity_only
+0.9,1.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,7,Density + min-distance heuristics,deterministic_heuristic,test_sensitivity_only
+0.1,1.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,7,Current-state persistence baseline,deterministic_persistence_baseline,test_sensitivity_only
+0.2,1.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,7,Current-state persistence baseline,deterministic_persistence_baseline,test_sensitivity_only
+0.3,1.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,7,Current-state persistence baseline,deterministic_persistence_baseline,test_sensitivity_only
+0.4,1.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,7,Current-state persistence baseline,deterministic_persistence_baseline,test_sensitivity_only
+0.5,1.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,7,Current-state persistence baseline,deterministic_persistence_baseline,test_sensitivity_only
+0.6,1.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,7,Current-state persistence baseline,deterministic_persistence_baseline,test_sensitivity_only
+0.7,1.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,7,Current-state persistence baseline,deterministic_persistence_baseline,test_sensitivity_only
+0.8,1.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,7,Current-state persistence baseline,deterministic_persistence_baseline,test_sensitivity_only
+0.9,1.0,1.0,1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,7,Current-state persistence baseline,deterministic_persistence_baseline,test_sensitivity_only

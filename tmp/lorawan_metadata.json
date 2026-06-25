@@ -1,0 +1,107 @@
+{
+  "@context": "http://schema.org",
+  "@id": "https://doi.org/10.5061/dryad.w0vt4b939",
+  "@type": "Dataset",
+  "contentUrl": [
+    "http://datadryad.org/stash/downloads/file_stream/3840956",
+    "http://datadryad.org/stash/downloads/file_stream/3840957"
+  ],
+  "creator": [
+    {
+      "@type": "Person",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "North Carolina State University",
+        "sameAs": "https://ror.org/04tj63d06"
+      },
+      "familyName": "Vargas Villar",
+      "givenName": "Sergio",
+      "name": "Sergio Vargas Villar"
+    },
+    {
+      "@type": "Person",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "North Carolina State University",
+        "sameAs": "https://ror.org/04tj63d06"
+      },
+      "familyName": "Fahim Raouf",
+      "givenName": "Amir Hossein",
+      "name": "Amir Hossein Fahim Raouf",
+      "sameAs": "http://orcid.org/0000-0001-9822-021X"
+    },
+    {
+      "@type": "Person",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "North Carolina State University",
+        "sameAs": "https://ror.org/04tj63d06"
+      },
+      "familyName": "Ozdemir",
+      "givenName": "Ozgur",
+      "name": "Ozgur Ozdemir"
+    },
+    {
+      "@type": "Person",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "North Carolina State University",
+        "sameAs": "https://ror.org/04tj63d06"
+      },
+      "familyName": "Guvenc",
+      "givenName": "Ismail",
+      "name": "Ismail Guvenc"
+    },
+    {
+      "@type": "Person",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "North Carolina State University",
+        "sameAs": "https://ror.org/04tj63d06"
+      },
+      "familyName": "Sichitiu",
+      "givenName": "Mihail",
+      "name": "Mihail Sichitiu"
+    }
+  ],
+  "description": [
+    "This dataset was collected during an experiment conducted during NC State\u00e2\u0080\u0099s Packapalooza festival in August 2024. It evaluates the performance of LoRaWAN gateways by analyzing received telemetry data from a moving vehicle (i.e., helikite). Key metrics include Received Signal Strength Indicator (RSSI), Signal-to-Noise Ratio (SNR), transmission timestamps, and geographic data. The dataset supports various research applications such as optimizing IoT networks, enhancing data reliability, and developing energy-efficient LoRaWAN solutions. The raw and processed data, along with SigMF metadata and Python scripts for post-processing, enable reproducible analyses and integration into other workflows., The experiment utilized a LoRaWAN-enabled LoStik IoT transmitter connected to a LattePanda MiniPC to transmit telemetry data at 1.5-second intervals. The transmitted packets contained a combination of timestamps, unique package identifiers, and vehicle telemetry. The data was received by multiple RAK7289CV2-V1 LoRaWAN gateways deployed at different locations (LW1, LW2, LW3, LW4, LW5, CC2, CC3, and RE2), which recorded signal strength (RSSI), noise levels (SNR), and reception timestamps.\nTo set up and manage the LoRaWAN network, ChirpStack, an open-source LoRaWAN Network Server, was used. Uplink payloads were sent without requiring confirmation at the MAC layer using the command mac tx uncnf &lt;portno&gt; &lt;data&gt;. For each transmission, the Data Rate (DR) was incremented by one, starting from DR0 and progressing up to DR3, enabling an evaluation of the network's performance across varying Data Rates.\nThe received data was logged by the gateways, capturing additional details such as..., , # LoRaWAN Gateway Performance and Vehicle Tracking Data\n\n[https://doi.org/10.5061/dryad.w0vt4b939](https://doi.org/10.5061/dryad.w0vt4b939)\n\n## Description of the data and file structure\n\nThe dataset contains detailed measurements collected from the transmitter and gateways, categorized as follows:\n\n* **Transmitter Information**:\n  * Sent timestamp (sent_timestamp)\n  * Vehicle's geographic location (longitude, latitude, altitude)\n  * Vehicle's orientation (pitch, yaw, roll)\n  * Vehicle's velocity (velocity_x, velocity_y, velocity_z)\n  * Spreading factor (tx_spreadingFactor)\n  * GPS data (number_of_satellites)\n  * Package number and ID\n* **Gateway Data**:\n  * Received signal strength (rx_rssi)\n  * Signal to noise ratio (rx_snr)\n  * Reception timestamp (rx_time)\n  * The channel used for receiving the data (rx_channel)\n  * RF chain id used for receiving the signal (rx_rfChain)\n  * Gateway geographic location (rx_location_latitude, rx_location_longitude, rx_location_altitude)\n  * Gateway ID..."
+  ],
+  "distribution": {
+    "@type": "DataDownload",
+    "contentUrl": "http://datadryad.org/api/v2/datasets/doi%253A10.5061%252Fdryad.w0vt4b939/download",
+    "encodingFormat": "application/zip"
+  },
+  "identifier": "https://doi.org/10.5061/dryad.w0vt4b939",
+  "isAccessibleForFree": true,
+  "keywords": [
+    "LoRaWAN",
+    "IOT",
+    "RSSI",
+    "SNR",
+    "telemetry",
+    "vehicle tracking",
+    "gateway performance",
+    "AERPAW"
+  ],
+  "license": {
+    "@type": "CreativeWork",
+    "license": "https://spdx.org/licenses/CC0-1.0.html",
+    "name": "Creative Commons Zero v1.0 Universal"
+  },
+  "name": "LoRaWAN gateway performance and vehicle tracking data",
+  "provider": {
+    "@id": "https://datadryad.org"
+  },
+  "publisher": {
+    "@id": "https://datadryad.org",
+    "@type": "Organization",
+    "legalName": "Dryad Data Platform",
+    "name": "Dryad",
+    "url": "https://datadryad.org"
+  },
+  "spatialCoverage": [],
+  "temporalCoverage": [],
+  "url": "http://datadryad.org/stash/dataset/doi%253A10.5061%252Fdryad.w0vt4b939",
+  "version": 3
+}

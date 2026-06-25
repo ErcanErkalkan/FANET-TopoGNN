@@ -29,13 +29,14 @@ __pycache__/
 .pytest_tmp*/
 logs/
 
-# Large third-party ROS bag files used for external validation stay local.
-data/external_validation/raw/*.bag
-data/external_validation/raw/*.part
+# Large third-party external-validation downloads stay local.
+data/external_validation/raw/
 
 # Track the small derived trace, external-validation evidence, and confirmatory
 # outputs while keeping all other exploratory outputs local.
 !outputs/external_validation/
 !outputs/external_validation/**
+!outputs/aerpaw_cellular_validation/
+!outputs/aerpaw_cellular_validation/**
 !outputs/paper_like_submission/
 !outputs/paper_like_submission/**

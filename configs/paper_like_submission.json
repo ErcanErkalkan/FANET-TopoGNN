@@ -119,6 +119,7 @@
     "bootstrap_rounds": 1000,
     "network_radius_boost": 1.15,
     "warning_horizon_steps": 6,
-    "risk_threshold": 0.5
+    "risk_threshold": 0.5,
+    "false_alert_event_budgets_per_minute": [2.0, 1.0]
   }
 }

@@ -1,0 +1,41 @@
+{
+  "experiment_name": "publication_neural_extension",
+  "n_seeds": 2,
+  "total_snapshots": 43200,
+  "graph_policies": [
+    "adaptive",
+    "fixed"
+  ],
+  "radio_scenarios": [
+    "degraded",
+    "nominal"
+  ],
+  "forecast_horizon_steps": 6,
+  "best_model_by_mae": "Kinetic-TopoGuard",
+  "best_model_by_lead": "FANET-TopoGNN, TGN (w=5), PI+MLP",
+  "best_models_by_lead": [
+    "FANET-TopoGNN",
+    "TGN (w=5)",
+    "PI+MLP"
+  ],
+  "output_dir": "outputs\\publication_neural_extension",
+  "model_backend": {
+    "kinetic_topoguard": "scikit_learn",
+    "GCN": "pytorch",
+    "GAT": "pytorch",
+    "GraphSAGE": "pytorch",
+    "PI+MLP": "pytorch",
+    "FANET-TopoGNN": "pytorch",
+    "FANET-TopoGNN (concat)": "pytorch",
+    "tgcn:5": "pytorch",
+    "stgcn:5": "pytorch",
+    "tgn:5": "pytorch"
+  },
+  "torch_available": true,
+  "torch_version": "2.11.0+cpu",
+  "device": "cpu",
+  "surrogate_used": false,
+  "runtime_seconds": 2787.715560099983,
+  "runtime_minutes": 46.461926001666384,
+  "cuda_available": false
+}

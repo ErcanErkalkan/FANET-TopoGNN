@@ -4,8 +4,9 @@ import unittest
 
 import numpy as np
 
-from fanet.dataset import Snapshot, build_dataset, to_frame, train_val_test_split
-from fanet.evaluation import evaluate_predictions, event_warning_leads, run_network_controller
+from fanet.dataset import Snapshot, build_dataset, relabel_forecast_horizon, to_frame, train_val_test_split
+from fanet.evaluation import alert_event_metrics, evaluate_predictions, event_warning_leads, run_network_controller
+from fanet.packet_sim import PacketSimulationConfig, simulate_packet_tick
 from fanet.pyg_utils import snapshot_to_pyg_data, torch_geometric_available
 from fanet.training import fit_kinetic_topoguard, kinetic_topoguard_feature_vector
 
@@ -65,6 +66,19 @@ class CorePipelineTests(unittest.TestCase):
         self.assertEqual(set(frame["graph_policy"]), {"fixed", "adaptive"})
         self.assertEqual(set(frame["radio_scenario"]), {"low_shadow", "high_shadow"})
         self.assertIn("frag_at_horizon", frame.columns)
+
+    def test_relabel_forecast_horizon_reuses_trajectory(self) -> None:
+        snapshots = build_dataset(self._small_config(), seed=7)
+        run_id = snapshots[0].run_id
+        sequence = sorted(
+            [item for item in snapshots if item.run_id == run_id],
+            key=lambda item: item.time_index,
+        )
+        relabeled = relabel_forecast_horizon(sequence, 1)
+        self.assertEqual(relabeled[0].beta_target, sequence[1].beta_current)
+        self.assertEqual(relabeled[0].future_time_index, sequence[1].time_index)
+        self.assertEqual(relabeled[0].frag_at_horizon, int(sequence[1].beta_current > 1))
+        self.assertIs(relabeled[0].positions, sequence[0].positions)
 
     def test_split_is_run_wise_and_non_empty(self) -> None:
         snapshots = build_dataset(self._small_config(), seed=11)
@@ -202,6 +216,59 @@ class CorePipelineTests(unittest.TestCase):
         )
         self.assertEqual(metrics["Connectivity ratio"], 0.0)
         self.assertEqual(metrics["PDR (%)"], 0.0)
+
+    def test_alert_metric_counts_episodes_not_positive_samples(self) -> None:
+        adjacency = np.asarray([[0.0, 1.0], [1.0, 0.0]], dtype=np.float32)
+        snapshots = []
+        for index in range(6):
+            snapshots.append(
+                Snapshot(
+                    run_id="alert_run",
+                    split_group_id="alert_run",
+                    time_index=index,
+                    mobility="unit",
+                    n_nodes=2,
+                    positions=np.zeros((2, 2), dtype=np.float32),
+                    velocities=np.zeros((2, 2), dtype=np.float32),
+                    node_features=np.zeros((2, 4), dtype=np.float32),
+                    adjacency=adjacency,
+                    adjacency_fixed=adjacency,
+                    adjacency_adaptive=adjacency,
+                    pi=np.zeros(4, dtype=np.float32),
+                    stats=np.zeros(17, dtype=np.float32),
+                    beta_current=1.0,
+                    beta_target=1.0,
+                    beta_fixed=1.0,
+                    beta_adaptive=1.0,
+                    radius=1.0,
+                    radius_fixed=1.0,
+                    radius_adaptive=1.0,
+                    edge_count_fixed=1,
+                    edge_count_adaptive=1,
+                    link_model="unit",
+                    graph_policy="fixed",
+                    radio_scenario="unit",
+                    is_connected=1,
+                    future_time_index=index,
+                    frag_at_horizon=0,
+                )
+            )
+        scores = np.asarray([0.0, 1.0, 1.0, 1.0, 0.0, 0.0])
+        metrics = alert_event_metrics(snapshots, scores, threshold=0.5, dt=0.1, horizon_steps=2)
+        self.assertEqual(metrics["Alert_Events"], 1.0)
+        self.assertEqual(metrics["False_Alert_Events"], 1.0)
+
+    def test_packet_simulator_reports_contention_and_delivery(self) -> None:
+        connected = np.ones((4, 4), dtype=np.float32) - np.eye(4, dtype=np.float32)
+        metrics = simulate_packet_tick(
+            connected,
+            np.random.default_rng(7),
+            PacketSimulationConfig(packets_per_tick=8),
+        )
+        self.assertEqual(metrics["generated"], 8.0)
+        self.assertGreater(metrics["delivered"], 0.0)
+        self.assertGreater(metrics["pdr"], 0.0)
+        self.assertLessEqual(metrics["pdr"], 1.0)
 
     def test_kinetic_topoguard_fits_and_scores_snapshots(self) -> None:
         config = self._small_config()

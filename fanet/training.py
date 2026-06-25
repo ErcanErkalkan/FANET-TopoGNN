@@ -422,6 +422,57 @@ def _lead_median_for_threshold(
     return float(np.median(np.asarray(leads, dtype=float)))
 
 
+def _warning_event_windows(
+    snapshots: list[Snapshot],
+    horizon_steps: int,
+) -> list[tuple[np.ndarray, np.ndarray]]:
+    grouped: dict[str, list[tuple[int, Snapshot]]] = {}
+    for global_index, snapshot in enumerate(snapshots):
+        grouped.setdefault(snapshot.run_id, []).append((global_index, snapshot))
+    windows: list[tuple[np.ndarray, np.ndarray]] = []
+    for pairs in grouped.values():
+        ordered = sorted(pairs, key=lambda item: item[1].time_index)
+        for idx in range(1, len(ordered)):
+            previous = ordered[idx - 1][1]
+            current = ordered[idx][1]
+            if previous.adjacency.shape != current.adjacency.shape:
+                continue
+            if not np.any(previous.adjacency != current.adjacency):
+                continue
+            eligible_indices = []
+            lead_steps = []
+            for look in range(max(0, idx - horizon_steps), idx):
+                global_index, candidate = ordered[look]
+                if candidate.beta_current <= 1 and look + horizon_steps >= idx:
+                    eligible_indices.append(global_index)
+                    lead_steps.append(idx - look)
+            windows.append(
+                (
+                    np.asarray(eligible_indices, dtype=int),
+                    np.asarray(lead_steps, dtype=float),
+                )
+            )
+    return windows
+
+
+def _lead_median_from_windows(
+    windows: list[tuple[np.ndarray, np.ndarray]],
+    risk_scores: np.ndarray,
+    dt: float,
+    threshold: float,
+) -> float:
+    if not windows:
+        return 0.0
+    leads = []
+    for indices, lead_steps in windows:
+        if indices.size == 0:
+            leads.append(0.0)
+            continue
+        warned = np.flatnonzero(risk_scores[indices] >= threshold)
+        leads.append(0.0 if warned.size == 0 else float(lead_steps[int(warned[0])] * dt * 1000.0))
+    return float(np.median(np.asarray(leads, dtype=float)))
+
+
 class KineticTopoGuardPredictor:
     def __init__(self, horizon_steps: int, dt: float, seed: int):
         self.horizon_steps = int(horizon_steps)
@@ -447,9 +498,9 @@ class KineticTopoGuardPredictor:
 
         if SKLEARN_AVAILABLE:
             candidates = [
-                ExtraTreesRegressor(n_estimators=220, min_samples_leaf=2, random_state=self.seed + 101, n_jobs=-1),
-                GradientBoostingRegressor(n_estimators=160, learning_rate=0.04, max_depth=3, random_state=self.seed + 103),
-                RandomForestRegressor(n_estimators=160, min_samples_leaf=2, random_state=self.seed + 107, n_jobs=-1),
+                ExtraTreesRegressor(n_estimators=64, min_samples_leaf=2, random_state=self.seed + 101, n_jobs=2),
+                GradientBoostingRegressor(n_estimators=96, learning_rate=0.05, max_depth=3, random_state=self.seed + 103),
+                RandomForestRegressor(n_estimators=64, min_samples_leaf=2, random_state=self.seed + 107, n_jobs=2),
             ]
         else:
             candidates = [
@@ -462,6 +513,8 @@ class KineticTopoGuardPredictor:
         self.residual_scale = 0.0
         for candidate in candidates:
             candidate.fit(train_x, residual_train)
+            if hasattr(candidate, "set_params") and "n_jobs" in candidate.get_params():
+                candidate.set_params(n_jobs=1)
             residual_val = np.asarray(candidate.predict(val_x), dtype=float)
             for scale in np.linspace(0.0, 1.0, 11):
                 pred_val = np.clip(base_val + float(scale) * residual_val, 1.0, None)
@@ -475,22 +528,23 @@ class KineticTopoGuardPredictor:
         reg_risk_val = np.clip((val_pred - 1.0) / 1.5, 0.0, 1.0)
         if SKLEARN_AVAILABLE and np.unique(risk_train).size >= 2:
             classifier_candidates = [
-                ExtraTreesClassifier(n_estimators=220, min_samples_leaf=2, class_weight="balanced", random_state=self.seed + 211, n_jobs=-1),
-                GradientBoostingClassifier(n_estimators=160, learning_rate=0.04, max_depth=2, random_state=self.seed + 223),
-                RandomForestClassifier(n_estimators=160, min_samples_leaf=2, class_weight="balanced", random_state=self.seed + 227, n_jobs=-1),
+                ExtraTreesClassifier(n_estimators=64, min_samples_leaf=2, class_weight="balanced", random_state=self.seed + 211, n_jobs=2),
+                GradientBoostingClassifier(n_estimators=96, learning_rate=0.05, max_depth=2, random_state=self.seed + 223),
+                RandomForestClassifier(n_estimators=64, min_samples_leaf=2, class_weight="balanced", random_state=self.seed + 227, n_jobs=2),
             ]
             probs = []
             f1s = []
             for classifier in classifier_candidates:
                 classifier.fit(train_x, risk_train)
+                if hasattr(classifier, "set_params") and "n_jobs" in classifier.get_params():
+                    classifier.set_params(n_jobs=1)
                 prob = _positive_class_probability(classifier, val_x)
                 probs.append(prob)
                 f1s.append(_binary_f1(risk_val, prob >= 0.5))
-            weights = np.square(np.asarray(f1s, dtype=float) + 1e-3)
-            weights = weights / max(float(weights.sum()), 1e-8)
-            self.classifiers = classifier_candidates
-            self.classifier_weights = weights
-            clf_risk_val = np.average(np.column_stack(probs), axis=1, weights=weights)
+            best_classifier_index = int(np.argmax(np.asarray(f1s, dtype=float)))
+            self.classifiers = [classifier_candidates[best_classifier_index]]
+            self.classifier_weights = np.asarray([1.0], dtype=float)
+            clf_risk_val = probs[best_classifier_index]
         else:
             self.classifiers = []
             self.classifier_weights = np.asarray([], dtype=float)
@@ -507,7 +561,8 @@ class KineticTopoGuardPredictor:
             (0.55, 0.15, 0.30),
             (0.45, 0.20, 0.35),
         ]
-        threshold_grid = np.linspace(0.05, 0.95, 181)
+        threshold_grid = np.linspace(0.05, 0.95, 19)
+        warning_windows = _warning_event_windows(val_aligned, self.horizon_steps)
         target_lead = 0.5 * max(self.horizon_steps * self.dt * 1000.0, 1.0)
         best_any = (-1.0, 0.5, blend_candidates[0], 0.0, 0.0)
         best_eligible = (-1.0, 0.5, blend_candidates[0], 0.0, 0.0)
@@ -519,7 +574,7 @@ class KineticTopoGuardPredictor:
             for threshold in threshold_grid:
                 pred = score >= float(threshold)
                 f1 = _binary_f1(risk_val, pred)
-                lead_median = _lead_median_for_threshold(val_aligned, score, self.dt, self.horizon_steps, float(threshold))
+                lead_median = _lead_median_from_windows(warning_windows, score, self.dt, float(threshold))
                 blend_best_f1 = max(blend_best_f1, f1)
                 candidates_for_blend.append((f1, float(threshold), blend, lead_median, float(np.mean(pred))))
                 lead_norm = lead_median / max(self.horizon_steps * self.dt * 1000.0, 1.0)
@@ -829,14 +884,23 @@ def fit_heuristic(train_data: list[Snapshot]) -> TrainResult:
     return TrainResult(model=HeuristicPredictor().fit(train_data), model_name="Density + min-distance heuristics", inference_ms=0.05)
 
 
-class UnionFindDetectionOracle:
+class CurrentStatePersistenceBaseline:
     def predict_snapshots(self, snapshots: list[Snapshot]) -> tuple[np.ndarray, np.ndarray]:
         beta = np.asarray([betti_zero(snap.adjacency) for snap in snapshots], dtype=float)
         return beta, (beta > 1.0).astype(float)
 
 
+def fit_current_state_persistence() -> TrainResult:
+    return TrainResult(
+        model=CurrentStatePersistenceBaseline(),
+        model_name="Current-state persistence baseline",
+        inference_ms=0.02,
+    )
+
+
 def fit_union_find_oracle() -> TrainResult:
-    return TrainResult(model=UnionFindDetectionOracle(), model_name="Union-Find detection oracle", inference_ms=0.02)
+    """Backward-compatible alias for older experiment configurations."""
+    return fit_current_state_persistence()
 
 
 def fit_shallow_models(train_data: list[Snapshot]) -> dict[str, object]:

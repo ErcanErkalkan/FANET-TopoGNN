@@ -1,0 +1,42 @@
+{
+  "experiment_name": "smoke_30s",
+  "runtime_seconds": 19.915,
+  "runtime_minutes": 0.332,
+  "n_seeds": 1,
+  "total_snapshots": 36,
+  "forecast_horizon_steps": 2,
+  "graph_policies": [
+    "fixed"
+  ],
+  "radio_scenarios": [
+    "default"
+  ],
+  "python_version": "3.14.3",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "cuda_available": false,
+  "model_backend": {
+    "heuristic": "deterministic_heuristic",
+    "union_find": "deterministic_persistence_baseline"
+  },
+  "torch_available": true,
+  "torch_version": "2.11.0+cpu",
+  "device": "cpu",
+  "surrogate_used": false,
+  "runtime_context": {
+    "author_recorded_runtime_environment": {
+      "purpose": "Environment used to record this run's wall-clock runtime.",
+      "python_version": "3.14.3",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "cuda_available": false,
+      "scope": "Local host used for the executed run; this is not asserted to be identical to environment.yml."
+    },
+    "reproducibility_environment": {
+      "purpose": "Reference environment specification distributed for rerunning the package.",
+      "environment_file": "environment.yml",
+      "python_version": "3.12",
+      "scope": "Base scientific environment without PyTorch; use requirements-deep.txt or pip install -e .[deep] for actual PyTorch neural GNN and temporal baselines."
+    }
+  },
+  "scope": "End-to-end pipeline wall-clock time for the configured benchmark on the local host; reproducibility environment metadata is recorded separately below.",
+  "note": "Wall-clock runtime is environment-specific. The author-recorded runtime environment and the distributed reproducibility environment are intentionally separated; per-snapshot inference latency is reported in metrics_overall.csv."
+}

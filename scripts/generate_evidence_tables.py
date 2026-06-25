@@ -17,11 +17,11 @@ def generate_confirmatory_table() -> Path:
     source_dir = ROOT / "outputs/paper_like_submission"
     frame = pd.read_csv(source_dir / "metrics_overall.csv")
     labels = {
-        "Union-Find detection oracle": "Union--find diagnostic",
+        "Current-state persistence baseline": "Current-state persistence",
         "Kinetic-TopoGuard": "Kinetic-TopoGuard",
         "Shallow ML": "Shallow ML",
     }
-    order = ["Kinetic-TopoGuard", "Shallow ML", "Union-Find detection oracle"]
+    order = ["Kinetic-TopoGuard", "Shallow ML", "Current-state persistence baseline"]
     frame = frame.set_index("Model").loc[order].reset_index()
     lines = [
         "\\begin{tabular}{lrrrrr}",

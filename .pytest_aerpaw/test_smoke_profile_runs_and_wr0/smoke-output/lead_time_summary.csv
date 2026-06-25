@@ -1,0 +1,3 @@
+Model,Lead_5th_ms_mean,Lead_5th_ms_ci95_low,Lead_5th_ms_ci95_high,Lead_median_ms_mean,Lead_median_ms_ci95_low,Lead_median_ms_ci95_high,Lead_IQR_ms_mean,Lead_IQR_ms_ci95_low,Lead_IQR_ms_ci95_high,Lead_95th_ms_mean,Lead_95th_ms_ci95_low,Lead_95th_ms_ci95_high,Lead_mean_ms_mean,Lead_mean_ms_ci95_low,Lead_mean_ms_ci95_high,Lead_norm_mean_mean,Lead_norm_mean_ci95_low,Lead_norm_mean_ci95_high
+Current-state persistence baseline,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Density + min-distance heuristics,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0

@@ -1,6 +1,6 @@
 # Final EAAI submission checklist
 
-- [x] Final rebuilt anonymous manuscript remains under 50 pages (49 pages)
+- [x] Format-aware length gate passes: 51-page single-column anonymous manuscript (limit 55) and 25-page Elsevier 5p proof (limit 30)
 - [x] Title has no undefined abbreviations
 - [x] Abstract has no undefined abbreviations
 - [x] Anonymous manuscript has no author identity
@@ -12,6 +12,11 @@
 - [x] Neural vs surrogate backend metadata is produced by new runs
 - [x] Compact neural backend provenance verified by a fresh PyTorch rerun
 - [x] Real three-UAV field-motion transfer outputs and source checksums archived
+- [x] Measured AERPAW aerial cellular RF/KPI and throughput validation archived
+- [x] Measured peer-to-peer UAV 60 GHz RF validation archived with checksum and held-out-distance evaluation
+- [x] False-alarm-constrained operating points selected from executed threshold sweeps
+- [x] Five-seed PyTorch neural-family extension completed and aggregated
+- [x] Digital-twin evidence dashboard built from generated results
 - [x] PersLay bibliography repaired from the official PMLR record
 - [x] Union-Find is marked as a diagnostic reference
 - [x] Risk metrics include false-alarm-aware interpretation
@@ -21,4 +26,4 @@
 - [ ] Author completes account-only attestations and conflict checks in the journal portal
 - [x] Final PDF rebuild, render inspection, identity scan, and supplementary repack completed
 
-Current package status: **READY FOR AUTHOR PORTAL ATTESTATIONS**. All repository-completable evidence, build, anonymity, metadata, and packaging checks pass. The remaining unchecked item requires the corresponding author's authenticated journal-portal account.
+Current package status: **READY FOR AUTHOR PORTAL ATTESTATIONS**. Repository-completable evidence includes the compact and focused 20-seed studies, five-seed PyTorch neural stability, real-flight motion, measured UAV-to-UAV RF, measured AERPAW RF/throughput, operating-point selection, and the generated digital-twin dashboard. The remaining unchecked item requires the corresponding author's authenticated journal-portal account.

@@ -10,8 +10,9 @@ This note contains reproducibility detail moved out of the anonymous main manusc
 - `outputs/publication_compact/`: backend-verified three-seed compact model-family evidence.
 - `outputs/paper_like_submission/`: completed focused 20-seed evidence.
 - `outputs/external_validation/`: completed real-flight-motion transfer evidence.
+- `outputs/aerpaw_cellular_validation/`: completed AERPAW aerial cellular RF/KPI and throughput evidence.
 - `data/external_validation/derived/`: synchronized trace and source/checksum manifest.
-- `scripts/`: smoke, resumable expanded-run, trace-extraction, external-validation, and audit launchers.
+- `scripts/`: smoke, resumable expanded-run, trace-extraction, external-validation, AERPAW-validation, and audit launchers.
 
 ## Execution commands
 
@@ -45,6 +46,14 @@ python scripts/extract_forestry_trace.py
 python scripts/run_external_validation.py
 ```
 
+Reproduce the measured AERPAW cellular validation:
+
+```text
+python -m pip install -r requirements-external.txt
+powershell -ExecutionPolicy Bypass -File scripts\download_aerpaw_cellular_validation.ps1
+python scripts/run_aerpaw_cellular_validation.py
+```
+
 Each completed run exports `summary.json`, `runtime_profile.json`, CSV and LaTeX tables, `report.md`, `claims_summary.md`, figures, and an artifact manifest beneath the configured output directory.
 
 ## Backend interpretation
@@ -59,4 +68,4 @@ The compact profile uses T-GCN, STGCN, and TGN with window size 5, learning rate
 
 ## Evidence boundary
 
-The manuscript separates three evidence layers: a three-seed compact neural-family benchmark, a focused 20-seed primary learned comparison, and a real-field-motion transfer test. The flight source has no measured RF or packet ground truth, so deterministic radius graphs are sensitivity assumptions. Hardware-in-the-loop testing, measured links, packet-level medium-access, onboard profiling, and deployment validation remain future work.
+The manuscript separates four evidence layers: a three-seed compact neural-family benchmark, a focused 20-seed primary learned comparison, a real-field-motion transfer test, and a measured AERPAW aerial cellular RF/KPI and throughput check. The flight source has no measured RF or packet ground truth, so deterministic radius graphs are sensitivity assumptions. The AERPAW traces measure UAV-to-cellular-infrastructure links rather than synchronized inter-UAV FANET packet labels. Hardware-in-the-loop testing, peer-to-peer measured links, packet-level medium-access, onboard profiling, and deployment validation remain future work.

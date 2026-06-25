@@ -1,8 +1,13 @@
-# Real-flight motion external validation
+# External validation datasets
 
-This directory records the reproducible external-validation path based on the
-public Zenodo dataset *Dataset of A Multi-Drone System Proof of Concept for
-Forestry Applications* (DOI: `10.5281/zenodo.14701641`, CC BY 4.0).
+This directory records reproducible external-validation paths based on public
+flight and aerial cellular datasets.
+
+## Real-flight motion transfer
+
+The field-motion path uses the public Zenodo dataset *Dataset of A Multi-Drone
+System Proof of Concept for Forestry Applications* (DOI:
+`10.5281/zenodo.14701641`, CC BY 4.0).
 
 The source contains field-recorded GNSS, IMU, LiDAR, odometry, and system data
 from three UAVs. It does not contain packet-reception or RF link ground truth.
@@ -24,6 +29,23 @@ trace and its provenance/checksum manifest are stored under `derived/`.
 Evaluation tables, the protocol record, and the trajectory/radius figure are
 written to `outputs/external_validation/`.
 
+## Measured AERPAW cellular RF/KPI validation
+
+```powershell
+python -m pip install -r requirements-external.txt
+powershell -ExecutionPolicy Bypass -File scripts/download_aerpaw_cellular_validation.ps1
+python scripts/run_aerpaw_cellular_validation.py
+```
+
+This path uses public AERPAW Dataset-22 and Dataset-23 CSV folders. The raw
+Google Drive downloads remain ignored under `raw/`; the derived metrics,
+protocol manifest, manuscript table, and validation figure are written to
+`outputs/aerpaw_cellular_validation/` and `paper/*/generated/`.
+
+The cellular evidence contains measured UAV-to-base-station LTE/5G KPIs and
+iPerf throughput. It must not be described as synchronized inter-UAV FANET
+packet-link validation.
+
 ## Scope boundary
 
 - Real evidence: synchronized positions and motion from a forestry field test.
@@ -37,6 +59,8 @@ written to `outputs/external_validation/`.
   and evaluated without refitting on the measured flight trace.
 - Still not covered: measured RF links, MAC contention, packet-level traffic,
   onboard execution, hardware-in-the-loop, or operational deployment.
+- AERPAW cellular boundary: measured aerial RF/KPI and throughput are included,
+  but peer-to-peer inter-UAV packet labels are not.
 
 ## Attribution
 

@@ -15,6 +15,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the strict 20-seed submission profile")
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     parser.add_argument("--resume", action="store_true")
+    parser.add_argument("--seed-workers", type=int, default=2)
     return parser.parse_args()
 
 
@@ -33,6 +34,7 @@ def main() -> int:
             f"found {selected}"
         )
     command = [sys.executable, str(ROOT / "main.py"), "--config", str(config_path)]
+    command.extend(["--seed-workers", str(max(1, args.seed_workers))])
     if args.resume:
         command.append("--resume")
     return subprocess.run(command, cwd=ROOT, check=False).returncode

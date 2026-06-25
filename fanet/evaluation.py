@@ -130,6 +130,9 @@ def threshold_sensitivity_rows(
     y_true: np.ndarray,
     scores: np.ndarray,
     dt: float,
+    snapshots: list[Snapshot] | None = None,
+    horizon_steps: int = 1,
+    cooldown_steps: int | None = None,
     thresholds: tuple[float, ...] = (0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
 ) -> list[dict[str, float]]:
     labels = np.asarray(y_true, dtype=int)
@@ -140,15 +143,80 @@ def threshold_sensitivity_rows(
         predicted = (probabilities >= threshold).astype(int)
         metrics = classification_metrics(labels, predicted)
         false_alarms = int(np.sum((labels == 0) & (predicted == 1)))
-        rows.append(
-            {
-                "Threshold": float(threshold),
-                **metrics,
-                "False_Alarms": float(false_alarms),
-                "False_Alarms_per_minute": float(false_alarms / duration_minutes),
-            }
-        )
+        row = {
+            "Threshold": float(threshold),
+            **metrics,
+            "False_Alarms": float(false_alarms),
+            "False_Alarms_per_minute": float(false_alarms / duration_minutes),
+        }
+        if snapshots is not None:
+            row.update(
+                alert_event_metrics(
+                    snapshots,
+                    probabilities,
+                    threshold=float(threshold),
+                    dt=dt,
+                    horizon_steps=horizon_steps,
+                    cooldown_steps=cooldown_steps,
+                )
+            )
+        rows.append(row)
     return rows
+
+
+def alert_event_metrics(
+    snapshots: list[Snapshot],
+    scores: np.ndarray,
+    threshold: float,
+    dt: float,
+    horizon_steps: int,
+    cooldown_steps: int | None = None,
+) -> dict[str, float]:
+    """Count distinct warning episodes instead of positive time samples.
+
+    An alert is emitted on a threshold crossing after the cooldown period. It
+    is a true alert when physical fragmentation occurs within the forecast
+    horizon; otherwise it is a false alert event.
+    """
+    cooldown = max(int(cooldown_steps if cooldown_steps is not None else horizon_steps), 1)
+    run_pairs: dict[str, list[tuple[Snapshot, float]]] = {}
+    for snap, score in zip(snapshots, np.asarray(scores, dtype=float)):
+        run_pairs.setdefault(snap.run_id, []).append((snap, float(score)))
+
+    alert_events = 0
+    true_alert_events = 0
+    false_alert_events = 0
+    total_duration_minutes = 0.0
+    for pairs in run_pairs.values():
+        pairs = sorted(pairs, key=lambda item: item[0].time_index)
+        run_snaps = [item[0] for item in pairs]
+        run_scores = np.asarray([item[1] for item in pairs], dtype=float)
+        total_duration_minutes += len(run_snaps) * float(dt) / 60.0
+        last_alert = -cooldown
+        was_positive = False
+        for idx, score in enumerate(run_scores):
+            positive = bool(score >= threshold)
+            can_emit = idx - last_alert >= cooldown
+            if positive and not was_positive and can_emit:
+                alert_events += 1
+                last_alert = idx
+                stop = min(len(run_snaps), idx + max(int(horizon_steps), 1) + 1)
+                fragments = any(run_snaps[look].beta_current > 1.0 for look in range(idx + 1, stop))
+                if fragments:
+                    true_alert_events += 1
+                else:
+                    false_alert_events += 1
+            was_positive = positive
+
+    duration = max(total_duration_minutes, 1e-12)
+    precision = true_alert_events / max(alert_events, 1)
+    return {
+        "Alert_Events": float(alert_events),
+        "True_Alert_Events": float(true_alert_events),
+        "False_Alert_Events": float(false_alert_events),
+        "Alert_Event_Precision": float(precision),
+        "False_Alert_Events_per_minute": float(false_alert_events / duration),
+    }
 
 
 def predict_torch(model: torch.nn.Module, data: list[Snapshot], temporal_window: int | None = None) -> np.ndarray:
@@ -259,6 +327,15 @@ def evaluate_predictions(model_name: str, test_data: list[Snapshot], preds: np.n
     duration_minutes = max(len(y_risk_true) * float(dt) / 60.0, 1e-12)
     summary["False_Alarms"] = float(false_alarms)
     summary["False_Alarms_per_minute"] = float(false_alarms / duration_minutes)
+    summary.update(
+        alert_event_metrics(
+            aligned_test,
+            risk_scores,
+            threshold=risk_threshold,
+            dt=dt,
+            horizon_steps=horizon_steps,
+        )
+    )
     run_pairs: dict[str, list[tuple[Snapshot, float]]] = {}
     for snap, risk in zip(aligned_test, risk_scores):
         run_pairs.setdefault(snap.run_id, []).append((snap, float(risk)))
@@ -487,20 +564,14 @@ def run_network_controller(
     relay_actions = 0
     delays = []
     for snap, _pred, risk in zip(snaps[-len(preds) :], preds, risk_scores):
-        positions = snap.positions.copy()
-        base_adj = (snap.adjacency > 0).astype(np.float32)
-        relays: list[int] = []
-        proactive = risk >= risk_threshold
-        if risk >= risk_threshold:
-            components = connected_components(base_adj)
-            components = sorted(components, key=len, reverse=True)
-            relays = _select_relays(base_adj, components, max_relays=2)
-            relay_actions += len(relays)
-            if len(components) > 1 and relays:
-                positions = _steer_relays_towards_component_midpoints(positions, components, relays)
-            adj = _controlled_physical_adjacency(snap, positions, boost, relays, sim_config)
-        else:
-            adj = base_adj
+        adj, relays, proactive = controlled_adjacency_for_snapshot(
+            snap,
+            risk=float(risk),
+            boost=boost,
+            risk_threshold=risk_threshold,
+            sim_config=sim_config,
+        )
+        relay_actions += len(relays)
         beta = betti_zero(adj)
         connected_ticks += int(beta == 1)
         sp = shortest_path_matrix(adj)
@@ -527,6 +598,27 @@ def run_network_controller(
         "DTN buffered (%)": 100.0 * buffered_pairs / max(generated, 1),
         "Relay actions": float(relay_actions),
     }
+
+
+def controlled_adjacency_for_snapshot(
+    snap: Snapshot,
+    risk: float,
+    boost: float,
+    risk_threshold: float,
+    sim_config: dict | None = None,
+) -> tuple[np.ndarray, list[int], bool]:
+    """Return the controller-adjusted physical graph for one snapshot."""
+    positions = snap.positions.copy()
+    base_adj = (snap.adjacency > 0).astype(np.float32)
+    proactive = bool(risk >= risk_threshold)
+    if not proactive:
+        return base_adj, [], False
+    components = sorted(connected_components(base_adj), key=len, reverse=True)
+    relays = _select_relays(base_adj, components, max_relays=2)
+    if len(components) > 1 and relays:
+        positions = _steer_relays_towards_component_midpoints(positions, components, relays)
+    adj = _controlled_physical_adjacency(snap, positions, boost, relays, sim_config)
+    return adj, relays, True
 
 
 def paired_statistics(reference_name: str, reference_errors: np.ndarray, candidate_name: str, candidate_errors: np.ndarray) -> dict:

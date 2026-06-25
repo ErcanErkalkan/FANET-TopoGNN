@@ -1,0 +1,29 @@
+{
+  "experiment_name": "publication_neural_5seed_extension",
+  "source_dirs": [
+    "outputs\\publication_compact",
+    "outputs\\publication_neural_extension"
+  ],
+  "seeds": [
+    7,
+    17,
+    27,
+    37,
+    47
+  ],
+  "n_seeds": 5,
+  "models": [
+    "Kinetic-TopoGuard",
+    "GraphSAGE",
+    "STGCN (w=5)",
+    "T-GCN (w=5)",
+    "TGN (w=5)",
+    "FANET-TopoGNN (concat)",
+    "GAT",
+    "FANET-TopoGNN",
+    "GCN",
+    "PI+MLP"
+  ],
+  "neural_backend": "pytorch",
+  "scope": "Five-seed extension for neural-family stability; primary confirmatory inference remains the 20-seed Kinetic-TopoGuard-versus-shallow profile."
+}

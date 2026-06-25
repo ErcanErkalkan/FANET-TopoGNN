@@ -42,6 +42,36 @@
       "detail": "['Kinetic-TopoGuard', 'Shallow ML', 'Union-Find detection oracle']"
     },
     {
+      "check": "neural_seed_extension",
+      "status": "pass",
+      "detail": "raw two-seed run and five-seed aggregate exist"
+    },
+    {
+      "check": "neural_extension_raw_backend",
+      "status": "pass",
+      "detail": "{'kinetic_topoguard': 'scikit_learn', 'GCN': 'pytorch', 'GAT': 'pytorch', 'GraphSAGE': 'pytorch', 'PI+MLP': 'pytorch', 'FANET-TopoGNN': 'pytorch', 'FANET-TopoGNN (concat)': 'pytorch', 'tgcn:5': 'pytorch', 'stgcn:5': 'pytorch', 'tgn:5': 'pytorch'}"
+    },
+    {
+      "check": "neural_extension_seed_count",
+      "status": "pass",
+      "detail": "[7, 17, 27, 37, 47]"
+    },
+    {
+      "check": "neural_extension_model_coverage",
+      "status": "pass",
+      "detail": "models=9, seeds=[5]"
+    },
+    {
+      "check": "neural_extension_pytorch",
+      "status": "pass",
+      "detail": "['pytorch']"
+    },
+    {
+      "check": "neural_extension_per_seed_coverage",
+      "status": "pass",
+      "detail": "{'FANET-TopoGNN': 5, 'FANET-TopoGNN (concat)': 5, 'GAT': 5, 'GCN': 5, 'GraphSAGE': 5, 'Kinetic-TopoGuard': 5, 'PI+MLP': 5, 'STGCN (w=5)': 5, 'T-GCN (w=5)': 5, 'TGN (w=5)': 5}"
+    },
+    {
       "check": "external_validation",
       "status": "pass",
       "detail": "derived trace manifest and metrics exist"
@@ -77,6 +107,136 @@
       "detail": "rows=107730"
     },
     {
+      "check": "aerpaw_cellular_validation",
+      "status": "pass",
+      "detail": "protocol, metrics, table, and figure exist"
+    },
+    {
+      "check": "aerpaw_scope_boundary",
+      "status": "pass",
+      "detail": "Measured aerial cellular RF/KPI validation. This is real UAV-to-cellular infrastructure evidence; it is not an inter-UAV FANET packet-link dataset."
+    },
+    {
+      "check": "aerpaw_source_manifest",
+      "status": "pass",
+      "detail": "['dataset22_lte_semicircle', 'dataset23_iperf_two_sweeps', 'dataset23_lte_two_sweeps', 'dataset23_nr_two_sweeps']"
+    },
+    {
+      "check": "aerpaw_availability_rows",
+      "status": "pass",
+      "detail": "rows=4"
+    },
+    {
+      "check": "aerpaw_d22_lte_gain",
+      "status": "pass",
+      "detail": "0.828->0.961"
+    },
+    {
+      "check": "aerpaw_d23_lte_gain",
+      "status": "pass",
+      "detail": "0.679->0.980"
+    },
+    {
+      "check": "aerpaw_throughput_gain",
+      "status": "pass",
+      "detail": "MAE 223.0->75.2, R2=0.713"
+    },
+    {
+      "check": "uav_to_uav_mmwave_validation",
+      "status": "pass",
+      "detail": "protocol, metrics, table, and figure exist"
+    },
+    {
+      "check": "uav_to_uav_source_hash",
+      "status": "pass",
+      "detail": "9a8c0e4c2e473f7d5909040e71860ac0a6175c1821a9935b2c18f23c92202b33"
+    },
+    {
+      "check": "uav_to_uav_scope",
+      "status": "pass",
+      "detail": "Measured UAV-to-UAV 60 GHz RF validation and beta0-label integration; this uses RF/SNR link viability, not packet-delivery logs."
+    },
+    {
+      "check": "uav_to_uav_holdout",
+      "status": "pass",
+      "detail": "test_n=1756, split=held-out long distances >=33 m"
+    },
+    {
+      "check": "uav_to_uav_link_gain",
+      "status": "pass",
+      "detail": "F1 0.731->0.923"
+    },
+    {
+      "check": "uav_to_uav_pr_auc",
+      "status": "pass",
+      "detail": "PR-AUC=0.985"
+    },
+    {
+      "check": "uav_to_uav_beta_thresholds",
+      "status": "pass",
+      "detail": "[5.0, 7.0, 10.0]"
+    },
+    {
+      "check": "operating_point_selection",
+      "status": "pass",
+      "detail": "protocol, summary, table, and figure exist"
+    },
+    {
+      "check": "operating_point_rule",
+      "status": "pass",
+      "detail": "highest mean F1 among Kinetic-TopoGuard thresholds satisfying the false-alarm budget"
+    },
+    {
+      "check": "operating_point_deployable_budget",
+      "status": "pass",
+      "detail": "tau=0.6, F1=0.754, alarms/min=20.2"
+    },
+    {
+      "check": "operating_point_strict_budget",
+      "status": "pass",
+      "detail": "tau=0.7, F1=0.701, alarms/min=9.6"
+    },
+    {
+      "check": "operating_point_alarm_reduction",
+      "status": "pass",
+      "detail": "reductions=45.1/73.8"
+    },
+    {
+      "check": "digital_twin_dashboard",
+      "status": "pass",
+      "detail": "index, payload, and assets exist"
+    },
+    {
+      "check": "dashboard_confirmatory_binding",
+      "status": "pass",
+      "detail": "{'confirmatory_seeds': 20, 'confirmatory_snapshots': 432000, 'neural_extension_seeds': 5, 'forecast_horizon_steps': 6, 'torch_backend_verified': True}"
+    },
+    {
+      "check": "dashboard_neural_extension_binding",
+      "status": "pass",
+      "detail": "{'confirmatory_seeds': 20, 'confirmatory_snapshots': 432000, 'neural_extension_seeds': 5, 'forecast_horizon_steps': 6, 'torch_backend_verified': True}"
+    },
+    {
+      "check": "dashboard_a2a_binding",
+      "status": "pass",
+      "detail": "{'heldout_test_rows': 1756, 'baseline_f1': 0.7307553306830502, 'model_f1': 0.923, 'model_pr_auc': 0.9845646060326068, 'expected_beta0_snr7': 1.9145965407225567}"
+    },
+    {
+      "check": "dashboard_interactive_control",
+      "status": "pass",
+      "detail": "operating-point JavaScript control present"
+    },
+    {
+      "check": "single_column_page_count",
+      "status": "pass",
+      "detail": "{'single_column': 51, 'anonymous_single_column': 51, 'elsevier_5p': 25}"
+    },
+    {
+      "check": "elsevier_5p_page_count",
+      "status": "pass",
+      "detail": "{'single_column': 51, 'anonymous_single_column': 51, 'elsevier_5p': 25}"
+    },
+    {
       "check": "elsevier_highlight_count",
       "status": "pass",
       "detail": "count=5"
@@ -84,7 +244,7 @@
     {
       "check": "elsevier_highlight_length",
       "status": "pass",
-      "detail": "[65, 59, 56, 59, 58]"
+      "detail": "[65, 59, 56, 58, 58]"
     },
     {
       "check": "perslay_bibliography",
@@ -94,7 +254,7 @@
     {
       "check": "external_dataset_bibliography",
       "status": "pass",
-      "detail": "Zenodo DOI present"
+      "detail": "Zenodo, AERPAW, and UAV-to-UAV mmWave entries present"
     },
     {
       "check": "title_page_declarations",

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import hashlib
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 import platform
 import re
@@ -41,7 +42,7 @@ from .reporting import (
     write_claims_summary,
     write_markdown_report,
 )
-from .training import TORCH_AVAILABLE, fit_heuristic, fit_kinetic_topoguard, fit_union_find_oracle, select_best_shallow, train_torch_model
+from .training import TORCH_AVAILABLE, fit_current_state_persistence, fit_heuristic, fit_kinetic_topoguard, select_best_shallow, train_torch_model
 
 
 NUMERIC_METRICS = [
@@ -60,6 +61,11 @@ NUMERIC_METRICS = [
     "Risk_ECE",
     "False_Alarms",
     "False_Alarms_per_minute",
+    "Alert_Events",
+    "True_Alert_Events",
+    "False_Alert_Events",
+    "Alert_Event_Precision",
+    "False_Alert_Events_per_minute",
 ]
 
 METRIC_BOUNDS = {
@@ -78,6 +84,11 @@ METRIC_BOUNDS = {
     "Risk_ECE": (0.0, 1.0),
     "False_Alarms": (0.0, None),
     "False_Alarms_per_minute": (0.0, None),
+    "Alert_Events": (0.0, None),
+    "True_Alert_Events": (0.0, None),
+    "False_Alert_Events": (0.0, None),
+    "Alert_Event_Precision": (0.0, 1.0),
+    "False_Alert_Events_per_minute": (0.0, None),
     "Lead_5th_ms": (0.0, None),
     "Lead_median_ms": (0.0, None),
     "Lead_IQR_ms": (0.0, None),
@@ -99,9 +110,11 @@ SEED_REQUIRED_FILES = [
     "network_metrics.csv",
     "risk_metrics.csv",
     "split_assignments.csv",
+    "validation_threshold_sensitivity.csv",
+    "operating_point_metrics.csv",
 ]
 
-CACHE_VERSION = "kinetic_topoguard_v2_backend_and_risk_provenance"
+CACHE_VERSION = "kinetic_topoguard_v5_64tree_online_model"
 
 
 def _mean_ci(values: pd.Series, bounds: tuple[float | None, float | None] | None = None) -> pd.Series:
@@ -166,7 +179,7 @@ def _backend_metadata(tasks: list[str]) -> dict:
     backends = {}
     for task in tasks:
         if task == "union_find":
-            backends[task] = "diagnostic_reference"
+            backends[task] = "deterministic_persistence_baseline"
         elif task == "heuristic":
             backends[task] = "deterministic_heuristic"
         elif task in {"shallow", "kinetic_topoguard"}:
@@ -233,6 +246,8 @@ def _write_runtime_profile(out_path: Path, summary: dict, runtime_seconds: float
 
 def _canonical_model_name(name: object) -> str:
     text = str(name)
+    if text == "Union-Find detection oracle":
+        return "Current-state persistence baseline"
     if text.startswith("Shallow ML"):
         return "Shallow ML"
     match = re.fullmatch(r"(tgcn|stgcn|tgn):(\d+)", text)
@@ -279,7 +294,7 @@ def _train_task(task_name: str, train_data, val_data, config: ExperimentConfig, 
     if task_name == "heuristic":
         return fit_heuristic(train_data)
     if task_name == "union_find":
-        return fit_union_find_oracle()
+        return fit_current_state_persistence()
     if task_name == "shallow":
         return select_best_shallow(train_data, val_data)
     if task_name == "kinetic_topoguard":
@@ -319,6 +334,8 @@ def _save_model_cache(
     leads: list[float],
     normalised_leads: list[float],
     threshold_rows: list[dict],
+    validation_threshold_rows: list[dict],
+    operating_point_rows: list[dict],
     config_signature: str,
 ) -> None:
     meta_path, array_path = _cache_paths(seed_dir, task_name)
@@ -330,6 +347,8 @@ def _save_model_cache(
         "network_metrics": network_metrics,
         "risk_row": risk_row,
         "threshold_rows": threshold_rows,
+        "validation_threshold_rows": validation_threshold_rows,
+        "operating_point_rows": operating_point_rows,
         "config_signature": config_signature,
     }
     meta_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
@@ -361,6 +380,8 @@ def _load_model_cache(seed_dir: Path, task_name: str, config_signature: str | No
     payload["leads"] = leads
     payload["normalised_leads"] = normalised_leads
     payload.setdefault("threshold_rows", [])
+    payload.setdefault("validation_threshold_rows", [])
+    payload.setdefault("operating_point_rows", [])
     return payload
 
 
@@ -374,8 +395,10 @@ def _seed_complete(seed_dir: Path, config: ExperimentConfig) -> bool:
     return True
 
 
-def _load_seed_tables(seed_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+def _load_seed_tables(seed_dir: Path) -> tuple[pd.DataFrame, ...]:
     threshold_path = seed_dir / "risk_threshold_sensitivity.csv"
+    validation_threshold_path = seed_dir / "validation_threshold_sensitivity.csv"
+    operating_point_path = seed_dir / "operating_point_metrics.csv"
     return (
         pd.read_csv(seed_dir / "metrics_overall.csv"),
         pd.read_csv(seed_dir / "lead_time_summary.csv"),
@@ -383,6 +406,8 @@ def _load_seed_tables(seed_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame, pd.Da
         pd.read_csv(seed_dir / "risk_metrics.csv"),
         pd.read_csv(seed_dir / "dataset_summary.csv"),
         pd.read_csv(threshold_path) if threshold_path.exists() else pd.DataFrame(),
+        pd.read_csv(validation_threshold_path) if validation_threshold_path.exists() else pd.DataFrame(),
+        pd.read_csv(operating_point_path) if operating_point_path.exists() else pd.DataFrame(),
     )
 
 
@@ -400,7 +425,7 @@ def _load_cached_seed_maps(seed_dir: Path, config: ExperimentConfig) -> tuple[di
     return residual_map, lead_map
 
 
-def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool = False) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dict[str, np.ndarray], dict[str, list[float]], pd.DataFrame, pd.DataFrame]:
+def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool = False) -> tuple:
     seed_dir.mkdir(parents=True, exist_ok=True)
     print(f"[seed {seed}] building dataset")
     dataset_start = time.perf_counter()
@@ -445,6 +470,8 @@ def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool 
     lead_map: dict[str, list[float]] = {}
     risk_rows = []
     threshold_rows = []
+    validation_threshold_rows = []
+    operating_point_rows = []
 
     for task_name in _training_tasks(config):
         cached = _load_model_cache(seed_dir, task_name, signature) if resume else None
@@ -457,6 +484,8 @@ def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool 
             residual_map[model_name] = np.asarray(cached["residuals"], dtype=float)
             risk_rows.append(cached["risk_row"])
             threshold_rows.extend(cached.get("threshold_rows", []))
+            validation_threshold_rows.extend(cached.get("validation_threshold_rows", []))
+            operating_point_rows.extend(cached.get("operating_point_rows", []))
             if cached["network_metrics"] is not None:
                 network_rows.append(cached["network_metrics"])
             continue
@@ -464,6 +493,7 @@ def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool 
         print(f"[seed {seed}] training {task_name}")
         model_start = time.perf_counter()
         result = _train_task(task_name, train_data, val_data, config, pi_dim, seed)
+        _, val_risk_scores, _, aligned_val, _ = predict_generic(result, val_data)
         preds, risk_scores, inference_ms, aligned_test, risk_threshold = predict_generic(result, test_data)
         summary, leads, normalised_leads = evaluate_predictions(
             result.model_name,
@@ -499,14 +529,97 @@ def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool 
             "Risk_ECE": summary["Risk_ECE"],
             "False_Alarms": summary["False_Alarms"],
             "False_Alarms_per_minute": summary["False_Alarms_per_minute"],
+            "Alert_Events": summary["Alert_Events"],
+            "True_Alert_Events": summary["True_Alert_Events"],
+            "False_Alert_Events": summary["False_Alert_Events"],
+            "Alert_Event_Precision": summary["Alert_Event_Precision"],
+            "False_Alert_Events_per_minute": summary["False_Alert_Events_per_minute"],
             "Model_Backend": summary["Model_Backend"],
         }
         risk_rows.append(risk_row)
         y_risk_true = np.asarray([snap.frag_at_horizon for snap in aligned_test], dtype=int)
-        model_threshold_rows = threshold_sensitivity_rows(y_risk_true, risk_scores, dt=float(config.sim["dt"]))
+        horizon_steps = int(config.sim.get("forecast_horizon_steps", config.evaluation["warning_horizon_steps"]))
+        model_threshold_rows = threshold_sensitivity_rows(
+            y_risk_true,
+            risk_scores,
+            dt=float(config.sim["dt"]),
+            snapshots=aligned_test,
+            horizon_steps=horizon_steps,
+        )
         for row in model_threshold_rows:
-            row.update({"seed": seed, "Model": result.model_name, "Model_Backend": summary["Model_Backend"]})
+            row.update(
+                {
+                    "seed": seed,
+                    "Model": result.model_name,
+                    "Model_Backend": summary["Model_Backend"],
+                    "Split": "test_sensitivity_only",
+                }
+            )
         threshold_rows.extend(model_threshold_rows)
+        y_val_risk = np.asarray([snap.frag_at_horizon for snap in aligned_val], dtype=int)
+        model_validation_rows = threshold_sensitivity_rows(
+            y_val_risk,
+            val_risk_scores,
+            dt=float(config.sim["dt"]),
+            snapshots=aligned_val,
+            horizon_steps=horizon_steps,
+            thresholds=tuple(np.round(np.linspace(0.05, 0.95, 19), 2)),
+        )
+        for row in model_validation_rows:
+            row.update(
+                {
+                    "seed": seed,
+                    "Model": result.model_name,
+                    "Model_Backend": summary["Model_Backend"],
+                    "Split": "validation_selection",
+                }
+            )
+        validation_threshold_rows.extend(model_validation_rows)
+
+        if result.model_name == "Kinetic-TopoGuard":
+            val_frame = pd.DataFrame(model_validation_rows)
+            budgets = config.evaluation.get("false_alert_event_budgets_per_minute", [2.0, 1.0])
+            for policy, budget in zip(["deployable", "strict"], budgets):
+                feasible = val_frame[val_frame["False_Alert_Events_per_minute"] <= float(budget)].copy()
+                if feasible.empty:
+                    selected = val_frame.sort_values(
+                        ["False_Alert_Events_per_minute", "Risk_F1"],
+                        ascending=[True, False],
+                    ).iloc[0]
+                    constraint_met = False
+                else:
+                    selected = feasible.sort_values(
+                        ["Risk_F1", "Risk_Recall", "Alert_Event_Precision"],
+                        ascending=[False, False, False],
+                    ).iloc[0]
+                    constraint_met = True
+                selected_threshold = float(selected["Threshold"])
+                test_summary, _, _ = evaluate_predictions(
+                    result.model_name,
+                    aligned_test,
+                    preds,
+                    risk_scores,
+                    inference_ms,
+                    dt=config.sim["dt"],
+                    bootstrap_rounds=config.evaluation["bootstrap_rounds"],
+                    horizon_steps=horizon_steps,
+                    risk_threshold=selected_threshold,
+                )
+                operating_point_rows.append(
+                    {
+                        "seed": seed,
+                        "Model": result.model_name,
+                        "Policy": policy,
+                        "Validation_False_Alert_Budget_per_minute": float(budget),
+                        "Validation_Constraint_Met": bool(constraint_met),
+                        "Selected_Threshold": selected_threshold,
+                        "Validation_Risk_F1": float(selected["Risk_F1"]),
+                        "Validation_False_Alert_Events_per_minute": float(
+                            selected["False_Alert_Events_per_minute"]
+                        ),
+                        **{f"Test_{key}": value for key, value in test_summary.items() if key != "Model"},
+                    }
+                )
         network_metrics = None
         if result.model_name == "FANET-TopoGNN":
             plot_scatter(y_true, preds, seed_dir / "fanet_topognn_scatter.png")
@@ -533,6 +646,12 @@ def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool 
             leads=leads,
             normalised_leads=normalised_leads,
             threshold_rows=model_threshold_rows,
+            validation_threshold_rows=model_validation_rows,
+            operating_point_rows=[
+                row
+                for row in operating_point_rows
+                if row["seed"] == seed and row["Model"] == result.model_name
+            ],
             config_signature=signature,
         )
         print(f"[seed {seed}] finished {result.model_name} in {time.perf_counter() - model_start:.1f}s")
@@ -542,14 +661,30 @@ def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool 
     network_df = pd.DataFrame(network_rows)
     risk_df = pd.DataFrame(risk_rows)
     threshold_df = pd.DataFrame(threshold_rows)
+    validation_threshold_df = pd.DataFrame(validation_threshold_rows)
+    operating_point_df = pd.DataFrame(operating_point_rows)
     save_table(metrics_df, seed_dir, "metrics_overall")
     save_table(leads_df, seed_dir, "lead_time_summary")
     save_table(network_df, seed_dir, "network_metrics")
     save_table(risk_df, seed_dir, "risk_metrics")
     if not threshold_df.empty:
         save_table(threshold_df, seed_dir, "risk_threshold_sensitivity")
+    if not validation_threshold_df.empty:
+        save_table(validation_threshold_df, seed_dir, "validation_threshold_sensitivity")
+    if not operating_point_df.empty:
+        save_table(operating_point_df, seed_dir, "operating_point_metrics")
     plot_lead_cdf({name: vals for name, vals in lead_map.items() if name in {"Kinetic-TopoGuard", "GraphSAGE", "FANET-TopoGNN"}}, seed_dir / "lead_cdf.png")
-    return metrics_df, leads_df, network_df, residual_map, lead_map, risk_df, threshold_df
+    return (
+        metrics_df,
+        leads_df,
+        network_df,
+        residual_map,
+        lead_map,
+        risk_df,
+        threshold_df,
+        validation_threshold_df,
+        operating_point_df,
+    )
 
 
 def _build_stats_table(metrics_seed_df: pd.DataFrame, leads_seed_df: pd.DataFrame) -> pd.DataFrame:
@@ -582,7 +717,50 @@ def _build_stats_table(metrics_seed_df: pd.DataFrame, leads_seed_df: pd.DataFram
     return stats_df
 
 
-def run_experiment(config: ExperimentConfig, resume: bool = False) -> dict:
+def _run_or_load_seed(seed: int, config: ExperimentConfig, seeds_root: Path, resume: bool) -> tuple:
+    seed_dir = seeds_root / f"seed_{seed}"
+    if resume and _seed_complete(seed_dir, config):
+        print(f"[resume] skipping completed seed {seed}")
+        (
+            metrics_df,
+            leads_df,
+            network_df,
+            risk_df,
+            dataset_df,
+            threshold_df,
+            validation_threshold_df,
+            operating_point_df,
+        ) = _load_seed_tables(seed_dir)
+        residual_map, lead_map = _load_cached_seed_maps(seed_dir, config)
+    else:
+        (
+            metrics_df,
+            leads_df,
+            network_df,
+            residual_map,
+            lead_map,
+            risk_df,
+            threshold_df,
+            validation_threshold_df,
+            operating_point_df,
+        ) = _run_seed(seed, config, seed_dir, resume=resume)
+        dataset_df = pd.read_csv(seed_dir / "dataset_summary.csv")
+    return (
+        seed,
+        metrics_df,
+        leads_df,
+        network_df,
+        residual_map,
+        lead_map,
+        risk_df,
+        threshold_df,
+        validation_threshold_df,
+        operating_point_df,
+        dataset_df,
+    )
+
+
+def run_experiment(config: ExperimentConfig, resume: bool = False, seed_workers: int = 1) -> dict:
     out_dir = config.output_dir
     out_dir.mkdir(parents=True, exist_ok=True)
     figures_dir = out_dir / "figures"
@@ -595,26 +773,54 @@ def run_experiment(config: ExperimentConfig, resume: bool = False) -> dict:
     network_seed_frames = []
     risk_seed_frames = []
     threshold_seed_frames = []
+    validation_threshold_seed_frames = []
+    operating_point_seed_frames = []
     dataset_frames = []
     residual_map_first: dict[str, np.ndarray] = {}
     lead_map_first: dict[str, list[float]] = {}
 
     run_start = time.perf_counter()
-    for idx, seed in enumerate(config.training["seed_list"]):
-        seed_dir = seeds_root / f"seed_{seed}"
-        if resume and _seed_complete(seed_dir, config):
-            print(f"[resume] skipping completed seed {seed}")
-            metrics_df, leads_df, network_df, risk_df, dataset_df, threshold_df = _load_seed_tables(seed_dir)
-            residual_map, lead_map = _load_cached_seed_maps(seed_dir, config)
-        else:
-            metrics_df, leads_df, network_df, residual_map, lead_map, risk_df, threshold_df = _run_seed(seed, config, seed_dir, resume=resume)
-            dataset_df = pd.read_csv(seed_dir / "dataset_summary.csv")
+    seeds = list(config.training["seed_list"])
+    worker_count = max(1, min(int(seed_workers), len(seeds)))
+    if worker_count == 1:
+        seed_results = [_run_or_load_seed(seed, config, seeds_root, resume) for seed in seeds]
+    else:
+        print(f"[run] executing {len(seeds)} seeds with {worker_count} parallel workers")
+        with ProcessPoolExecutor(max_workers=worker_count) as executor:
+            seed_results = list(
+                executor.map(
+                    _run_or_load_seed,
+                    seeds,
+                    [config] * len(seeds),
+                    [seeds_root] * len(seeds),
+                    [resume] * len(seeds),
+                )
+            )
+
+    for idx, result in enumerate(seed_results):
+        (
+            seed,
+            metrics_df,
+            leads_df,
+            network_df,
+            residual_map,
+            lead_map,
+            risk_df,
+            threshold_df,
+            validation_threshold_df,
+            operating_point_df,
+            dataset_df,
+        ) = result
         metrics_seed_frames.append(metrics_df)
         leads_seed_frames.append(leads_df)
         network_seed_frames.append(network_df)
         risk_seed_frames.append(risk_df)
         if not threshold_df.empty:
             threshold_seed_frames.append(threshold_df)
+        if not validation_threshold_df.empty:
+            validation_threshold_seed_frames.append(validation_threshold_df)
+        if not operating_point_df.empty:
+            operating_point_seed_frames.append(operating_point_df)
         dataset_frames.append(dataset_df)
         if idx == 0:
             residual_map_first = {_canonical_model_name(name): values for name, values in residual_map.items()}
@@ -625,6 +831,16 @@ def run_experiment(config: ExperimentConfig, resume: bool = False) -> dict:
     network_seed_df = pd.concat(network_seed_frames, ignore_index=True)
     risk_seed_df = pd.concat(risk_seed_frames, ignore_index=True)
     threshold_seed_df = pd.concat(threshold_seed_frames, ignore_index=True) if threshold_seed_frames else pd.DataFrame()
+    validation_threshold_seed_df = (
+        pd.concat(validation_threshold_seed_frames, ignore_index=True)
+        if validation_threshold_seed_frames
+        else pd.DataFrame()
+    )
+    operating_point_seed_df = (
+        pd.concat(operating_point_seed_frames, ignore_index=True)
+        if operating_point_seed_frames
+        else pd.DataFrame()
+    )
     metrics_seed_df = _canonicalise_model_labels(metrics_seed_df)
     leads_seed_df = _canonicalise_model_labels(leads_seed_df)
     network_seed_df = _canonicalise_model_labels(network_seed_df)
@@ -660,6 +876,11 @@ def run_experiment(config: ExperimentConfig, resume: bool = False) -> dict:
         "Risk_ECE",
         "False_Alarms",
         "False_Alarms_per_minute",
+        "Alert_Events",
+        "True_Alert_Events",
+        "False_Alert_Events",
+        "Alert_Event_Precision",
+        "False_Alert_Events_per_minute",
     ]
     risk_df = _aggregate_metrics(risk_seed_df, ["Model"], risk_metric_cols).sort_values("Risk_F1_mean", ascending=False).reset_index(drop=True)
     threshold_df = pd.DataFrame()
@@ -672,13 +893,47 @@ def run_experiment(config: ExperimentConfig, resume: bool = False) -> dict:
             "Risk_Accuracy",
             "False_Alarms",
             "False_Alarms_per_minute",
+            "Alert_Events",
+            "True_Alert_Events",
+            "False_Alert_Events",
+            "Alert_Event_Precision",
+            "False_Alert_Events_per_minute",
         ]
         threshold_df = _aggregate_metrics(threshold_seed_df, ["Model", "Threshold"], threshold_metric_cols)
+
+    validation_threshold_df = pd.DataFrame()
+    if not validation_threshold_seed_df.empty:
+        validation_threshold_df = _aggregate_metrics(
+            validation_threshold_seed_df,
+            ["Model", "Threshold"],
+            [
+                "Risk_Precision",
+                "Risk_Recall",
+                "Risk_F1",
+                "False_Alarms_per_minute",
+                "Alert_Event_Precision",
+                "False_Alert_Events_per_minute",
+            ],
+        )
+
+    operating_point_df = pd.DataFrame()
+    if not operating_point_seed_df.empty:
+        numeric_operating_cols = [
+            column
+            for column in operating_point_seed_df.columns
+            if column not in {"seed", "Model", "Policy", "Validation_Constraint_Met"}
+            and pd.api.types.is_numeric_dtype(operating_point_seed_df[column])
+        ]
+        operating_point_df = _aggregate_metrics(
+            operating_point_seed_df,
+            ["Model", "Policy"],
+            numeric_operating_cols,
+        )
 
     shallow_name = next((name for name in metrics_df["Model"] if name.startswith("Shallow ML")), None)
     static_models = [
         "Density + min-distance heuristics",
-        "Union-Find detection oracle",
+        "Current-state persistence baseline",
         "Kinetic-TopoGuard",
         "GCN",
         "GAT",
@@ -698,6 +953,10 @@ def run_experiment(config: ExperimentConfig, resume: bool = False) -> dict:
     save_table(leads_seed_df, out_dir, "per_seed_leads")
     save_table(network_seed_df, out_dir, "per_seed_network_metrics")
     save_table(risk_seed_df, out_dir, "per_seed_risk_metrics")
+    if not validation_threshold_seed_df.empty:
+        save_table(validation_threshold_seed_df, out_dir, "per_seed_validation_threshold_sensitivity")
+    if not operating_point_seed_df.empty:
+        save_table(operating_point_seed_df, out_dir, "per_seed_operating_point_metrics")
     save_table(metrics_df, out_dir, "metrics_overall")
     save_table(leads_df, out_dir, "lead_time_summary")
     save_table(static_df, out_dir, "ablation_static")
@@ -706,6 +965,10 @@ def run_experiment(config: ExperimentConfig, resume: bool = False) -> dict:
     save_table(risk_df, out_dir, "risk_metrics")
     if not threshold_df.empty:
         save_table(threshold_df, out_dir, "risk_threshold_sensitivity")
+    if not validation_threshold_df.empty:
+        save_table(validation_threshold_df, out_dir, "validation_threshold_sensitivity")
+    if not operating_point_df.empty:
+        save_table(operating_point_df, out_dir, "operating_point_metrics")
     save_table(stats_df, out_dir, "stats_tests")
 
     lead_plot_map = {name: vals for name, vals in lead_map_first.items() if name in {"Kinetic-TopoGuard", "FANET-TopoGNN", "PI+MLP", "FANET-TopoGNN (concat)", "GraphSAGE"}}

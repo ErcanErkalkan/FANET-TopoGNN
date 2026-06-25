@@ -6,7 +6,7 @@
   \def\href#1#2{#2} \def\path#1{#1}\fi
 
 \bibitem{BEKMEZCI20131254}
-İlker Bekmezci, O.~K. Sahingoz, Şamil Temel,
+I.~Bekmezci, O.~K. Sahingoz, S.~Temel,
   \href{https://www.sciencedirect.com/science/article/pii/S1570870512002193}{Flying
   ad-hoc networks (fanets): A survey}, Ad Hoc Networks 11~(3) (2013)
   1254--1270.
@@ -16,7 +16,7 @@
 
 \bibitem{tarjan1975efficiency}
 R.~E. Tarjan, \href{https://doi.org/10.1145/321879.321884}{Efficiency of a good
-  but not linear set union algorithm}, J. ACM 22~(2) (1975) 215–225.
+  but not linear set union algorithm}, J. ACM 22~(2) (1975) 215--225.
 \newblock \href {https://doi.org/10.1145/321879.321884}
   {\path{doi:10.1145/321879.321884}}.
 \newline\urlprefix\url{https://doi.org/10.1145/321879.321884}
@@ -89,10 +89,8 @@ F.~Pasandideh, J.~P. J.~d. Costa, R.~Kunst, W.~Hardjawana, E.~P. de~Freitas,
   \href{https://onlinelibrary.wiley.com/doi/abs/10.1002/rob.22157}{A systematic
   literature review of flying ad hoc networks: State-of-the-art, challenges,
   and perspectives}, Journal of Field Robotics 40~(4) (2023) 955--979.
-\newblock \href
-  {http://arxiv.org/abs/https://onlinelibrary.wiley.com/doi/pdf/10.1002/rob.22157}
-  {\path{arXiv:https://onlinelibrary.wiley.com/doi/pdf/10.1002/rob.22157}},
-  \href {https://doi.org/10.1002/rob.22157} {\path{doi:10.1002/rob.22157}}.
+\newblock \href {https://doi.org/10.1002/rob.22157}
+  {\path{doi:10.1002/rob.22157}}.
 \newline\urlprefix\url{https://onlinelibrary.wiley.com/doi/abs/10.1002/rob.22157}
 
 \bibitem{su16219239}
@@ -189,5 +187,26 @@ A.~Ara\'ujo, C.~A. Pontes~Pizzino, M.~Couceiro, R.~P. Rocha,
 \newblock \href {https://doi.org/10.5281/zenodo.14701641}
   {\path{doi:10.5281/zenodo.14701641}}.
 \newline\urlprefix\url{https://doi.org/10.5281/zenodo.14701641}
+
+\bibitem{aerpawDataset22}
+{AERPAW}, \href{https://aerpaw.org/dataset/}{Dataset-22: Android-based 4g lte
+  measurements for semi-circular uav trajectory around a private aerpaw base
+  station}, AERPAW public dataset page, dataset-22 page accessed: 2026-06-23
+  (2025).
+\newline\urlprefix\url{https://aerpaw.org/dataset/}
+
+\bibitem{aerpawDataset23}
+{AERPAW}, \href{https://aerpaw.org/dataset/}{Dataset-23: Android-based 4g lte,
+  5g nr, and throughput measurements for two sweeps of a uav near a private
+  aerpaw base station}, AERPAW public dataset page, dataset-23 page accessed:
+  2026-06-23 (2025).
+\newline\urlprefix\url{https://aerpaw.org/dataset/}
+
+\bibitem{winesUavToUav60GHz}
+M.~Polese, L.~Bertizzolo, L.~Bonati, A.~Gosain, T.~Melodia,
+  \href{https://ece.northeastern.edu/wineslab/datasets.php}{Experimental
+  uav-to-uav 60 ghz channel model dataset}, WiNES Lab and Northeastern
+  University public dataset, dataset page accessed: 2026-06-23 (2020).
+\newline\urlprefix\url{https://ece.northeastern.edu/wineslab/datasets.php}
 
 \end{thebibliography}

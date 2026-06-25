@@ -17,7 +17,7 @@ from fanet.config import load_config
 from fanet.dataset import build_dataset, train_val_test_split
 from fanet.evaluation import evaluate_predictions, predict_generic
 from fanet.external_validation import build_trace_snapshots, load_flight_trace_csv, pairwise_distance_quantiles
-from fanet.training import fit_kinetic_topoguard, fit_union_find_oracle, select_best_shallow
+from fanet.training import fit_current_state_persistence, fit_kinetic_topoguard, select_best_shallow
 
 
 def _aggregate(frame: pd.DataFrame) -> pd.DataFrame:
@@ -84,7 +84,10 @@ def _write_latex_table(aggregate: pd.DataFrame, path: Path) -> None:
         "\\midrule",
     ]
     for _, item in aggregate.sort_values(["Radius_quantile", "Model"]).iterrows():
-        model = str(item["Model"]).replace("Union-Find detection oracle", "Union--find diagnostic")
+        model = str(item["Model"]).replace(
+            "Current-state persistence baseline",
+            "Current-state persistence",
+        )
         model = model.replace("Shallow ML", "Shallow ML").replace("_", "\\_")
         radius = f"q{int(round(100 * item['Radius_quantile']))} ({item['Radius_m']:.1f} m)"
         rows.append(
@@ -136,7 +139,7 @@ def main() -> None:
         stratify = tuple(config.sim.get("split_stratify_by", ["mobility"]))
         train_data, val_data, _ = train_val_test_split(synthetic, split_seed=int(config.sim["split_seed"]), stratify_by=stratify)
         models = [
-            fit_union_find_oracle(),
+            fit_current_state_persistence(),
             select_best_shallow(train_data, val_data),
             fit_kinetic_topoguard(train_data, val_data, horizon_steps=horizon_steps, dt=training_dt, seed=int(seed)),
         ]

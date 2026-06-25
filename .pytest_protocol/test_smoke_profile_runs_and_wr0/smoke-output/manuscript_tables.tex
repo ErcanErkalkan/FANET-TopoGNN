@@ -1,0 +1,56 @@
+% Auto-generated manuscript tables
+% Experiment: smoke_30s
+
+\begin{table}[t]
+\centering
+\small
+\caption{Overall prediction performance.}
+\label{tab:perf_overall_auto}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lrrrr}
+\toprule
+Model & MAE & MSE & R2 & Latency (ms) \\
+\midrule
+Current-state persistence baseline & 0.000 [0.000, 0.000] & 0.000 [0.000, 0.000] & 1.000 [1.000, 1.000] & 0.059 \\
+Density + min-distance heuristics & 1.000 [1.000, 1.000] & 1.000 [1.000, 1.000] & -1199999999.000 [-1199999999.000, -1199999999.000] & 0.032 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\par\footnotesize\emph{Note:} Union-Find uses current graph connectivity as a diagnostic reference and is not a future forecasting model.
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Topology-change lead-time summary.}
+\label{tab:lead_time_auto}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lrrr}
+\toprule
+Model & Topology-change lead median (ms) & Topology-change lead mean (ms) & Topology-change lead 95th (ms) \\
+\midrule
+Current-state persistence baseline & 0.00 & 0.00 & 0.00 \\
+Density + min-distance heuristics & 0.00 & 0.00 & 0.00 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\par\footnotesize\emph{Note:} Lead time is capped by the configured forecast horizon; the 600 ms ceiling is not a deployment guarantee.
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Fragmentation-risk forecasting metrics.}
+\label{tab:risk_metrics_auto}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lrrr}
+\toprule
+Model & Risk F1 & Risk Recall & Risk Precision \\
+\midrule
+Current-state persistence baseline & 1.000 & 1.000 & 1.000 \\
+Density + min-distance heuristics & 1.000 & 1.000 & 1.000 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\par\footnotesize\emph{Note:} Union-Find is a current-graph diagnostic reference; learned forecasting models are ranked separately.
+\end{table}

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import copy
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Iterable
 import numpy as np
 import pandas as pd
@@ -134,7 +134,7 @@ def _radio_scenarios(sim_cfg: dict) -> list[tuple[str, dict]]:
     return expanded
 
 
-def _raw_run(sim_cfg: dict, mobility_name: str, n_nodes: int, run_seed: int) -> list[dict]:
+def _kinematic_run(sim_cfg: dict, mobility_name: str, n_nodes: int, run_seed: int) -> list[dict]:
     rng = np.random.default_rng(run_seed)
     area_size = sim_cfg["area_size"]
     dt = sim_cfg["dt"]
@@ -159,16 +159,54 @@ def _raw_run(sim_cfg: dict, mobility_name: str, n_nodes: int, run_seed: int) -> 
         )
 
     velocity_scale = max(speed_range[1], sim_cfg.get("gauss_markov_mu", speed_range[1]), 30.0)
+    kinematic_items: list[dict] = []
+    for time_index in range(sim_cfg["time_steps"]):
+        positions = state.position.astype(np.float32)
+        velocities = state.velocity.astype(np.float32)
+        distances = pairwise_distances(positions)
+        pi = persistence_image(
+            positions,
+            sim_cfg["pi_resolution"],
+            sim_cfg["pi_sigma"],
+            sim_cfg["pi_max_radius"],
+        ).reshape(-1)
+        node_features = np.concatenate(
+            [normalize_positions(positions), _velocity_features(velocities, velocity_scale)],
+            axis=1,
+        ).astype(np.float32)
+        kinematic_items.append(
+            {
+                "time_index": time_index,
+                "positions": positions,
+                "velocities": velocities,
+                "distances": distances,
+                "pi": pi.astype(np.float32),
+                "node_features": node_features,
+            }
+        )
+        state = step_fn(state)
+    return kinematic_items
+
+
+def _raw_run(
+    sim_cfg: dict,
+    mobility_name: str,
+    n_nodes: int,
+    run_seed: int,
+    kinematic_items: list[dict] | None = None,
+) -> list[dict]:
     graph_policy = _normalise_label(sim_cfg.get("graph_policy", "adaptive"))
     link_model = str(sim_cfg.get("link_model", "radius")).lower()
     radio_scenario = _normalise_label(sim_cfg.get("radio_scenario", "default"))
     raw_items: list[dict] = []
     split_group_id = f"{mobility_name}_N{n_nodes}_seed{run_seed}"
     run_id = f"{mobility_name}_N{n_nodes}_{graph_policy}_{radio_scenario}_seed{run_seed}"
-    for time_index in range(sim_cfg["time_steps"]):
-        positions = state.position.astype(np.float32)
-        velocities = state.velocity.astype(np.float32)
-        distances = pairwise_distances(positions)
+    base_items = kinematic_items or _kinematic_run(sim_cfg, mobility_name, n_nodes, run_seed)
+    for base in base_items:
+        time_index = int(base["time_index"])
+        positions = base["positions"]
+        velocities = base["velocities"]
+        distances = base["distances"]
         radius_fixed = float(sim_cfg["base_radius"])
         radius_adaptive = adaptive_radius(positions, radius_fixed, sim_cfg["density_threshold"], sim_cfg["adaptive_scale"])
         link_seed = int((run_seed * 1_000_003 + time_index) % (2**63 - 1))
@@ -191,8 +229,6 @@ def _raw_run(sim_cfg: dict, mobility_name: str, n_nodes: int, run_seed: int) -> 
             radius = radius_adaptive
         else:
             raise ValueError(f"Unknown graph_policy: {graph_policy}")
-        pi = persistence_image(positions, sim_cfg["pi_resolution"], sim_cfg["pi_sigma"], sim_cfg["pi_max_radius"]).reshape(-1)
-        node_features = np.concatenate([normalize_positions(positions), _velocity_features(velocities, velocity_scale)], axis=1).astype(np.float32)
         raw_items.append(
             {
                 "run_id": run_id,
@@ -202,11 +238,11 @@ def _raw_run(sim_cfg: dict, mobility_name: str, n_nodes: int, run_seed: int) -> 
                 "n_nodes": n_nodes,
                 "positions": positions,
                 "velocities": velocities,
-                "node_features": node_features,
+                "node_features": base["node_features"],
                 "adjacency": adjacency.astype(np.float32),
                 "adjacency_fixed": adjacency_fixed.astype(np.float32),
                 "adjacency_adaptive": adjacency_adaptive.astype(np.float32),
-                "pi": pi.astype(np.float32),
+                "pi": base["pi"],
                 "beta_current": beta_current,
                 "beta_fixed": beta_fixed,
                 "beta_adaptive": beta_adaptive,
@@ -220,12 +256,17 @@ def _raw_run(sim_cfg: dict, mobility_name: str, n_nodes: int, run_seed: int) -> 
                 "radio_scenario": radio_scenario,
             }
         )
-        state = step_fn(state)
     return raw_items
 
 
-def simulate_run(sim_cfg: dict, mobility_name: str, n_nodes: int, run_seed: int) -> list[Snapshot]:
-    raw_items = _raw_run(sim_cfg, mobility_name, n_nodes, run_seed)
+def simulate_run(
+    sim_cfg: dict,
+    mobility_name: str,
+    n_nodes: int,
+    run_seed: int,
+    kinematic_items: list[dict] | None = None,
+) -> list[Snapshot]:
+    raw_items = _raw_run(sim_cfg, mobility_name, n_nodes, run_seed, kinematic_items)
     horizon = int(sim_cfg.get("forecast_horizon_steps", sim_cfg.get("warning_horizon_steps", 1)))
     snapshots: list[Snapshot] = []
     for idx, item in enumerate(raw_items):
@@ -272,6 +313,17 @@ def build_dataset(sim_cfg: dict, seed: int) -> list[Snapshot]:
     snapshots: list[Snapshot] = []
     radio_scenarios = _radio_scenarios(sim_cfg)
     graph_policies = _graph_policies(sim_cfg)
+    kinematic_cache = {}
+    for mobility_idx, mobility_name in enumerate(sim_cfg["mobility_models"]):
+        for size_idx, n_nodes in enumerate(sim_cfg["swarm_sizes"]):
+            for run_idx in range(sim_cfg["runs_per_setting"]):
+                run_seed = seed + mobility_idx * 10000 + size_idx * 100 + run_idx
+                kinematic_cache[(mobility_name, n_nodes, run_seed)] = _kinematic_run(
+                    sim_cfg,
+                    mobility_name,
+                    n_nodes,
+                    run_seed,
+                )
     for scenario_name, scenario_cfg in radio_scenarios:
         for graph_policy in graph_policies:
             run_cfg = copy.deepcopy(scenario_cfg)
@@ -281,8 +333,35 @@ def build_dataset(sim_cfg: dict, seed: int) -> list[Snapshot]:
                 for size_idx, n_nodes in enumerate(sim_cfg["swarm_sizes"]):
                     for run_idx in range(sim_cfg["runs_per_setting"]):
                         run_seed = seed + mobility_idx * 10000 + size_idx * 100 + run_idx
-                        snapshots.extend(simulate_run(run_cfg, mobility_name, n_nodes, run_seed))
+                        snapshots.extend(
+                            simulate_run(
+                                run_cfg,
+                                mobility_name,
+                                n_nodes,
+                                run_seed,
+                                kinematic_cache[(mobility_name, n_nodes, run_seed)],
+                            )
+                        )
     return snapshots
+
+
+def relabel_forecast_horizon(snapshots: list[Snapshot], horizon_steps: int) -> list[Snapshot]:
+    """Reuse fixed trajectories while changing only deterministic future labels."""
+    horizon = max(int(horizon_steps), 0)
+    relabeled: list[Snapshot] = []
+    for sequence in split_by_run(snapshots).values():
+        ordered = sorted(sequence, key=lambda item: item.time_index)
+        for idx, snapshot in enumerate(ordered):
+            future = ordered[min(idx + horizon, len(ordered) - 1)]
+            relabeled.append(
+                replace(
+                    snapshot,
+                    beta_target=float(future.beta_current),
+                    future_time_index=int(future.time_index),
+                    frag_at_horizon=int(future.beta_current > 1),
+                )
+            )
+    return relabeled
 
 
 def to_frame(snapshots: Iterable[Snapshot]) -> pd.DataFrame:

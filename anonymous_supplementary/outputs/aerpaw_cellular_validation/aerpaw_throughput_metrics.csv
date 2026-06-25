@@ -1,0 +1,3 @@
+dataset,target,model,split,train_n,test_n,mae_mbps,rmse_mbps,r2
+dataset23_iperf_two_sweeps,iPerf throughput (Mbps),Training-mean baseline,interleaved-5s-blocks,966.0,240.0,223.0487435300207,252.57634114227,-0.00015647390557194107
+dataset23_iperf_two_sweeps,iPerf throughput (Mbps),RF/KPI random forest,interleaved-5s-blocks,966.0,240.0,75.15135347541106,135.2290493748211,0.7133033586875424

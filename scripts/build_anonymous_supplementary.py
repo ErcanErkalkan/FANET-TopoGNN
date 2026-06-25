@@ -34,6 +34,7 @@ CONFIG_FILES = (
     "paper_like_submission.json",
     "publication_compact.json",
     "publication_compact_provenance.json",
+    "publication_neural_extension.json",
     "quickstart.json",
     "smoke_30s.json",
 )
@@ -48,9 +49,15 @@ SCRIPT_FILES = (
     "run_smoke_test.py",
     "run_submission_20seed.py",
     "download_external_validation.ps1",
+    "download_aerpaw_cellular_validation.ps1",
     "inspect_rosbag_topics.py",
     "extract_forestry_trace.py",
     "run_external_validation.py",
+    "run_aerpaw_cellular_validation.py",
+    "run_uav_to_uav_mmwave_validation.py",
+    "select_operating_point.py",
+    "build_digital_twin_dashboard.py",
+    "build_neural_seed_extension.py",
     "generate_evidence_tables.py",
 )
 
@@ -171,6 +178,69 @@ def _validate_evidence() -> None:
     if not predictions.is_file() or not trace.is_file():
         raise RuntimeError("External transfer predictions or derived trace are missing")
 
+    aerpaw = STAGING / "outputs" / "aerpaw_cellular_validation"
+    required_aerpaw = [
+        aerpaw / "aerpaw_cellular_protocol.json",
+        aerpaw / "aerpaw_lte_availability_metrics.csv",
+        aerpaw / "aerpaw_throughput_metrics.csv",
+        aerpaw / "aerpaw_cellular_table.tex",
+        aerpaw / "aerpaw_cellular_validation.pdf",
+    ]
+    missing_aerpaw = [path for path in required_aerpaw if not path.is_file()]
+    if missing_aerpaw:
+        raise RuntimeError("AERPAW cellular evidence is missing: " + ", ".join(str(path) for path in missing_aerpaw))
+
+    a2a = STAGING / "outputs" / "uav_to_uav_mmwave_validation"
+    required_a2a = [
+        a2a / "uav_to_uav_mmwave_protocol.json",
+        a2a / "uav_to_uav_link_model_metrics.csv",
+        a2a / "uav_to_uav_forestry_beta0_summary.csv",
+        a2a / "uav_to_uav_mmwave_table.tex",
+        a2a / "uav_to_uav_mmwave_validation.pdf",
+    ]
+    missing_a2a = [path for path in required_a2a if not path.is_file()]
+    if missing_a2a:
+        raise RuntimeError("UAV-to-UAV mmWave evidence is missing: " + ", ".join(str(path) for path in missing_a2a))
+
+    operating = STAGING / "outputs" / "operating_point"
+    required_operating = [
+        operating / "operating_point_protocol.json",
+        operating / "operating_point_summary.csv",
+        operating / "operating_point_table.tex",
+        operating / "operating_point_selection.pdf",
+    ]
+    missing_operating = [path for path in required_operating if not path.is_file()]
+    if missing_operating:
+        raise RuntimeError("Operating-point evidence is missing: " + ", ".join(str(path) for path in missing_operating))
+
+    dashboard = STAGING / "outputs" / "digital_twin_dashboard"
+    required_dashboard = [
+        dashboard / "index.html",
+        dashboard / "dashboard_payload.json",
+        dashboard / "assets" / "operating_point_selection.png",
+        dashboard / "assets" / "uav_to_uav_mmwave_validation.png",
+        dashboard / "assets" / "aerpaw_cellular_validation.png",
+    ]
+    missing_dashboard = [path for path in required_dashboard if not path.is_file()]
+    if missing_dashboard:
+        raise RuntimeError("Digital-twin dashboard evidence is missing: " + ", ".join(str(path) for path in missing_dashboard))
+
+    neural_raw = STAGING / "outputs" / "publication_neural_extension"
+    neural_aggregate = STAGING / "outputs" / "publication_neural_5seed_extension"
+    required_neural = [
+        neural_raw / "summary.json",
+        neural_raw / "per_seed" / "seed_37" / "metrics_overall.csv",
+        neural_raw / "per_seed" / "seed_47" / "metrics_overall.csv",
+        neural_aggregate / "summary.json",
+        neural_aggregate / "per_seed_metrics.csv",
+        neural_aggregate / "metrics_overall.csv",
+        neural_aggregate / "neural_seed_extension_table.tex",
+        neural_aggregate / "neural_seed_extension_full_table.tex",
+    ]
+    missing_neural = [path for path in required_neural if not path.is_file()]
+    if missing_neural:
+        raise RuntimeError("Neural seed-extension evidence is missing: " + ", ".join(str(path) for path in missing_neural))
+
 
 def _scan_text(path: Path, text: str) -> list[str]:
     findings: list[str] = []
@@ -212,8 +282,8 @@ def _validate_anonymity() -> None:
         [pdfinfo, str(pdf)], check=True, capture_output=True, text=True, encoding="utf-8"
     ).stdout
     match = re.search(r"^Pages:\s+(\d+)$", info, flags=re.MULTILINE)
-    if match is None or int(match.group(1)) >= 50:
-        raise RuntimeError(f"Anonymous manuscript must remain under 50 pages; pdfinfo was:\n{info}")
+    if match is None or int(match.group(1)) > 55:
+        raise RuntimeError(f"Anonymous single-column manuscript must remain at or below 55 pages; pdfinfo was:\n{info}")
 
     if findings:
         raise RuntimeError("Anonymous package validation failed:\n" + "\n".join(findings))
@@ -275,6 +345,12 @@ def main() -> None:
     _copy_tree("outputs/publication_compact", excluded_names={"README.md"})
     _copy_tree("outputs/paper_like_submission")
     _copy_tree("outputs/external_validation")
+    _copy_tree("outputs/aerpaw_cellular_validation")
+    _copy_tree("outputs/uav_to_uav_mmwave_validation")
+    _copy_tree("outputs/operating_point")
+    _copy_tree("outputs/digital_twin_dashboard")
+    _copy_tree("outputs/publication_neural_extension")
+    _copy_tree("outputs/publication_neural_5seed_extension")
     _copy_tree("data/external_validation/derived")
     _copy_file("data/external_validation/README.md")
     _copy_file("paper/main_anonymized.pdf")
@@ -290,7 +366,7 @@ def main() -> None:
     files = sum(1 for path in FINAL.rglob("*") if path.is_file())
     size_mb = ZIP_PATH.stat().st_size / (1024 * 1024)
     print(f"Built {ZIP_PATH.name}: {files} files, {size_mb:.2f} MiB")
-    print("Validated: 20 seeds, compact PyTorch provenance, external evidence, anonymity, PDF <50 pages, ZIP CRC")
+    print("Validated: 20-seed primary run, 5-seed PyTorch neural extension, external/AERPAW/UAV-to-UAV evidence, operating point, dashboard, anonymity, single-column PDF <=55 pages, ZIP CRC")
 
 
 if __name__ == "__main__":
