@@ -192,10 +192,10 @@ def plot_latency(df: pd.DataFrame, out_path: Path) -> None:
 
 def plot_network_metrics(df: pd.DataFrame, out_path: Path) -> None:
     fig, axes = plt.subplots(3, 1, figsize=(7.4, 8.6))
-    metrics = ["Connectivity ratio", "PDR (%)", "Avg. end-to-end delay (ms)"]
+    metrics = ["Connectivity ratio", "Reachability-delivery proxy (%)", "Proxy delay (ms)"]
     colors = ["#3b7a57", "#2f6db3", "#a33b20"]
     for ax, metric, color in zip(axes, metrics, colors):
-        ordered = df.sort_values(metric, ascending=(metric == "Avg. end-to-end delay (ms)"))
+        ordered = df.sort_values(metric, ascending=(metric == "Proxy delay (ms)"))
         labels = ordered["Model"].tolist()
         values = ordered[metric].to_numpy(dtype=float)
         y_pos = np.arange(len(labels))
@@ -319,8 +319,8 @@ def plot_radio_policy_sensitivity(dataset_df: pd.DataFrame, out_path: Path) -> N
 def plot_network_extended_metrics(network_df: pd.DataFrame, out_path: Path) -> None:
     metrics = [
         ("Connectivity ratio_mean", "Connectivity ratio"),
-        ("PDR (%)_mean", "PDR (%)"),
-        ("Avg. end-to-end delay (ms)_mean", "Delay (ms)"),
+        ("Reachability-delivery proxy (%)_mean", "Delivery proxy (%)"),
+        ("Proxy delay (ms)_mean", "Proxy delay (ms)"),
         ("Proactive reroute (%)_mean", "Reroute (%)"),
         ("DTN buffered (%)_mean", "DTN buffered (%)"),
         ("Relay actions_mean", "Relay actions"),
@@ -331,7 +331,7 @@ def plot_network_extended_metrics(network_df: pd.DataFrame, out_path: Path) -> N
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(11.4, 4.6 * n_rows))
     axes_arr = np.asarray(axes).reshape(-1)
     for ax, (col, title) in zip(axes_arr, metrics):
-        ordered = network_df.sort_values(col, ascending=(col == "Avg. end-to-end delay (ms)_mean"))
+        ordered = network_df.sort_values(col, ascending=(col == "Proxy delay (ms)_mean"))
         labels = ordered["Model"].tolist()
         values = ordered[col].to_numpy(dtype=float)
         y_pos = np.arange(len(labels))
@@ -499,8 +499,8 @@ def write_markdown_report(
                         for col in [
                             "Model",
                             "Connectivity ratio_mean",
-                            "PDR (%)_mean",
-                            "Avg. end-to-end delay (ms)_mean",
+                            "Reachability-delivery proxy (%)_mean",
+                            "Proxy delay (ms)_mean",
                             "Proactive reroute (%)_mean",
                             "DTN buffered (%)_mean",
                             "Relay actions_mean",

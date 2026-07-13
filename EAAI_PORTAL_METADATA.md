@@ -1,7 +1,7 @@
 # Engineering Applications of Artificial Intelligence portal metadata
 
 Reviewed against the manuscript, title page, CFF, Zenodo metadata, official
-ORCID record, and Elsevier highlight guidance on 2026-06-21.
+ORCID record, and Elsevier highlight guidance on 2026-07-01.
 
 ## Submission identity
 
@@ -28,25 +28,22 @@ button if it requests account-level confirmation.
 
 ## Abstract
 
-Unmanned aerial vehicle (UAV) networks can fragment within short control
-horizons because motion changes pairwise distance, radio margin, and multi-hop
-component structure. This paper proposes Kinetic-TopoGuard, a motion-conditioned
-topological artificial intelligence framework that combines horizon projection,
-zero-dimensional persistence-image descriptors, residual forecasting, and
-calibrated risk scoring. The method forecasts the future number of connected
-components and converts that estimate into an interpretable fragmentation
-warning for relay, routing, and delay-tolerant connectivity management. A
-verified PyTorch compact benchmark evaluates tabular, graph, topological, and
-temporal baselines under fixed/adaptive topology control and nominal/degraded
-radio conditions. In a focused 20-seed simulation, Kinetic-TopoGuard reduces
-mean absolute error from 0.363 to 0.308 and raises fragmentation-risk F1 from
-0.503 to 0.587 relative to the validation-selected shallow comparator. Transfer
-to a public 399-second three-UAV forestry flight trace yields mean absolute
-errors of 0.152-0.219 across three predeclared communication-radius
-sensitivities, compared with 0.709-1.542 for the shallow comparator. The field
-dataset contains motion but no radio or packet ground truth; consequently, the
-external study supports mobility-source transfer, not field-measured
-wireless-network or deployment readiness.
+Rapid motion and correlated radio variation can partition a flying ad hoc
+network before a reactive connectivity monitor leaves enough time for
+intervention. This paper presents Kinetic-TopoGuard, a short-horizon predictor
+of the future number of connected components and of connected-to-fragmented
+transition risk. The method combines current graph state, velocity-projected
+link margins, zero-dimensional persistence images, graph summaries, residual
+regression, and validation-selected risk thresholds. At the 0.6-second horizon,
+Kinetic-TopoGuard does not improve count MAE over persistence (0.133 versus
+0.132), but it yields event F1=0.483 with 3.53 false events/minute, compared
+with 0.414 and 13.24 for shallow ML. AERPAW chronological LTE link-state F1
+rises from 0.828/0.679 to 0.961/0.980, while robust throughput tests are
+negative. A measured 60 GHz peer-link model raises held-out link-viability F1
+from 0.731 to 0.923. Direct MILUV three-UAV UWB topology transfer exposes
+substantial domain shift: Kinetic-TopoGuard event F1 is 0.08 at the primary
+threshold. The study does not claim a live digital twin, measured outdoor
+FANET IP packet delivery, or field deployment.
 
 ## Keywords
 
@@ -59,11 +56,11 @@ wireless-network or deployment readiness.
 
 ## Highlights
 
-1. Topological artificial intelligence forecasts fragmentation risk.
-2. Motion projection improves short-horizon topology encoding.
-3. Twenty seeds support the primary forecasting comparison.
-4. Real three-drone motion provides an external transfer test.
-5. Backend records verify the implemented neural comparisons.
+1. Fragmentation transitions are scored with one-to-one event matching.
+2. Motion, topology, and graph sources are isolated in a full factorial.
+3. Twenty seeds and six horizons test the primary forecasting claim.
+4. Measured three-UAV UWB topology provides direct multi-UAV transfer evidence.
+5. Packet, latency, and physical relay constraints bound operational claims.
 
 All five highlights are at most 85 characters and contain no undefined acronym.
 
@@ -83,7 +80,10 @@ Code, configurations, derived external-validation data, and generated artifacts
 are available from `https://github.com/ErcanErkalkan/FANET-TopoGNN` and the
 archived release `https://doi.org/10.5281/zenodo.20226053`. The source forestry
 flight dataset is available under CC BY 4.0 at
-`https://doi.org/10.5281/zenodo.14701641`. For double-anonymous review, use the
+`https://doi.org/10.5281/zenodo.14701641`. MILUV is available at
+`https://doi.org/10.25452/figshare.plus.28386041.v1`; AERPAW and WiNES source
+records are listed in the manuscript and supplementary protocols. For
+double-anonymous review, use the
 identity-scanned supplementary ZIP and do not expose the public repository or
 software DOI in the anonymous manuscript fields.
 

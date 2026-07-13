@@ -82,8 +82,8 @@ def export_manuscript_tables(
             {
                 "Model": network_df["Model"],
                 "Connectivity ratio": network_df["Connectivity ratio_mean"].map(lambda x: f"{x:.3f}"),
-                "PDR (%)": network_df["PDR (%)_mean"].map(lambda x: f"{x:.2f}"),
-                "Delay (ms)": network_df["Avg. end-to-end delay (ms)_mean"].map(lambda x: f"{x:.2f}"),
+                "Delivery proxy (%)": network_df["Reachability-delivery proxy (%)_mean"].map(lambda x: f"{x:.2f}"),
+                "Proxy delay (ms)": network_df["Proxy delay (ms)_mean"].map(lambda x: f"{x:.2f}"),
             }
         )
         if "Proactive reroute (%)_mean" in network_df.columns:
@@ -106,7 +106,7 @@ def export_manuscript_tables(
             perf,
             "Overall prediction performance.",
             "tab:perf_overall_auto",
-            "Union-Find uses current graph connectivity as a diagnostic reference and is not a future forecasting model.",
+            "Current-state persistence carries the observed component count forward to the forecast horizon.",
         ),
         _simple_latex_table(
             lead,
@@ -116,13 +116,19 @@ def export_manuscript_tables(
         ),
     ]
     if not network.empty:
-        blocks.append(_simple_latex_table(network, "Network-level performance under the connectivity-aware controller.", "tab:network_metrics_auto"))
+        blocks.append(
+            _simple_latex_table(
+                network,
+                "Analytical reachability proxies under the connectivity-aware controller; packet-level PDR is reported separately.",
+                "tab:network_metrics_auto",
+            )
+        )
     blocks.append(
         _simple_latex_table(
             risk,
             "Fragmentation-risk forecasting metrics.",
             "tab:risk_metrics_auto",
-            "Union-Find is a current-graph diagnostic reference; learned forecasting models are ranked separately.",
+            "Current-state persistence is a deployable no-change forecasting baseline.",
         )
     )
     out_path.write_text("\n".join(blocks), encoding="utf-8")

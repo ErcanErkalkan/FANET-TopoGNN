@@ -33,6 +33,8 @@ def _policy_payload(row: pd.Series) -> dict:
         "f1": float(row["Test_Risk_F1_mean"]),
         "precision": float(row["Test_Risk_Precision_mean"]),
         "recall": float(row["Test_Risk_Recall_mean"]),
+        "event_f1": float(row["Test_Alert_Event_F1_mean"]),
+        "event_recall": float(row["Test_Alert_Event_Recall_mean"]),
         "false_alert_events_per_minute": float(row["Test_False_Alert_Events_per_minute_mean"]),
     }
 
@@ -133,17 +135,37 @@ def _load_payload() -> dict:
         (throughput["split"] == "final-30%-by-time")
         & (throughput["model"] == "Training-mean baseline")
     ].iloc[0]
+    throughput_robust = throughput[
+        (throughput["split"] == "first-half-to-second-half")
+        & (throughput["model"] == "RF/KPI random forest")
+    ].iloc[0]
+    throughput_robust_baseline = throughput[
+        (throughput["split"] == "first-half-to-second-half")
+        & (throughput["model"] == "Training-mean baseline")
+    ].iloc[0]
 
     external = pd.read_csv(ROOT / "outputs" / "external_validation" / "external_metrics_summary.csv")
     external_ktg = external[
         (external["Model"] == "Kinetic-TopoGuard") & (external["Radius_quantile"] == 0.5)
     ].iloc[0]
-    latency = pd.read_csv(ROOT / "outputs" / "end_to_end_latency" / "end_to_end_latency_summary.csv")
+    latency = pd.read_csv(ROOT / "outputs" / "end_to_end_latency" / "latency_summary.csv")
     latency_n30 = latency.loc[latency["n_nodes"] == 30].iloc[0]
 
     packet_path = ROOT / "outputs" / "packet_level_controller" / "packet_metrics_summary.csv"
     packet = pd.read_csv(packet_path) if packet_path.is_file() else pd.DataFrame()
-    packet_ktg = packet.loc[packet["Model"] == "Kinetic-TopoGuard"].iloc[0] if not packet.empty else None
+    packet_ktg = (
+        packet.loc[
+            (packet["Model"] == "Kinetic-TopoGuard")
+            & (packet["Packets_per_tick"] == 32)
+        ].iloc[0]
+        if not packet.empty
+        else None
+    )
+    miluv = pd.read_csv(ROOT / "outputs" / "miluv_validation" / "miluv_metrics_summary.csv")
+    miluv_ktg = miluv.loc[
+        (miluv["Model"] == "Kinetic-TopoGuard")
+        & (miluv["FPP_Threshold_dBm"] == -90.0)
+    ].iloc[0]
 
     audit_path = ROOT / "submission_readiness_audit.json"
     audit = _read_json(audit_path) if audit_path.is_file() else {"status": "not_run", "checks": []}
@@ -158,6 +180,7 @@ def _load_payload() -> dict:
             "forestry": "outputs/external_validation",
             "latency": "outputs/end_to_end_latency",
             "packet_level": "outputs/packet_level_controller",
+            "miluv": "outputs/miluv_validation",
         },
         "experiment": {
             "confirmatory_seeds": int(paper_summary["n_seeds"]),
@@ -173,7 +196,7 @@ def _load_payload() -> dict:
             "risk_f1": float(ktg["Risk_F1_mean"]),
             "risk_pr_auc": float(ktg["Risk_PR_AUC_mean"]),
             "persistence_f1": float(persistence["Risk_F1_mean"]),
-            "end_to_end_p95_ms_n30": float(latency_n30["p95_ms"]),
+            "end_to_end_p95_ms_n30": float(latency_n30["total_p95_ms"]),
         },
         "operating_points": {
             "deployable": _policy_payload(deployable),
@@ -193,11 +216,25 @@ def _load_payload() -> dict:
                 "throughput_baseline_mae_mbps": float(throughput_baseline["mae_mbps"]),
                 "throughput_r2": float(throughput_primary["r2"]),
                 "throughput_split": str(throughput_primary["split"]),
+                "robustness_model_mae_mbps": float(throughput_robust["mae_mbps"]),
+                "robustness_baseline_mae_mbps": float(
+                    throughput_robust_baseline["mae_mbps"]
+                ),
+                "robustness_r2": float(throughput_robust["r2"]),
+                "robustness_split": str(throughput_robust["split"]),
             },
             "forestry_transfer": {
                 "radius_median_m": float(external_ktg["Radius_m"]),
                 "risk_f1": float(external_ktg["Risk_F1_mean"]),
                 "mae": float(external_ktg["MAE_mean"]),
+            },
+            "miluv_measured_topology": {
+                "threshold_dbm": float(miluv_ktg["FPP_Threshold_dBm"]),
+                "snapshots": int(miluv_ktg["Snapshots"]),
+                "fragmentation_events": int(miluv_ktg["Fragmentation_Events"]),
+                "mae": float(miluv_ktg["MAE_mean"]),
+                "risk_pr_auc": float(miluv_ktg["Risk_PR_AUC_mean"]),
+                "event_f1": float(miluv_ktg["Alert_Event_F1_mean"]),
             },
         },
         "packet_level": (
@@ -245,7 +282,10 @@ def _render_html(payload: dict, assets: dict[str, str | None]) -> str:
             _asset_panel("Forecast-Horizon Sensitivity", assets["horizon"], "Forecast horizon sensitivity"),
             _asset_panel("Equal-Learner Feature Ablation", assets["ablation"], "Factorial feature ablation"),
             _asset_panel("Simplified Packet-Level Validation", assets["packet"], "Packet-level controller metrics"),
+            _asset_panel("Validation-Selected Operating Points", assets["operating"], "Operating-point selection"),
             _asset_panel("Measured RF Checks", assets["a2a"], "Measured UAV-to-UAV RF validation"),
+            _asset_panel("AERPAW Cellular Checks", assets["aerpaw"], "AERPAW cellular validation"),
+            _asset_panel("MILUV Measured UWB Topology", assets["miluv"], "MILUV measured UWB topology"),
         ]
     )
     return f"""<!doctype html>
@@ -340,6 +380,7 @@ def _render_html(payload: dict, assets: dict[str, str | None]) -> str:
           <tr><th>Selected threshold</th><td id="o-threshold"></td></tr>
           <tr><th>Independent-test F1</th><td id="o-f1"></td></tr>
           <tr><th>Independent-test precision / recall</th><td id="o-pr"></td></tr>
+          <tr><th>Independent-test event F1 / recall</th><td id="o-event"></td></tr>
           <tr><th>Independent-test false alert events/min</th><td id="o-false"></td></tr>
         </table>
       </div>
@@ -350,7 +391,9 @@ def _render_html(payload: dict, assets: dict[str, str | None]) -> str:
           <tr><th>AERPAW LTE F1</th><td>{p['measured_validation']['aerpaw_cellular']['d22_lte_f1']:.3f} / {p['measured_validation']['aerpaw_cellular']['d23_lte_f1']:.3f}</td></tr>
           <tr><th>AERPAW throughput MAE</th><td>{p['measured_validation']['aerpaw_cellular']['throughput_model_mae_mbps']:.1f} vs {p['measured_validation']['aerpaw_cellular']['throughput_baseline_mae_mbps']:.1f} Mbps baseline</td></tr>
           <tr><th>AERPAW throughput R2</th><td>{p['measured_validation']['aerpaw_cellular']['throughput_r2']:.3f} ({html.escape(p['measured_validation']['aerpaw_cellular']['throughput_split'])})</td></tr>
+          <tr><th>AERPAW robustness MAE / R2</th><td>{p['measured_validation']['aerpaw_cellular']['robustness_model_mae_mbps']:.1f} vs {p['measured_validation']['aerpaw_cellular']['robustness_baseline_mae_mbps']:.1f} Mbps; R2 {p['measured_validation']['aerpaw_cellular']['robustness_r2']:.3f} ({html.escape(p['measured_validation']['aerpaw_cellular']['robustness_split'])})</td></tr>
           <tr><th>Forestry transfer MAE / F1</th><td>{p['measured_validation']['forestry_transfer']['mae']:.3f} / {p['measured_validation']['forestry_transfer']['risk_f1']:.3f}</td></tr>
+          <tr><th>MILUV measured UWB topology</th><td>{p['measured_validation']['miluv_measured_topology']['fragmentation_events']} events, event F1 {p['measured_validation']['miluv_measured_topology']['event_f1']:.3f}</td></tr>
           <tr><th>Readiness audit</th><td>{html.escape(str(p['audit']['status']).upper())}: {p['audit']['pass_count']} pass, {p['audit']['fail_count']} fail</td></tr>
         </table>
       </div>
@@ -430,6 +473,7 @@ def _render_html(payload: dict, assets: dict[str, str | None]) -> str:
       document.getElementById("o-threshold").textContent = point.threshold.toFixed(2);
       document.getElementById("o-f1").textContent = point.f1.toFixed(3);
       document.getElementById("o-pr").textContent = point.precision.toFixed(3) + " / " + point.recall.toFixed(3);
+      document.getElementById("o-event").textContent = point.event_f1.toFixed(3) + " / " + point.event_recall.toFixed(3);
       document.getElementById("o-false").textContent = point.false_alert_events_per_minute.toFixed(2);
       document.querySelectorAll(".policy").forEach(button => button.classList.toggle("active", button.dataset.policy === name));
     }}
@@ -467,8 +511,20 @@ def main() -> int:
             ROOT / "outputs" / "packet_level_controller" / "packet_level_controller.png",
             assets_dir,
         ),
+        "operating": _copy_asset(
+            ROOT / "outputs" / "operating_point" / "operating_point_selection.png",
+            assets_dir,
+        ),
         "a2a": _copy_asset(
             ROOT / "paper" / "figures" / "generated" / "uav_to_uav_mmwave_validation.png",
+            assets_dir,
+        ),
+        "aerpaw": _copy_asset(
+            ROOT / "paper" / "figures" / "generated" / "aerpaw_cellular_validation.png",
+            assets_dir,
+        ),
+        "miluv": _copy_asset(
+            ROOT / "outputs" / "miluv_validation" / "miluv_validation.png",
             assets_dir,
         ),
     }

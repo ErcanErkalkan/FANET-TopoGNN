@@ -37,7 +37,7 @@ python main.py --config configs/publication_compact.json
 python main.py --config configs/publication_compact.json --resume
 ```
 
-The tracked `outputs/publication_compact/` bundle contains the three-seed compact model-family evidence used by the manuscript. Its fresh provenance rerun records all nine neural task rows as PyTorch 2.11.0 CPU executions and records `surrogate_used=false`. The concurrent rerun duration is provenance only, not an isolated speed benchmark.
+The tracked `outputs/publication_compact/` bundle contains the three-seed compact model-family evidence used by the manuscript. Its summary must record the current cache version, all nine neural task rows as PyTorch executions, and `surrogate_used=false`. Concurrent shared-host duration is provenance only, not an isolated speed benchmark.
 
 ## Expanded 20-seed benchmark
 
@@ -46,7 +46,7 @@ python scripts/run_submission_20seed.py
 python scripts/run_submission_20seed.py --resume
 ```
 
-The launcher checks for 20 unique seeds and exactly the focused Kinetic-TopoGuard, shallow-ML, and union-find task set. The completed `outputs/paper_like_submission/` bundle contains all 20 per-seed results, aggregate tables, statistical tests, and generated figures. This focused base-environment run strengthens the primary learned comparison; it is not a 20-seed rerun of every compact neural baseline.
+The launcher checks for 20 unique seeds and exactly the focused Kinetic-TopoGuard, shallow-ML, and current-state persistence task set. The completed `outputs/paper_like_submission/` bundle contains all 20 per-seed results, aggregate tables, statistical tests, and generated figures. This focused base-environment run strengthens the primary learned comparison; it is not a 20-seed rerun of every compact neural baseline.
 
 ## Real-flight motion transfer
 
@@ -71,10 +71,10 @@ The public AERPAW Dataset-22 and Dataset-23 CSV folders remain outside the packa
 
 ## Output interpretation
 
-`Union-Find detection oracle` uses current graph connectivity as a diagnostic reference and is not a future forecasting model. Forecasting and learned-model rankings must therefore be discussed separately from this row.
+`Current-state persistence baseline` carries the observed component count forward unchanged to the forecast horizon and is ranked as a deployable no-change forecast.
 
-New runs export PR-AUC, ROC-AUC, Brier score, expected calibration error, false alarms per minute, and threshold-sensitivity data. The 600 ms lead-time ceiling in the compact profile is imposed by the six-step forecast horizon and is not a deployment guarantee.
+Current runs export PR-AUC, ROC-AUC, Brier score, expected calibration error, sample false alarms, one-to-one fragmentation-event precision/recall/F1, false alert events per minute, and threshold-sensitivity data. The 600 ms nominal horizon is one point in the executed 0.2--2.0 s sweep and is not a deployment guarantee.
 
 ## Evidence boundary
 
-The evidence includes simulated-radio experiments, a real-field-motion transfer test, and measured AERPAW aerial cellular RF/KPI and throughput checks. The public flight bags do not contain measured RF or packet-reception labels, so their graph labels are counterfactual communication-radius sensitivities. The AERPAW cellular traces are UAV-to-infrastructure rather than peer-to-peer inter-UAV FANET labels. Hardware-in-the-loop experiments, synchronized inter-UAV wireless links, packet-level medium-access validation, onboard profiling, and deployment-level validation remain outside the completed package.
+The evidence includes temporally correlated simulated-radio experiments, a real-field-motion transfer test, measured AERPAW aerial cellular RF/KPI and throughput checks, measured 60 GHz peer-link modelling with an explicitly transported forestry sensitivity, and measured MILUV three-UAV UWB topology transfer. A simplified SimPy queue/contention experiment reports simulated packet-level PDR and delay over the physical-radio graphs. The forestry bags still lack RF labels, AERPAW is UAV-to-infrastructure, and MILUV first-path power is not IP packet delivery. Hardware-in-the-loop control, synchronized outdoor FANET IP packets, onboard profiling, and deployment-level validation remain outside the completed package.

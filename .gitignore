@@ -27,7 +27,16 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .pytest_tmp*/
+.pytest_*/
+.pdf_qa/
+tmp/
 logs/
+
+# Submission staging and audit reports are regenerated from current evidence.
+anonymous_supplementary/
+anonymous_supplementary.zip
+pre_submission_readiness_audit.json
+submission_readiness_audit.json
 
 # Large third-party external-validation downloads stay local.
 data/external_validation/raw/

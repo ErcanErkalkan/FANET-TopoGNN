@@ -1,9 +1,9 @@
-\begin{tabular}{lrrrrrrrrrrrrr}
+\begin{tabular}{lrrrrrrrrrrrrrrrrrrrrrr}
 \toprule
-seed & Model & Risk\_Precision & Risk\_Recall & Risk\_F1 & Risk\_Specificity & Risk\_Accuracy & Risk\_PR\_AUC & Risk\_ROC\_AUC & Risk\_Brier & Risk\_ECE & False\_Alarms & False\_Alarms\_per\_minute & Model\_Backend \\
+seed & Model & Risk\_Precision & Risk\_Recall & Risk\_F1 & Risk\_Specificity & Risk\_Accuracy & Risk\_PR\_AUC & Risk\_ROC\_AUC & Risk\_Brier & Risk\_ECE & False\_Alarms & False\_Alarms\_per\_minute & Alert\_Events & True\_Alert\_Events & False\_Alert\_Events & Ground\_Truth\_Fragmentation\_Events & Missed\_Fragmentation\_Events & Alert\_Event\_Precision & Alert\_Event\_Recall & Alert\_Event\_F1 & False\_Alert\_Events\_per\_minute & Model\_Backend \\
 \midrule
-137 & Union-Find detection oracle & 0.733 & 0.745 & 0.739 & 0.903 & 0.861 & 0.685 & 0.824 & 0.139 & 0.139 & 515.000 & 42.917 & diagnostic\_reference \\
-137 & Shallow ML (GBR) & 0.272 & 0.991 & 0.426 & 0.049 & 0.297 & 0.204 & 0.520 & 0.703 & 0.703 & 5043.000 & 420.250 & scikit\_learn \\
-137 & Kinetic-TopoGuard & 0.444 & 0.997 & 0.615 & 0.553 & 0.670 & 0.870 & 0.944 & 0.094 & 0.097 & 2369.000 & 197.417 & scikit\_learn \\
+137 & Current-state persistence baseline & 0.823 & 0.848 & 0.835 & 0.968 & 0.950 & 0.783 & 0.908 & 0.050 & 0.050 & 196.000 & 16.333 & 0.000 & 0.000 & 0.000 & 136.000 & 136.000 & 0.000 & 0.000 & 0.000 & 0.000 & deterministic\_persistence\_baseline \\
+137 & Shallow ML (GBR) & 0.159 & 0.989 & 0.274 & 0.086 & 0.220 & 0.146 & 0.537 & 0.780 & 0.780 & 5603.000 & 466.917 & 167.000 & 54.000 & 113.000 & 136.000 & 82.000 & 0.323 & 0.397 & 0.356 & 9.417 & scikit\_learn \\
+137 & Kinetic-TopoGuard & 0.678 & 0.886 & 0.768 & 0.926 & 0.920 & 0.920 & 0.970 & 0.042 & 0.102 & 452.000 & 37.667 & 100.000 & 54.000 & 46.000 & 136.000 & 82.000 & 0.540 & 0.397 & 0.458 & 3.833 & scikit\_learn \\
 \bottomrule
 \end{tabular}

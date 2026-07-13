@@ -6,18 +6,18 @@
 \small
 \caption{Overall prediction performance.}
 \label{tab:perf_overall_auto}
-\begin{adjustbox}{max width=\textwidth}
+\begin{adjustbox}{max width=\linewidth}
 \begin{tabular}{lrrrr}
 \toprule
 Model & MAE & MSE & R2 & Latency (ms) \\
 \midrule
-Kinetic-TopoGuard & 0.308 [0.297, 0.318] & 0.386 [0.351, 0.421] & 0.539 [0.480, 0.598] & 6.072 \\
-Union-Find detection oracle & 0.315 [0.303, 0.326] & 0.532 [0.503, 0.562] & 0.366 [0.306, 0.425] & 0.241 \\
-Shallow ML & 0.363 [0.346, 0.380] & 0.411 [0.382, 0.440] & 0.514 [0.473, 0.554] & 0.037 \\
+Current-state persistence baseline & 0.132 [0.122, 0.142] & 0.173 [0.158, 0.188] & 0.449 [0.369, 0.529] & 0.226 \\
+Kinetic-TopoGuard & 0.133 [0.122, 0.143] & 0.170 [0.155, 0.185] & 0.457 [0.376, 0.538] & 5.283 \\
+Shallow ML & 0.204 [0.184, 0.224] & 0.190 [0.159, 0.222] & 0.415 [0.334, 0.497] & 0.033 \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
-\par\footnotesize\emph{Note:} Union-Find uses current graph connectivity as a diagnostic reference and is not a future forecasting model.
+\par\footnotesize\emph{Note:} Current-state persistence carries the observed component count forward to the forecast horizon.
 \end{table}
 
 \begin{table}[t]
@@ -25,14 +25,14 @@ Shallow ML & 0.363 [0.346, 0.380] & 0.411 [0.382, 0.440] & 0.514 [0.473, 0.554] 
 \small
 \caption{Topology-change lead-time summary.}
 \label{tab:lead_time_auto}
-\begin{adjustbox}{max width=\textwidth}
+\begin{adjustbox}{max width=\linewidth}
 \begin{tabular}{lrrr}
 \toprule
 Model & Topology-change lead median (ms) & Topology-change lead mean (ms) & Topology-change lead 95th (ms) \\
 \midrule
-Shallow ML & 495.00 & 380.22 & 600.00 \\
-Kinetic-TopoGuard & 230.00 & 281.16 & 600.00 \\
-Union-Find detection oracle & 0.00 & 0.00 & 0.00 \\
+Shallow ML & 595.00 & 491.79 & 600.00 \\
+Kinetic-TopoGuard & 260.00 & 281.10 & 600.00 \\
+Current-state persistence baseline & 0.00 & 0.00 & 0.00 \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
@@ -42,14 +42,14 @@ Union-Find detection oracle & 0.00 & 0.00 & 0.00 \\
 \begin{table}[t]
 \centering
 \small
-\caption{Network-level performance under the connectivity-aware controller.}
+\caption{Analytical reachability proxies under the connectivity-aware controller; packet-level PDR is reported separately.}
 \label{tab:network_metrics_auto}
-\begin{adjustbox}{max width=\textwidth}
+\begin{adjustbox}{max width=\linewidth}
 \begin{tabular}{lrrrrr}
 \toprule
-Model & Connectivity ratio & PDR (\%) & Delay (ms) & Reroute (\%) & DTN (\%) \\
+Model & Connectivity ratio & Delivery proxy (\%) & Proxy delay (ms) & Reroute (\%) & DTN (\%) \\
 \midrule
-Kinetic-TopoGuard & 0.841 & 99.33 & 21.50 & 18.36 & 1.25 \\
+Kinetic-TopoGuard & 0.895 & 99.65 & 18.60 & 2.79 & 0.56 \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
@@ -60,16 +60,16 @@ Kinetic-TopoGuard & 0.841 & 99.33 & 21.50 & 18.36 & 1.25 \\
 \small
 \caption{Fragmentation-risk forecasting metrics.}
 \label{tab:risk_metrics_auto}
-\begin{adjustbox}{max width=\textwidth}
+\begin{adjustbox}{max width=\linewidth}
 \begin{tabular}{lrrr}
 \toprule
 Model & Risk F1 & Risk Recall & Risk Precision \\
 \midrule
-Union-Find detection oracle & 0.754 & 0.761 & 0.749 \\
-Kinetic-TopoGuard & 0.587 & 0.996 & 0.419 \\
-Shallow ML & 0.503 & 0.976 & 0.343 \\
+Kinetic-TopoGuard & 0.728 & 0.870 & 0.634 \\
+Shallow ML & 0.353 & 0.975 & 0.224 \\
+Current-state persistence baseline & 0.758 & 0.766 & 0.750 \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
-\par\footnotesize\emph{Note:} Union-Find is a current-graph diagnostic reference; learned forecasting models are ranked separately.
+\par\footnotesize\emph{Note:} Current-state persistence is a deployable no-change forecasting baseline.
 \end{table}

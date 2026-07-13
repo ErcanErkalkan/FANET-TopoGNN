@@ -11,14 +11,15 @@
     "nominal"
   ],
   "forecast_horizon_steps": 6,
-  "best_model_by_mae": "Kinetic-TopoGuard",
+  "best_model_by_mae": "Current-state persistence baseline",
   "best_model_by_lead": "Shallow ML",
   "best_models_by_lead": [
     "Shallow ML"
   ],
   "output_dir": "outputs\\paper_like_submission",
+  "cache_version": "kinetic_topoguard_v6_fragmentation_events_correlated_radio",
   "model_backend": {
-    "union_find": "diagnostic_reference",
+    "current_state_persistence": "deterministic_persistence_baseline",
     "shallow": "scikit_learn",
     "kinetic_topoguard": "scikit_learn"
   },
@@ -26,7 +27,7 @@
   "torch_version": "2.11.0+cpu",
   "device": "cpu",
   "surrogate_used": false,
-  "runtime_seconds": 11700.424943499995,
-  "runtime_minutes": 195.0070823916666,
+  "runtime_seconds": 45.34194660000503,
+  "runtime_minutes": 0.7556991100000838,
   "cuda_available": false
 }

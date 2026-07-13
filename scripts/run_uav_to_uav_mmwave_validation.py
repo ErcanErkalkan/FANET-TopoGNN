@@ -126,11 +126,17 @@ def _link_model_metrics(frame: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def _distance_success_table(frame: pd.DataFrame, snr_thresholds: tuple[float, ...]) -> pd.DataFrame:
+def _distance_success_table(
+    frame: pd.DataFrame,
+    snr_thresholds: tuple[float, ...],
+    prx_dbm: float,
+) -> pd.DataFrame:
     rows = []
     for threshold in snr_thresholds:
         work = frame.copy()
-        work["link_viable"] = (work["post_snr"] >= threshold).astype(int)
+        work["link_viable"] = (
+            (work["post_snr"] >= threshold) & (work["pRx"] >= prx_dbm)
+        ).astype(int)
         grouped = work.groupby("distance", as_index=False).agg(
             success_probability=("link_viable", "mean"),
             mean_post_snr=("post_snr", "mean"),
@@ -176,8 +182,19 @@ def _forestry_beta_trace(trace_path: Path, distance_table: pd.DataFrame) -> tupl
                     probability = float(
                         np.interp(distance, distances_known, probs_known, left=probs_known[0], right=probs_known[-1])
                     )
+                    in_support = bool(
+                        distances_known[0] <= distance <= distances_known[-1]
+                    )
                     probs.append(probability)
-                    pair_rows.append((trace.vehicle_ids[left], trace.vehicle_ids[right], distance, probability))
+                    pair_rows.append(
+                        (
+                            trace.vehicle_ids[left],
+                            trace.vehicle_ids[right],
+                            distance,
+                            probability,
+                            in_support,
+                        )
+                    )
             expected_beta, frag_probability, p_two, p_three = _three_node_beta_expectation(probs)
             row = {
                 "snr_threshold_db": float(threshold),
@@ -186,22 +203,37 @@ def _forestry_beta_trace(trace_path: Path, distance_table: pd.DataFrame) -> tupl
                 "fragmentation_probability": frag_probability,
                 "p_two_components": p_two,
                 "p_three_components": p_three,
+                "all_pairs_in_measured_support": bool(
+                    all(item[4] for item in pair_rows)
+                ),
             }
-            for idx, (left_id, right_id, distance, probability) in enumerate(pair_rows, start=1):
+            for idx, (left_id, right_id, distance, probability, in_support) in enumerate(pair_rows, start=1):
                 row[f"pair_{idx}"] = f"{left_id}-{right_id}"
                 row[f"pair_{idx}_distance_m"] = distance
                 row[f"pair_{idx}_link_probability"] = probability
+                row[f"pair_{idx}_in_measured_support"] = in_support
             rows.append(row)
     series = pd.DataFrame(rows)
-    summary = series.groupby("snr_threshold_db", as_index=False).agg(
-        samples=("timestamp_s", "size"),
-        expected_beta0_mean=("expected_beta0", "mean"),
-        expected_beta0_min=("expected_beta0", "min"),
-        expected_beta0_max=("expected_beta0", "max"),
-        fragmentation_probability_mean=("fragmentation_probability", "mean"),
-        fragmentation_probability_min=("fragmentation_probability", "min"),
-        fragmentation_probability_max=("fragmentation_probability", "max"),
-    )
+    summaries = []
+    for scope, subset in [
+        ("full_trace_clamped", series),
+        (
+            "all_pairs_within_measured_distance_support",
+            series[series["all_pairs_in_measured_support"]],
+        ),
+    ]:
+        grouped = subset.groupby("snr_threshold_db", as_index=False).agg(
+            samples=("timestamp_s", "size"),
+            expected_beta0_mean=("expected_beta0", "mean"),
+            expected_beta0_min=("expected_beta0", "min"),
+            expected_beta0_max=("expected_beta0", "max"),
+            fragmentation_probability_mean=("fragmentation_probability", "mean"),
+            fragmentation_probability_min=("fragmentation_probability", "min"),
+            fragmentation_probability_max=("fragmentation_probability", "max"),
+        )
+        grouped.insert(1, "support_scope", scope)
+        summaries.append(grouped)
+    summary = pd.concat(summaries, ignore_index=True)
     return series, summary
 
 
@@ -211,7 +243,7 @@ def _write_table(path: Path, metrics: pd.DataFrame, beta_summary: pd.DataFrame) 
     rows = [
         r"\begin{tabular}{llrrrr}",
         r"\toprule",
-        r"Evidence & Target & Test $n$ & Metric & Baseline & Model \\",
+        r"Evidence & Target & $n$ & Condition & Estimate A & Estimate B \\",
         r"\midrule",
         (
             "UAV--UAV 60 GHz & Link viability & "
@@ -222,9 +254,13 @@ def _write_table(path: Path, metrics: pd.DataFrame, beta_summary: pd.DataFrame) 
             f"{int(logistic['test_n'])} & PR-AUC & {baseline['pr_auc']:.3f} & {logistic['pr_auc']:.3f} \\\\"
         ),
     ]
-    for _, item in beta_summary.iterrows():
+    primary_summary = beta_summary[
+        beta_summary["support_scope"]
+        == "all_pairs_within_measured_distance_support"
+    ]
+    for _, item in primary_summary.iterrows():
         rows.append(
-            "A2A-calibrated forestry & Expected $\\beta_0$ & "
+            "Transported RF sensitivity & Expected $\\beta_0$ & "
             f"{int(item['samples'])} & SNR {item['snr_threshold_db']:.0f} dB & "
             f"{item['expected_beta0_mean']:.3f} & {item['fragmentation_probability_mean']:.3f} \\\\"
         )
@@ -246,7 +282,7 @@ def _plot(out_dir: Path, distance_table: pd.DataFrame, beta_series: pd.DataFrame
         axes[1].plot(group["timestamp_s"], group["expected_beta0"], linewidth=1.0, label=f"SNR >= {threshold:.0f} dB")
     axes[1].set_xlabel("Elapsed time (s)")
     axes[1].set_ylabel("Expected $\\beta_0$")
-    axes[1].set_title("A2A-calibrated forestry topology")
+    axes[1].set_title("Transported 60 GHz forestry sensitivity")
     axes[1].grid(alpha=0.25)
     axes[1].legend(fontsize=8)
     fig.tight_layout()
@@ -270,7 +306,11 @@ def main() -> int:
 
     frame = _load_a2a(args.dataset, args.link_snr_db, args.link_prx_dbm)
     metrics = _link_model_metrics(frame)
-    distance_table = _distance_success_table(frame, (5.0, 7.0, 10.0))
+    distance_table = _distance_success_table(
+        frame,
+        (5.0, 7.0, 10.0),
+        args.link_prx_dbm,
+    )
     beta_series, beta_summary = _forestry_beta_trace(args.trace, distance_table)
 
     metrics.to_csv(args.output_dir / "uav_to_uav_link_model_metrics.csv", index=False)
@@ -283,7 +323,7 @@ def main() -> int:
     _plot(args.output_dir, distance_table, beta_series)
 
     protocol = {
-        "scope": "Measured UAV-to-UAV 60 GHz RF validation and beta0-label integration; this uses RF/SNR link viability, not packet-delivery logs.",
+        "scope": "Measured UAV-to-UAV 60 GHz RF validation plus a transported forestry sensitivity analysis; this is not same-site calibration or packet-delivery ground truth.",
         "source": "WiNES/Northeastern UAV-to-UAV 60 GHz experimental channel model",
         "dataset_url": DATASET_URL,
         "raw_url": RAW_URL,
@@ -297,7 +337,13 @@ def main() -> int:
         "a2a_rows": int(len(frame)),
         "held_out_distance_split": "train distance < 33 m, test distance >= 33 m",
         "forestry_trace": str(args.trace.relative_to(ROOT)),
-        "forestry_beta0": "Pairwise link probabilities are interpolated from measured UAV-to-UAV beam-scan success rates and converted to three-node expected beta0.",
+        "forestry_beta0": "Pairwise SNR-and-pRx link probabilities are interpolated from measured UAV-to-UAV beam-scan success rates and converted to three-node expected beta0 under an explicit independent-edge sensitivity assumption.",
+        "measured_distance_support_m": [
+            float(distance_table["distance"].min()),
+            float(distance_table["distance"].max()),
+        ],
+        "primary_forestry_scope": "all_pairs_within_measured_distance_support",
+        "out_of_support_policy": "Full-trace rows are clamped to nearest measured distance and reported only as secondary sensitivity; primary summaries require all three pairs in support.",
     }
     (args.output_dir / "uav_to_uav_mmwave_protocol.json").write_text(json.dumps(protocol, indent=2), encoding="utf-8")
 

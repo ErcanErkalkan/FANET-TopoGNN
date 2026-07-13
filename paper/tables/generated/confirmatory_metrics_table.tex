@@ -1,9 +1,9 @@
-\begin{tabular}{lrrrrr}
+\begin{tabular}{lrrrrrrrr}
 \toprule
-Model & MAE [95\% CI] & $R^2$ [95\% CI] & Risk $F_1$ [95\% CI] & PR-AUC & Brier \\
+Model & MAE [95\% CI] & $R^2$ [95\% CI] & Sample $F_1$ & Event precision & Event recall & Event $F_1$ & False events/min & PR-AUC \\
 \midrule
-Kinetic-TopoGuard & 0.308 [0.297, 0.318] & 0.539 [0.480, 0.598] & 0.587 [0.562, 0.612] & 0.871 & 0.105 \\
-Shallow ML & 0.363 [0.346, 0.380] & 0.514 [0.473, 0.554] & 0.503 [0.469, 0.538] & 0.298 & 0.529 \\
-Union--find diagnostic & 0.315 [0.303, 0.326] & 0.366 [0.306, 0.425] & 0.754 [0.729, 0.780] & 0.691 & 0.129 \\
+Kinetic-TopoGuard & 0.133 [0.122, 0.143] & 0.457 [0.376, 0.538] & 0.728 & 0.644 & 0.390 & 0.483 & 3.53 & 0.838 \\
+Shallow ML & 0.204 [0.184, 0.224] & 0.415 [0.334, 0.497] & 0.353 & 0.380 & 0.468 & 0.414 & 13.24 & 0.246 \\
+Current-state persistence & 0.132 [0.122, 0.142] & 0.449 [0.369, 0.529] & 0.758 & 0.000 & 0.000 & 0.000 & 0.00 & 0.695 \\
 \bottomrule
 \end{tabular}

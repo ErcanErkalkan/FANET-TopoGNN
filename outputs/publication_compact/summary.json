@@ -11,15 +11,22 @@
     "nominal"
   ],
   "forecast_horizon_steps": 6,
-  "best_model_by_mae": "Union-Find detection oracle",
-  "best_model_by_lead": "FANET-TopoGNN, PI+MLP",
+  "best_model_by_mae": "Current-state persistence baseline",
+  "best_model_by_lead": "FANET-TopoGNN, FANET-TopoGNN (concat), GAT, GCN, Shallow ML, GraphSAGE, PI+MLP, STGCN (w=5)",
   "best_models_by_lead": [
     "FANET-TopoGNN",
-    "PI+MLP"
+    "FANET-TopoGNN (concat)",
+    "GAT",
+    "GCN",
+    "Shallow ML",
+    "GraphSAGE",
+    "PI+MLP",
+    "STGCN (w=5)"
   ],
-  "output_dir": "outputs/publication_compact",
+  "output_dir": "outputs\\publication_compact",
+  "cache_version": "kinetic_topoguard_v6_fragmentation_events_correlated_radio",
   "model_backend": {
-    "union_find": "diagnostic_reference",
+    "current_state_persistence": "deterministic_persistence_baseline",
     "shallow": "scikit_learn",
     "kinetic_topoguard": "scikit_learn",
     "GCN": "pytorch",
@@ -36,9 +43,7 @@
   "torch_version": "2.11.0+cpu",
   "device": "cpu",
   "surrogate_used": false,
-  "runtime_seconds": 4582.500815099993,
-  "runtime_minutes": 76.37501358499988,
-  "cuda_available": false,
-  "source_experiment_name": "publication_compact_provenance",
-  "backend_provenance_status": "verified_pytorch_rerun"
+  "runtime_seconds": 4017.0529763000086,
+  "runtime_minutes": 66.95088293833348,
+  "cuda_available": false
 }

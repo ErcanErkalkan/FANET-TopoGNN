@@ -1,9 +1,9 @@
-\begin{tabular}{lrrrrrrrrrrrrrrrrrrrrr}
+\begin{tabular}{lrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr}
 \toprule
-Model & MAE & MSE & R2 & MAE\_CI\_low & MAE\_CI\_high & R2\_CI\_low & R2\_CI\_high & Inference\_ms & Risk\_Precision & Risk\_Recall & Risk\_F1 & Risk\_Specificity & Risk\_Accuracy & Risk\_PR\_AUC & Risk\_ROC\_AUC & Risk\_Brier & Risk\_ECE & False\_Alarms & False\_Alarms\_per\_minute & seed & Model\_Backend \\
+Model & MAE & MSE & R2 & MAE\_CI\_low & MAE\_CI\_high & R2\_CI\_low & R2\_CI\_high & Inference\_ms & Risk\_Precision & Risk\_Recall & Risk\_F1 & Risk\_Specificity & Risk\_Accuracy & Risk\_PR\_AUC & Risk\_ROC\_AUC & Risk\_Brier & Risk\_ECE & False\_Alarms & False\_Alarms\_per\_minute & Alert\_Events & True\_Alert\_Events & False\_Alert\_Events & Ground\_Truth\_Fragmentation\_Events & Missed\_Fragmentation\_Events & Alert\_Event\_Precision & Alert\_Event\_Recall & Alert\_Event\_F1 & False\_Alert\_Events\_per\_minute & seed & Model\_Backend \\
 \midrule
-Union-Find detection oracle & 0.330 & 0.577 & 0.249 & 0.314 & 0.346 & 0.193 & 0.297 & 0.326 & 0.663 & 0.680 & 0.671 & 0.900 & 0.851 & 0.516 & 0.790 & 0.149 & 0.149 & 557.000 & 46.417 & 47 & diagnostic\_reference \\
-Kinetic-TopoGuard & 0.330 & 0.577 & 0.249 & 0.314 & 0.346 & 0.194 & 0.301 & 10.096 & 0.373 & 0.996 & 0.543 & 0.516 & 0.623 & 0.795 & 0.923 & 0.103 & 0.112 & 2706.000 & 225.500 & 47 & scikit\_learn \\
-Shallow ML (GBR) & 0.356 & 0.373 & 0.515 & 0.345 & 0.367 & 0.488 & 0.541 & 0.033 & 0.321 & 0.985 & 0.484 & 0.399 & 0.530 & 0.248 & 0.692 & 0.470 & 0.470 & 3359.000 & 279.917 & 47 & scikit\_learn \\
+Current-state persistence baseline & 0.120 & 0.162 & 0.033 & 0.055 & 0.193 & -0.439 & 0.170 & 0.222 & 0.526 & 0.534 & 0.530 & 0.952 & 0.914 & 0.333 & 0.743 & 0.086 & 0.086 & 313.000 & 26.083 & 0.000 & 0.000 & 0.000 & 238.000 & 238.000 & 0.000 & 0.000 & 0.000 & 0.000 & 47 & deterministic\_persistence\_baseline \\
+Kinetic-TopoGuard & 0.120 & 0.162 & 0.033 & 0.055 & 0.193 & -0.439 & 0.170 & 5.081 & 0.400 & 0.771 & 0.527 & 0.885 & 0.875 & 0.564 & 0.919 & 0.091 & 0.186 & 754.000 & 62.833 & 137.000 & 82.000 & 55.000 & 238.000 & 156.000 & 0.599 & 0.345 & 0.437 & 4.583 & 47 & scikit\_learn \\
+Shallow ML (RF) & 0.196 & 0.159 & 0.046 & 0.119 & 0.276 & -0.960 & 0.295 & 0.023 & 0.150 & 0.968 & 0.260 & 0.454 & 0.501 & 0.119 & 0.711 & 0.499 & 0.499 & 3575.000 & 297.917 & 412.000 & 118.000 & 294.000 & 238.000 & 120.000 & 0.286 & 0.496 & 0.363 & 24.500 & 47 & scikit\_learn \\
 \bottomrule
 \end{tabular}

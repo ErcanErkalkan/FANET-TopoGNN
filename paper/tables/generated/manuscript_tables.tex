@@ -11,22 +11,22 @@
 \toprule
 Model & MAE & MSE & R2 & Latency (ms) \\
 \midrule
-Union-Find detection oracle & 0.304 [0.282, 0.327] & 0.525 [0.475, 0.576] & 0.378 [0.196, 0.559] & 0.204 \\
-Kinetic-TopoGuard & 0.309 [0.294, 0.324] & 0.404 [0.309, 0.499] & 0.498 [0.205, 0.791] & 4.916 \\
-Shallow ML & 0.350 [0.347, 0.353] & 0.373 [0.322, 0.423] & 0.559 [0.427, 0.691] & 0.028 \\
-GraphSAGE & 0.406 [0.375, 0.437] & 0.456 [0.396, 0.516] & 0.464 [0.333, 0.595] & 0.056 \\
-STGCN (w=5) & 0.419 [0.302, 0.536] & 0.490 [0.346, 0.634] & 0.433 [0.365, 0.501] & 0.142 \\
-T-GCN (w=5) & 0.424 [0.385, 0.463] & 0.475 [0.402, 0.547] & 0.435 [0.286, 0.583] & 0.121 \\
-GAT & 0.434 [0.358, 0.511] & 0.541 [0.403, 0.679] & 0.372 [0.227, 0.518] & 0.123 \\
-TGN (w=5) & 0.441 [0.337, 0.544] & 0.587 [0.428, 0.745] & 0.307 [0.108, 0.507] & 0.216 \\
-FANET-TopoGNN (concat) & 0.445 [0.399, 0.490] & 0.482 [0.412, 0.552] & 0.427 [0.229, 0.625] & 0.058 \\
-PI+MLP & 0.450 [0.429, 0.471] & 0.584 [0.431, 0.738] & 0.327 [0.209, 0.445] & 0.032 \\
-GCN & 0.453 [0.374, 0.533] & 0.554 [0.439, 0.668] & 0.357 [0.226, 0.487] & 0.092 \\
-FANET-TopoGNN & 0.462 [0.389, 0.536] & 0.503 [0.373, 0.634] & 0.405 [0.178, 0.631] & 0.059 \\
+Current-state persistence baseline & 0.120 [0.077, 0.162] & 0.167 [0.100, 0.233] & 0.425 [0.146, 0.704] & 0.225 \\
+Kinetic-TopoGuard & 0.120 [0.077, 0.162] & 0.167 [0.100, 0.233] & 0.425 [0.146, 0.704] & 5.360 \\
+Shallow ML & 0.181 [0.139, 0.224] & 0.162 [0.090, 0.234] & 0.447 [0.173, 0.721] & 0.029 \\
+GraphSAGE & 0.224 [0.182, 0.267] & 0.161 [0.096, 0.226] & 0.458 [0.265, 0.650] & 0.100 \\
+STGCN (w=5) & 0.233 [0.178, 0.288] & 0.185 [0.138, 0.232] & 0.354 [0.137, 0.570] & 0.501 \\
+PI+MLP & 0.234 [0.154, 0.315] & 0.219 [0.086, 0.352] & 0.285 [-0.045, 0.616] & 0.041 \\
+TGN (w=5) & 0.245 [0.204, 0.287] & 0.211 [0.168, 0.255] & 0.220 [-0.227, 0.668] & 0.605 \\
+GCN & 0.257 [0.221, 0.294] & 0.199 [0.156, 0.243] & 0.291 [-0.053, 0.635] & 0.120 \\
+T-GCN (w=5) & 0.265 [0.205, 0.325] & 0.225 [0.186, 0.263] & 0.190 [-0.168, 0.549] & 0.240 \\
+GAT & 0.270 [0.223, 0.317] & 0.230 [0.135, 0.325] & 0.192 [-0.293, 0.678] & 0.239 \\
+FANET-TopoGNN (concat) & 0.274 [0.183, 0.364] & 0.209 [0.103, 0.316] & 0.276 [-0.175, 0.728] & 0.064 \\
+FANET-TopoGNN & 0.275 [0.185, 0.364] & 0.213 [0.118, 0.308] & 0.252 [-0.209, 0.714] & 0.187 \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
-\par\footnotesize\emph{Note:} Union-Find uses current graph connectivity as a diagnostic reference and is not a future forecasting model.
+\par\footnotesize\emph{Note:} Current-state persistence carries the observed component count forward to the forecast horizon.
 \end{table}
 
 \begin{table}[t]
@@ -39,18 +39,18 @@ FANET-TopoGNN & 0.462 [0.389, 0.536] & 0.503 [0.373, 0.634] & 0.405 [0.178, 0.63
 \toprule
 Model & Topology-change lead median (ms) & Topology-change lead mean (ms) & Topology-change lead 95th (ms) \\
 \midrule
-FANET-TopoGNN & 600.00 & 411.40 & 600.00 \\
-PI+MLP & 600.00 & 449.27 & 600.00 \\
-Shallow ML & 566.67 & 413.99 & 600.00 \\
-T-GCN (w=5) & 566.67 & 411.80 & 600.00 \\
-GAT & 533.33 & 394.01 & 600.00 \\
-GraphSAGE & 533.33 & 370.82 & 600.00 \\
-STGCN (w=5) & 433.33 & 322.01 & 600.00 \\
-GCN & 400.00 & 339.88 & 600.00 \\
-TGN (w=5) & 333.33 & 346.58 & 600.00 \\
-FANET-TopoGNN (concat) & 333.33 & 314.70 & 600.00 \\
-Kinetic-TopoGuard & 233.33 & 287.77 & 600.00 \\
-Union-Find detection oracle & 0.00 & 0.00 & 0.00 \\
+FANET-TopoGNN & 600.00 & 511.30 & 600.00 \\
+FANET-TopoGNN (concat) & 600.00 & 510.28 & 600.00 \\
+GAT & 600.00 & 492.44 & 600.00 \\
+GCN & 600.00 & 479.24 & 600.00 \\
+Shallow ML & 600.00 & 514.81 & 600.00 \\
+GraphSAGE & 600.00 & 499.57 & 600.00 \\
+PI+MLP & 600.00 & 496.80 & 600.00 \\
+STGCN (w=5) & 600.00 & 480.11 & 600.00 \\
+TGN (w=5) & 566.67 & 461.38 & 600.00 \\
+T-GCN (w=5) & 566.67 & 477.25 & 600.00 \\
+Kinetic-TopoGuard & 200.00 & 268.63 & 600.00 \\
+Current-state persistence baseline & 0.00 & 0.00 & 0.00 \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
@@ -60,19 +60,19 @@ Union-Find detection oracle & 0.00 & 0.00 & 0.00 \\
 \begin{table}[t]
 \centering
 \small
-\caption{Network-level performance under the connectivity-aware controller.}
+\caption{Analytical reachability proxies under the connectivity-aware controller; packet-level PDR is reported separately.}
 \label{tab:network_metrics_auto}
 \begin{adjustbox}{max width=\linewidth}
 \begin{tabular}{lrrrrr}
 \toprule
-Model & Connectivity ratio & PDR (\%) & Delay (ms) & Reroute (\%) & DTN (\%) \\
+Model & Connectivity ratio & Delivery proxy (\%) & Proxy delay (ms) & Reroute (\%) & DTN (\%) \\
 \midrule
-GraphSAGE & 0.861 & 99.39 & 21.46 & 22.36 & 1.15 \\
-Kinetic-TopoGuard & 0.861 & 99.39 & 21.50 & 18.07 & 1.15 \\
-GAT & 0.861 & 99.39 & 21.44 & 26.72 & 1.15 \\
-GCN & 0.861 & 99.39 & 21.45 & 23.02 & 1.15 \\
-FANET-TopoGNN & 0.861 & 99.38 & 21.42 & 27.86 & 1.15 \\
-FANET-TopoGNN (concat) & 0.860 & 99.37 & 21.46 & 20.62 & 1.14 \\
+Kinetic-TopoGuard & 0.906 & 99.69 & 18.72 & 1.95 & 0.56 \\
+GAT & 0.905 & 99.69 & 18.49 & 25.85 & 0.58 \\
+GCN & 0.904 & 99.69 & 18.50 & 25.10 & 0.58 \\
+FANET-TopoGNN & 0.904 & 99.69 & 18.48 & 25.00 & 0.58 \\
+GraphSAGE & 0.904 & 99.69 & 18.52 & 22.13 & 0.58 \\
+FANET-TopoGNN (concat) & 0.903 & 99.69 & 18.49 & 24.09 & 0.58 \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
@@ -88,20 +88,20 @@ FANET-TopoGNN (concat) & 0.860 & 99.37 & 21.46 & 20.62 & 1.14 \\
 \toprule
 Model & Risk F1 & Risk Recall & Risk Precision \\
 \midrule
-Union-Find detection oracle & 0.731 & 0.738 & 0.724 \\
-Kinetic-TopoGuard & 0.555 & 0.997 & 0.386 \\
-FANET-TopoGNN (concat) & 0.519 & 0.972 & 0.355 \\
-STGCN (w=5) & 0.508 & 0.980 & 0.344 \\
-GCN & 0.502 & 0.975 & 0.340 \\
-TGN (w=5) & 0.494 & 0.974 & 0.336 \\
-GraphSAGE & 0.487 & 0.992 & 0.324 \\
-GAT & 0.468 & 0.986 & 0.309 \\
-FANET-TopoGNN & 0.446 & 0.998 & 0.289 \\
-T-GCN (w=5) & 0.445 & 0.996 & 0.287 \\
-Shallow ML & 0.443 & 0.972 & 0.287 \\
-PI+MLP & 0.416 & 0.991 & 0.266 \\
+Kinetic-TopoGuard & 0.736 & 0.887 & 0.636 \\
+TGN (w=5) & 0.367 & 0.958 & 0.227 \\
+PI+MLP & 0.318 & 0.991 & 0.196 \\
+T-GCN (w=5) & 0.332 & 0.966 & 0.203 \\
+FANET-TopoGNN (concat) & 0.325 & 0.998 & 0.199 \\
+FANET-TopoGNN & 0.319 & 0.998 & 0.193 \\
+Shallow ML & 0.281 & 1.000 & 0.165 \\
+STGCN (w=5) & 0.338 & 0.967 & 0.205 \\
+GCN & 0.318 & 0.966 & 0.192 \\
+GAT & 0.317 & 0.975 & 0.193 \\
+GraphSAGE & 0.329 & 0.983 & 0.201 \\
+Current-state persistence baseline & 0.762 & 0.771 & 0.753 \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
-\par\footnotesize\emph{Note:} Union-Find is a current-graph diagnostic reference; learned forecasting models are ranked separately.
+\par\footnotesize\emph{Note:} Current-state persistence is a deployable no-change forecasting baseline.
 \end{table}

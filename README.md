@@ -19,7 +19,7 @@ It creates a reproducible Python research workflow that can:
 - build snapshot datasets with graph statistics, fixed/adaptive connectivity labels, physical-layer link filtering, radio-scenario sweeps, and `H0` persistence-image features,
 - optionally export snapshots as PyTorch Geometric `Data` objects through `fanet.pyg_utils`,
 - train Kinetic-TopoGuard plus static, topological, neural GNN, and temporal baselines,
-- include the exact union-find current-topology detection oracle as a non-forecasting baseline,
+- include a current-state persistence forecast as a deployable no-change baseline,
 - compute compact-reporting metrics, confidence intervals, and paired statistical tests,
 - export publication-ready tables in CSV and LaTeX formats,
 - generate figures for accuracy, lead time, latency, residuals, ablations, and network-level impact.
@@ -59,7 +59,7 @@ The release intentionally separates the lightweight scientific environment from 
 
 ### Base scientific environment
 
-Use the base environment for dataset generation, Kinetic-TopoGuard, union-find, shallow/tabular baselines, smoke tests, table/figure aggregation, and manuscript asset checks. This environment does **not** install PyTorch.
+Use the base environment for dataset generation, Kinetic-TopoGuard, current-state persistence, shallow/tabular baselines, smoke tests, table/figure aggregation, and manuscript asset checks. This environment does **not** install PyTorch.
 
 ```bash
 conda env create -f environment.yml
@@ -97,7 +97,7 @@ python -m pip install -r requirements-pyg.txt
 
 If PyTorch is not installed, the code keeps long runs executable by replacing neural model names with deterministic scikit-learn surrogate estimators that use the corresponding feature family. This fallback is useful for CI, smoke tests, and base-environment reproducibility checks, but it should **not** be described as a real PyTorch GNN or temporal-neural result. For manuscript-facing neural-baseline reruns, install `.[deep]` or `requirements-deep.txt` first.
 
-New `summary.json` and `runtime_profile.json` files record `model_backend`, `torch_available`, `torch_version`, `device`, and `surrogate_used`. Per-seed model tables also record `Model_Backend`. The tracked three-seed compact artifact was freshly rerun with PyTorch 2.11.0 on CPU: all nine neural GNN/temporal task rows are recorded as `pytorch`, `surrogate_used` is false, and `outputs/publication_compact/provenance_rerun.json` records the promotion checks. The shared-host rerun duration is retained for provenance and is not used as an isolated runtime benchmark.
+New `summary.json` and `runtime_profile.json` files record `cache_version`, `model_backend`, `torch_available`, `torch_version`, `device`, and `surrogate_used`. Per-seed model tables also record `Model_Backend`. A compact artifact is manuscript-eligible only when all nine neural GNN/temporal task rows are recorded as `pytorch`, `surrogate_used` is false, and the current event/radio cache version is present. Shared-host runtime is retained for provenance and is not treated as an isolated speed benchmark.
 
 Run the compact manuscript profile with the deep environment when neural rows are intended to be interpreted as neural baselines:
 
@@ -140,7 +140,7 @@ python scripts/run_submission_20seed.py
 python scripts/run_submission_20seed.py --resume
 ```
 
-The launcher verifies 20 unique seeds and requires exactly the primary Kinetic-TopoGuard model, the selected shallow-ML comparator, and the union-find current-graph diagnostic reference. The profile preserves the compact mobility, graph-policy, radio-scenario, split, and horizon design. The expensive neural family remains in the verified three-seed compact benchmark; the 20-seed profile is deliberately focused on the primary inferential comparison.
+The launcher verifies 20 unique seeds and requires exactly the primary Kinetic-TopoGuard model, the selected shallow-ML comparator, and the deployable current-state persistence baseline. The profile preserves the compact mobility, graph-policy, radio-scenario, split, and horizon design. The expensive neural family remains in the verified compact benchmark plus its five-seed extension; the 20-seed profile is focused on the primary inferential comparison.
 
 For the public real-flight motion transfer test, install the optional ROS bag reader, verify/download the three source bags, derive the aligned 10 Hz trace, and run the frozen-transfer evaluation:
 
@@ -152,6 +152,19 @@ python scripts\run_external_validation.py
 ```
 
 The source bags remain ignored. The tracked derived trace, checksum manifest, transfer metrics, prediction records, protocol JSON, and trajectory/radius figure document the external evidence. Because the public bags contain motion but no RF or packet ground truth, the study is a real-field-motion transfer test under deterministic radius sensitivity, not a field-measured wireless-network test.
+
+For measured three-UAV UWB topology transfer and the complementary protocol studies, use:
+
+```powershell
+python scripts/download_miluv_validation.py
+python scripts/run_miluv_validation.py
+python scripts/run_horizon_sweep.py --workers 2
+python scripts/run_factorial_feature_ablation.py --workers 2
+python scripts/run_packet_level_controller_validation.py --workers 2
+python scripts/benchmark_end_to_end_latency.py
+```
+
+The MILUV downloader uses the official Figshare record, range-extracts only the six required Vicon/UWB CSV members, and verifies ZIP CRC and per-file SHA-256 hashes. MILUV supplies measured motion and inter-robot UWB first-path power, not IP packet-delivery labels. The SimPy study is a separate simplified queue/contention experiment over simulated physical-radio graphs.
 
 To copy generated figure assets into the manuscript package, run:
 
@@ -165,7 +178,7 @@ The same script copies all generated PNG figures plus `manuscript_tables.tex`, `
 
 Each run creates tables, figures, and a `summary.json` file in the configured output folder.
 
-Expected machine-readable files include `summary.json`, `runtime_profile.json`, `metrics_overall.csv`, `risk_metrics.csv`, `risk_threshold_sensitivity.csv`, `lead_time_summary.csv`, `network_metrics.csv`, and `artifact_manifest.txt`. New risk exports include PR-AUC, ROC-AUC, Brier score, expected calibration error, false alarms per minute, and threshold sensitivity. These values are computed only for new runs; they are not fabricated for legacy caches that lack risk scores.
+Expected machine-readable files include `summary.json`, `runtime_profile.json`, `metrics_overall.csv`, `risk_metrics.csv`, `risk_threshold_sensitivity.csv`, `lead_time_summary.csv`, `network_metrics.csv`, and `artifact_manifest.txt`. Risk exports include PR-AUC, ROC-AUC, Brier score, expected calibration error, sample false alarms, one-to-one fragmentation-event precision/recall/F1, false alert events per minute, and threshold sensitivity. These values are computed only for current runs; they are not fabricated for legacy caches.
 
 The compact manuscript-facing result bundle is tracked in this repository at:
 
@@ -187,14 +200,14 @@ Use `docs/zenodo_release.md` for the repository `ErcanErkalkan/FANET-TopoGNN` Ze
 
 The double-anonymous manuscript PDF and `anonymous_supplementary.zip` exclude author-identifying metadata. The author-identifying `paper/title_page.tex` and public citation/archive metadata remain separate and must be uploaded only in the journal portal fields intended for author information.
 
-The manuscript reports three distinct evidence layers: a backend-verified three-seed compact model-family benchmark, a completed focused 20-seed primary comparison, and a completed real-field-motion transfer test under counterfactual radius graphs. The release does not claim measured RF/packet validation, onboard profiling, hardware-in-the-loop evidence, or deployment readiness.
+The manuscript separates simulation, model-family, 20-seed confirmation, counterfactual real-motion transfer, measured AERPAW cellular evidence, transported 60 GHz sensitivity, measured MILUV three-UAV UWB topology, and simplified packet-level simulation. It does not claim measured field IP-PDR, onboard profiling, hardware-in-the-loop control, or deployment readiness.
 
 ## Technical notes
 
 - This archive is the curated executable reproducibility release for the manuscript. Source code, configurations, compact output artefacts, citation metadata, and release notes are versioned together so that the reported compact benchmark can be inspected and rerun from the packaged project.
 - `H0` persistent homology is implemented directly from the minimum spanning tree of the point cloud, which is exact for connected-component persistence.
 - The project now treats the task as future-horizon connectivity forecasting rather than same-timestep regression, which is required for meaningful early-warning analysis.
-- The simulator now implements the manuscript-level radio model: log-distance path loss, log-normal shadowing, Rayleigh/Nakagami fading, asymmetric transmit/receive chains, bidirectional link admission, optional SINR gating, and fixed/adaptive radius policies.
+- The simulator implements log-distance path loss, run-persistent asymmetric hardware offsets, temporally correlated log-normal shadowing and fading, bidirectional link admission, optional SINR gating, and fixed/adaptive radius policies.
 - Configs may provide `graph_policies` and `radio_scenarios` to evaluate fixed/adaptive policies and physical-layer sensitivity settings in one run while keeping run-wise split metadata explicit.
 - Mission mobility uses offline scan, transit, and loiter waypoint plans per mission region with stochastic tracking, heading, and speed perturbations.
 - Run-wise train/validation/test splits are grouped by the base `(mobility, N, seed)` identifier, so fixed/adaptive graph-policy and nominal/degraded radio variants of the same underlying trajectory cannot leak across folds. The exported `split_assignments.csv` documents the mapping.

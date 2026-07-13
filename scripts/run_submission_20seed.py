@@ -27,10 +27,10 @@ def main() -> int:
     if len(seeds) != 20 or len(set(seeds)) != 20:
         raise ValueError(f"Submission profile must contain 20 unique seeds; found {len(set(seeds))}")
     selected = config.get("training", {}).get("selected_models", [])
-    required = {"union_find", "shallow", "kinetic_topoguard"}
+    required = {"current_state_persistence", "shallow", "kinetic_topoguard"}
     if set(selected) != required:
         raise ValueError(
-            "The confirmatory profile must contain exactly union_find, shallow, and kinetic_topoguard; "
+            "The confirmatory profile must contain exactly current_state_persistence, shallow, and kinetic_topoguard; "
             f"found {selected}"
         )
     command = [sys.executable, str(ROOT / "main.py"), "--config", str(config_path)]

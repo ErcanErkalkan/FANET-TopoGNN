@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 from pathlib import Path
 import re
@@ -55,10 +56,18 @@ SCRIPT_FILES = (
     "run_external_validation.py",
     "run_aerpaw_cellular_validation.py",
     "run_uav_to_uav_mmwave_validation.py",
+    "download_miluv_validation.py",
+    "run_miluv_validation.py",
+    "run_horizon_sweep.py",
+    "run_factorial_feature_ablation.py",
+    "run_packet_level_controller_validation.py",
+    "benchmark_end_to_end_latency.py",
     "select_operating_point.py",
     "build_digital_twin_dashboard.py",
     "build_neural_seed_extension.py",
     "generate_evidence_tables.py",
+    "audit_submission_readiness.py",
+    "build_anonymous_supplementary.py",
 )
 
 TEXT_SUFFIXES = {
@@ -168,10 +177,31 @@ def _validate_evidence() -> None:
     summary = (STAGING / "outputs" / "publication_compact" / "summary.json").read_text(
         encoding="utf-8"
     )
-    if '"backend_provenance_status": "verified_pytorch_rerun"' not in summary:
-        raise RuntimeError("Compact PyTorch provenance marker is missing")
+    if '"torch_available": true' not in summary:
+        raise RuntimeError("Compact summary does not verify torch_available=true")
     if '"surrogate_used": false' not in summary:
         raise RuntimeError("Compact summary does not verify surrogate_used=false")
+    if '"cache_version": "kinetic_topoguard_v6_fragmentation_events_correlated_radio"' not in summary:
+        raise RuntimeError("Compact summary is stale or uses the pre-event-metric cache")
+    summary_payload = json.loads(summary)
+    neural_tasks = {
+        "GCN",
+        "GAT",
+        "GraphSAGE",
+        "PI+MLP",
+        "FANET-TopoGNN",
+        "FANET-TopoGNN (concat)",
+        "tgcn:5",
+        "stgcn:5",
+        "tgn:5",
+    }
+    wrong_backends = {
+        task: summary_payload.get("model_backend", {}).get(task)
+        for task in neural_tasks
+        if summary_payload.get("model_backend", {}).get(task) != "pytorch"
+    }
+    if wrong_backends:
+        raise RuntimeError(f"Compact neural backend mismatch: {wrong_backends}")
 
     predictions = STAGING / "outputs" / "external_validation" / "external_predictions.csv"
     trace = STAGING / "data" / "external_validation" / "derived" / "forestry_multidrone_trace.csv"
@@ -202,6 +232,41 @@ def _validate_evidence() -> None:
     if missing_a2a:
         raise RuntimeError("UAV-to-UAV mmWave evidence is missing: " + ", ".join(str(path) for path in missing_a2a))
 
+    miluv = STAGING / "outputs" / "miluv_validation"
+    required_miluv = [
+        miluv / "miluv_protocol.json",
+        miluv / "miluv_metrics_per_seed.csv",
+        miluv / "miluv_metrics_summary.csv",
+        miluv / "miluv_measured_topology_trace.csv",
+        STAGING / "data" / "external_validation" / "raw" / "miluv" / "cirObstacles_3_random_0" / "manifest.json",
+    ]
+    missing_miluv = [path for path in required_miluv if not path.is_file()]
+    if missing_miluv:
+        raise RuntimeError("MILUV evidence is missing: " + ", ".join(str(path) for path in missing_miluv))
+
+    experiment_outputs = {
+        "horizon sweep": [
+            "outputs/horizon_sweep/horizon_sweep_protocol.json",
+            "outputs/horizon_sweep/horizon_sweep_summary.csv",
+        ],
+        "factorial ablation": [
+            "outputs/factorial_feature_ablation/factorial_ablation_protocol.json",
+            "outputs/factorial_feature_ablation/factorial_ablation_summary.csv",
+        ],
+        "packet validation": [
+            "outputs/packet_level_controller/packet_level_protocol.json",
+            "outputs/packet_level_controller/packet_metrics_summary.csv",
+        ],
+        "latency benchmark": [
+            "outputs/end_to_end_latency/latency_protocol.json",
+            "outputs/end_to_end_latency/latency_summary.csv",
+        ],
+    }
+    for label, relative_paths in experiment_outputs.items():
+        missing = [path for path in relative_paths if not (STAGING / path).is_file()]
+        if missing:
+            raise RuntimeError(f"{label} evidence is missing: {missing}")
+
     operating = STAGING / "outputs" / "operating_point"
     required_operating = [
         operating / "operating_point_protocol.json",
@@ -220,6 +285,10 @@ def _validate_evidence() -> None:
         dashboard / "assets" / "operating_point_selection.png",
         dashboard / "assets" / "uav_to_uav_mmwave_validation.png",
         dashboard / "assets" / "aerpaw_cellular_validation.png",
+        dashboard / "assets" / "horizon_sweep.png",
+        dashboard / "assets" / "factorial_feature_ablation.png",
+        dashboard / "assets" / "packet_level_controller.png",
+        dashboard / "assets" / "miluv_validation.png",
     ]
     missing_dashboard = [path for path in required_dashboard if not path.is_file()]
     if missing_dashboard:
@@ -347,11 +416,17 @@ def main() -> None:
     _copy_tree("outputs/external_validation")
     _copy_tree("outputs/aerpaw_cellular_validation")
     _copy_tree("outputs/uav_to_uav_mmwave_validation")
+    _copy_tree("outputs/miluv_validation")
+    _copy_tree("outputs/horizon_sweep")
+    _copy_tree("outputs/factorial_feature_ablation")
+    _copy_tree("outputs/packet_level_controller")
+    _copy_tree("outputs/end_to_end_latency")
     _copy_tree("outputs/operating_point")
     _copy_tree("outputs/digital_twin_dashboard")
     _copy_tree("outputs/publication_neural_extension")
     _copy_tree("outputs/publication_neural_5seed_extension")
     _copy_tree("data/external_validation/derived")
+    _copy_tree("data/external_validation/raw/miluv/cirObstacles_3_random_0")
     _copy_file("data/external_validation/README.md")
     _copy_file("paper/main_anonymized.pdf")
     _copy_file("paper/ANONYMOUS_SUPPLEMENTARY_NOTES.md")

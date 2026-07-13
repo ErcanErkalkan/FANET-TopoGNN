@@ -1,8 +1,20 @@
 from __future__ import annotations
 
+import copy
+from dataclasses import dataclass
+
 import numpy as np
 
 from .graph_utils import adjacency_from_radius
+
+
+@dataclass
+class TemporalRadioState:
+    shadowing_db: np.ndarray | None = None
+    tx_chain_db: np.ndarray | None = None
+    rx_chain_db: np.ndarray | None = None
+    rayleigh_channel: np.ndarray | None = None
+    fading_db: np.ndarray | None = None
 
 
 def _dbm_to_mw(value_dbm: np.ndarray | float) -> np.ndarray | float:
@@ -27,6 +39,7 @@ def received_power_dbm(
     distances: np.ndarray,
     rng: np.random.Generator,
     radio_cfg: dict,
+    state: TemporalRadioState | None = None,
 ) -> np.ndarray:
     """Per-direction received power with path loss, shadowing, fading, and chain asymmetry."""
     n_nodes = distances.shape[0]
@@ -44,15 +57,69 @@ def received_power_dbm(
     fading = str(radio_cfg.get("fading", "rayleigh")).lower()
     nakagami_m = float(radio_cfg.get("nakagami_m", 1.0))
 
-    shadowing = rng.normal(0.0, shadow_sigma, size=(n_nodes, n_nodes))
-    tx_chain = rng.normal(0.0, chain_sigma, size=(n_nodes, 1))
-    rx_chain = rng.normal(0.0, chain_sigma, size=(1, n_nodes))
+    shadow_rho = float(np.clip(radio_cfg.get("shadowing_temporal_rho", 0.96), 0.0, 0.9999))
+    fading_rho = float(np.clip(radio_cfg.get("fading_temporal_rho", 0.80), 0.0, 0.9999))
+    shadow_innovation = rng.normal(0.0, shadow_sigma, size=(n_nodes, n_nodes))
+    shadow_innovation = (shadow_innovation + shadow_innovation.T) / np.sqrt(2.0)
+    if state is not None and state.shadowing_db is not None:
+        shadowing = (
+            shadow_rho * state.shadowing_db
+            + np.sqrt(1.0 - shadow_rho**2) * shadow_innovation
+        )
+    else:
+        shadowing = shadow_innovation
+    if state is not None:
+        state.shadowing_db = shadowing
+
+    if state is not None and state.tx_chain_db is not None and state.rx_chain_db is not None:
+        tx_chain = state.tx_chain_db
+        rx_chain = state.rx_chain_db
+    else:
+        tx_chain = rng.normal(0.0, chain_sigma, size=(n_nodes, 1))
+        rx_chain = rng.normal(0.0, chain_sigma, size=(1, n_nodes))
+        if state is not None:
+            state.tx_chain_db = tx_chain
+            state.rx_chain_db = rx_chain
     path_loss = pl_d0_db + 10.0 * path_loss_exp * np.log10(d / d0) + shadowing
     if fading == "nakagami":
-        fading_gain = _nakagami_power_gain(rng, (n_nodes, n_nodes), nakagami_m)
+        innovation_db = 10.0 * np.log10(
+            _nakagami_power_gain(rng, (n_nodes, n_nodes), nakagami_m)
+        )
+        innovation_db = (innovation_db + innovation_db.T) / np.sqrt(2.0)
+        if state is not None and state.fading_db is not None:
+            fading_db = (
+                fading_rho * state.fading_db
+                + np.sqrt(1.0 - fading_rho**2) * innovation_db
+            )
+        else:
+            fading_db = innovation_db
+        if state is not None:
+            state.fading_db = fading_db
     else:
-        fading_gain = _rayleigh_power_gain(rng, (n_nodes, n_nodes))
-    fading_db = 10.0 * np.log10(fading_gain)
+        innovation = (
+            rng.normal(size=(n_nodes, n_nodes))
+            + 1j * rng.normal(size=(n_nodes, n_nodes))
+        ) / np.sqrt(2.0)
+        innovation = (innovation + innovation.T) / np.sqrt(2.0)
+        if state is not None and state.rayleigh_channel is not None:
+            channel = (
+                fading_rho * state.rayleigh_channel
+                + np.sqrt(1.0 - fading_rho**2) * innovation
+            )
+        else:
+            channel = innovation
+        if state is not None:
+            state.rayleigh_channel = channel
+        fading_db = 10.0 * np.log10(np.maximum(np.abs(channel) ** 2, 1e-12))
+    node_boost = np.asarray(
+        radio_cfg.get("node_link_budget_boost_db", np.zeros(n_nodes)),
+        dtype=float,
+    ).reshape(-1)
+    if node_boost.size == 1:
+        node_boost = np.full(n_nodes, float(node_boost[0]))
+    if node_boost.size != n_nodes:
+        raise ValueError("node_link_budget_boost_db must be scalar or have one value per node")
+    incident_link_boost = np.maximum(node_boost[:, None], node_boost[None, :])
     rx_power = (
         tx_power_dbm
         + tx_gain_db
@@ -63,6 +130,7 @@ def received_power_dbm(
         - system_loss_db
         - link_margin_db
         + fading_db
+        + incident_link_boost
     )
     np.fill_diagonal(rx_power, np.inf)
     return rx_power.astype(np.float32)
@@ -73,8 +141,9 @@ def physical_power_adjacency(
     radius: float,
     rng: np.random.Generator,
     radio_cfg: dict,
+    state: TemporalRadioState | None = None,
 ) -> np.ndarray:
-    rx_power = received_power_dbm(distances, rng, radio_cfg)
+    rx_power = received_power_dbm(distances, rng, radio_cfg, state=state)
     sensitivity = float(radio_cfg.get("receiver_sensitivity_dbm", -88.0))
     directed = rx_power >= sensitivity
     if bool(radio_cfg.get("apply_radius_cap", True)):
@@ -98,8 +167,9 @@ def sinr_adjacency(
     radius: float,
     rng: np.random.Generator,
     radio_cfg: dict,
+    state: TemporalRadioState | None = None,
 ) -> np.ndarray:
-    rx_power_dbm = received_power_dbm(distances, rng, radio_cfg)
+    rx_power_dbm = received_power_dbm(distances, rng, radio_cfg, state=state)
     n_nodes = distances.shape[0]
     p_tx = float(radio_cfg.get("tx_probability", 0.35))
     tx_active = rng.random(n_nodes) < p_tx
@@ -131,15 +201,16 @@ def build_link_adjacency(
     radius: float,
     rng: np.random.Generator,
     sim_cfg: dict,
+    state: TemporalRadioState | None = None,
 ) -> np.ndarray:
     link_model = str(sim_cfg.get("link_model", "radius")).lower()
     radio_cfg = sim_cfg.get("physical_layer", {})
     if link_model in {"radius", "proximity", "distance"}:
         return adjacency_from_radius(distances, radius)
     if link_model in {"physical", "path_loss", "power"}:
-        return physical_power_adjacency(distances, radius, rng, radio_cfg)
+        return physical_power_adjacency(distances, radius, rng, radio_cfg, state=state)
     if link_model in {"sinr", "interference"}:
-        return sinr_adjacency(distances, radius, rng, radio_cfg)
+        return sinr_adjacency(distances, radius, rng, radio_cfg, state=state)
     raise ValueError(f"Unknown link_model: {link_model}")
 
 
@@ -149,21 +220,38 @@ def build_fixed_adaptive_adjacencies(
     radius_adaptive: float,
     rng: np.random.Generator,
     sim_cfg: dict,
+    state: TemporalRadioState | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
     link_model = str(sim_cfg.get("link_model", "radius")).lower()
     radio_cfg = sim_cfg.get("physical_layer", {})
     if link_model in {"radius", "proximity", "distance"}:
         return adjacency_from_radius(distances, radius_fixed), adjacency_from_radius(distances, radius_adaptive)
     if link_model in {"physical", "path_loss", "power"}:
-        rx_power = received_power_dbm(distances, rng, radio_cfg)
+        rx_power = received_power_dbm(distances, rng, radio_cfg, state=state)
         return (
             _physical_adjacency_from_power(rx_power, distances, radius_fixed, radio_cfg),
             _physical_adjacency_from_power(rx_power, distances, radius_adaptive, radio_cfg),
         )
     if link_model in {"sinr", "interference"}:
         seed = int(rng.integers(0, 2**63 - 1))
+        initial_state = copy.deepcopy(state)
+        fixed = sinr_adjacency(
+            distances,
+            radius_fixed,
+            np.random.default_rng(seed),
+            radio_cfg,
+            state=state,
+        )
+        adaptive_state = copy.deepcopy(initial_state)
+        adaptive = sinr_adjacency(
+            distances,
+            radius_adaptive,
+            np.random.default_rng(seed),
+            radio_cfg,
+            state=adaptive_state,
+        )
         return (
-            sinr_adjacency(distances, radius_fixed, np.random.default_rng(seed), radio_cfg),
-            sinr_adjacency(distances, radius_adaptive, np.random.default_rng(seed), radio_cfg),
+            fixed,
+            adaptive,
         )
     raise ValueError(f"Unknown link_model: {link_model}")

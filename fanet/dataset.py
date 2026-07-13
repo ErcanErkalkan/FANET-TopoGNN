@@ -9,7 +9,7 @@ import pandas as pd
 from .geometry import density, normalize_positions, pairwise_distances
 from .graph_utils import avg_clustering_coefficient, betti_zero, degree_features, largest_component_ratio, shortest_path_matrix
 from .mobility import init_gm, init_mission, init_rwp, step_gm, step_mission, step_rwp
-from .radio import build_fixed_adaptive_adjacencies
+from .radio import TemporalRadioState, build_fixed_adaptive_adjacencies
 from .topology import persistence_image
 
 
@@ -202,6 +202,7 @@ def _raw_run(
     split_group_id = f"{mobility_name}_N{n_nodes}_seed{run_seed}"
     run_id = f"{mobility_name}_N{n_nodes}_{graph_policy}_{radio_scenario}_seed{run_seed}"
     base_items = kinematic_items or _kinematic_run(sim_cfg, mobility_name, n_nodes, run_seed)
+    radio_state = TemporalRadioState()
     for base in base_items:
         time_index = int(base["time_index"])
         positions = base["positions"]
@@ -216,6 +217,7 @@ def _raw_run(
             radius_adaptive,
             np.random.default_rng(link_seed),
             sim_cfg,
+            state=radio_state,
         )
         beta_fixed = float(betti_zero(adjacency_fixed))
         beta_adaptive = float(betti_zero(adjacency_adaptive))

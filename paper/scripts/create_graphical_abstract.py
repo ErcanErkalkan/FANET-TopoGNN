@@ -61,7 +61,7 @@ def main() -> None:
         ((0.445, 0.54), 0.16, 0.28, "Motion-conditioned\ntopological AI\nresidual forecast", "#efe8fb"),
         ((0.655, 0.72), 0.14, 0.20, "Future beta0\nfragmentation\nstate", "#f9e4e2"),
         ((0.655, 0.36), 0.14, 0.20, "Risk score\nwarning threshold", "#dff3f2"),
-        ((0.835, 0.54), 0.13, 0.28, "Engineering\nwarning/action\nrelay + routing", "#edf6df"),
+        ((0.835, 0.54), 0.13, 0.28, "Bounded one-step\nwarning/action\nrelay + routing", "#edf6df"),
     ]
     for xy, width, height, label, face in boxes:
         add_box(ax, xy, width, height, label, face)
@@ -88,7 +88,7 @@ def main() -> None:
     ax.text(
         0.5,
         0.10,
-        "Validation outputs: implemented baselines, MAE/R2, risk-F1, lead-time, statistical tests, and network-level metrics",
+        "Validation: 20 seeds, event precision/recall/F1, horizon/factorial sweeps, measured UWB, packet load, and full-path latency",
         ha="center",
         va="center",
         fontsize=9.5,

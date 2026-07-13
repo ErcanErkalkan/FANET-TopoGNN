@@ -1,33 +1,33 @@
-\begin{tabular}{lrrrrrrrrrr}
+\begin{tabular}{lrrrrrrrrrrrrrrrrrrrr}
 \toprule
-Threshold & Risk\_Precision & Risk\_Recall & Risk\_F1 & Risk\_Specificity & Risk\_Accuracy & False\_Alarms & False\_Alarms\_per\_minute & seed & Model & Model\_Backend \\
+Threshold & Risk\_Precision & Risk\_Recall & Risk\_F1 & Risk\_Specificity & Risk\_Accuracy & False\_Alarms & False\_Alarms\_per\_minute & Alert\_Events & True\_Alert\_Events & False\_Alert\_Events & Ground\_Truth\_Fragmentation\_Events & Missed\_Fragmentation\_Events & Alert\_Event\_Precision & Alert\_Event\_Recall & Alert\_Event\_F1 & False\_Alert\_Events\_per\_minute & seed & Model & Model\_Backend & Split \\
 \midrule
-0.100 & 0.763 & 0.777 & 0.770 & 0.919 & 0.883 & 437.000 & 36.417 & 37 & Union-Find detection oracle & diagnostic\_reference \\
-0.200 & 0.763 & 0.777 & 0.770 & 0.919 & 0.883 & 437.000 & 36.417 & 37 & Union-Find detection oracle & diagnostic\_reference \\
-0.300 & 0.763 & 0.777 & 0.770 & 0.919 & 0.883 & 437.000 & 36.417 & 37 & Union-Find detection oracle & diagnostic\_reference \\
-0.400 & 0.763 & 0.777 & 0.770 & 0.919 & 0.883 & 437.000 & 36.417 & 37 & Union-Find detection oracle & diagnostic\_reference \\
-0.500 & 0.763 & 0.777 & 0.770 & 0.919 & 0.883 & 437.000 & 36.417 & 37 & Union-Find detection oracle & diagnostic\_reference \\
-0.600 & 0.763 & 0.777 & 0.770 & 0.919 & 0.883 & 437.000 & 36.417 & 37 & Union-Find detection oracle & diagnostic\_reference \\
-0.700 & 0.763 & 0.777 & 0.770 & 0.919 & 0.883 & 437.000 & 36.417 & 37 & Union-Find detection oracle & diagnostic\_reference \\
-0.800 & 0.763 & 0.777 & 0.770 & 0.919 & 0.883 & 437.000 & 36.417 & 37 & Union-Find detection oracle & diagnostic\_reference \\
-0.900 & 0.763 & 0.777 & 0.770 & 0.919 & 0.883 & 437.000 & 36.417 & 37 & Union-Find detection oracle & diagnostic\_reference \\
-0.100 & 0.363 & 0.976 & 0.530 & 0.424 & 0.563 & 3103.000 & 258.583 & 37 & Shallow ML (MLP) & scikit\_learn \\
-0.200 & 0.363 & 0.976 & 0.530 & 0.424 & 0.563 & 3103.000 & 258.583 & 37 & Shallow ML (MLP) & scikit\_learn \\
-0.300 & 0.363 & 0.976 & 0.530 & 0.424 & 0.563 & 3103.000 & 258.583 & 37 & Shallow ML (MLP) & scikit\_learn \\
-0.400 & 0.363 & 0.976 & 0.530 & 0.424 & 0.563 & 3103.000 & 258.583 & 37 & Shallow ML (MLP) & scikit\_learn \\
-0.500 & 0.363 & 0.976 & 0.530 & 0.424 & 0.563 & 3103.000 & 258.583 & 37 & Shallow ML (MLP) & scikit\_learn \\
-0.600 & 0.363 & 0.976 & 0.530 & 0.424 & 0.563 & 3103.000 & 258.583 & 37 & Shallow ML (MLP) & scikit\_learn \\
-0.700 & 0.363 & 0.976 & 0.530 & 0.424 & 0.563 & 3103.000 & 258.583 & 37 & Shallow ML (MLP) & scikit\_learn \\
-0.800 & 0.363 & 0.976 & 0.530 & 0.424 & 0.563 & 3103.000 & 258.583 & 37 & Shallow ML (MLP) & scikit\_learn \\
-0.900 & 0.363 & 0.976 & 0.530 & 0.424 & 0.563 & 3103.000 & 258.583 & 37 & Shallow ML (MLP) & scikit\_learn \\
-0.100 & 0.252 & 1.000 & 0.402 & 0.000 & 0.252 & 5386.000 & 448.833 & 37 & Kinetic-TopoGuard & scikit\_learn \\
-0.200 & 0.431 & 0.995 & 0.602 & 0.558 & 0.668 & 2380.000 & 198.333 & 37 & Kinetic-TopoGuard & scikit\_learn \\
-0.300 & 0.631 & 0.920 & 0.749 & 0.819 & 0.845 & 974.000 & 81.167 & 37 & Kinetic-TopoGuard & scikit\_learn \\
-0.400 & 0.800 & 0.816 & 0.808 & 0.931 & 0.902 & 370.000 & 30.833 & 37 & Kinetic-TopoGuard & scikit\_learn \\
-0.500 & 0.846 & 0.740 & 0.789 & 0.955 & 0.901 & 244.000 & 20.333 & 37 & Kinetic-TopoGuard & scikit\_learn \\
-0.600 & 0.886 & 0.673 & 0.765 & 0.971 & 0.896 & 157.000 & 13.083 & 37 & Kinetic-TopoGuard & scikit\_learn \\
-0.700 & 0.927 & 0.568 & 0.705 & 0.985 & 0.880 & 81.000 & 6.750 & 37 & Kinetic-TopoGuard & scikit\_learn \\
-0.800 & 0.972 & 0.362 & 0.528 & 0.996 & 0.837 & 19.000 & 1.583 & 37 & Kinetic-TopoGuard & scikit\_learn \\
-0.900 & 1.000 & 0.093 & 0.170 & 1.000 & 0.771 & 0.000 & 0.000 & 37 & Kinetic-TopoGuard & scikit\_learn \\
+0.100 & 0.796 & 0.830 & 0.813 & 0.962 & 0.942 & 232.000 & 19.333 & 0.000 & 0.000 & 0.000 & 148.000 & 148.000 & 0.000 & 0.000 & 0.000 & 0.000 & 37 & Current-state persistence baseline & deterministic\_persistence\_baseline & test\_sensitivity\_only \\
+0.200 & 0.796 & 0.830 & 0.813 & 0.962 & 0.942 & 232.000 & 19.333 & 0.000 & 0.000 & 0.000 & 148.000 & 148.000 & 0.000 & 0.000 & 0.000 & 0.000 & 37 & Current-state persistence baseline & deterministic\_persistence\_baseline & test\_sensitivity\_only \\
+0.300 & 0.796 & 0.830 & 0.813 & 0.962 & 0.942 & 232.000 & 19.333 & 0.000 & 0.000 & 0.000 & 148.000 & 148.000 & 0.000 & 0.000 & 0.000 & 0.000 & 37 & Current-state persistence baseline & deterministic\_persistence\_baseline & test\_sensitivity\_only \\
+0.400 & 0.796 & 0.830 & 0.813 & 0.962 & 0.942 & 232.000 & 19.333 & 0.000 & 0.000 & 0.000 & 148.000 & 148.000 & 0.000 & 0.000 & 0.000 & 0.000 & 37 & Current-state persistence baseline & deterministic\_persistence\_baseline & test\_sensitivity\_only \\
+0.500 & 0.796 & 0.830 & 0.813 & 0.962 & 0.942 & 232.000 & 19.333 & 0.000 & 0.000 & 0.000 & 148.000 & 148.000 & 0.000 & 0.000 & 0.000 & 0.000 & 37 & Current-state persistence baseline & deterministic\_persistence\_baseline & test\_sensitivity\_only \\
+0.600 & 0.796 & 0.830 & 0.813 & 0.962 & 0.942 & 232.000 & 19.333 & 0.000 & 0.000 & 0.000 & 148.000 & 148.000 & 0.000 & 0.000 & 0.000 & 0.000 & 37 & Current-state persistence baseline & deterministic\_persistence\_baseline & test\_sensitivity\_only \\
+0.700 & 0.796 & 0.830 & 0.813 & 0.962 & 0.942 & 232.000 & 19.333 & 0.000 & 0.000 & 0.000 & 148.000 & 148.000 & 0.000 & 0.000 & 0.000 & 0.000 & 37 & Current-state persistence baseline & deterministic\_persistence\_baseline & test\_sensitivity\_only \\
+0.800 & 0.796 & 0.830 & 0.813 & 0.962 & 0.942 & 232.000 & 19.333 & 0.000 & 0.000 & 0.000 & 148.000 & 148.000 & 0.000 & 0.000 & 0.000 & 0.000 & 37 & Current-state persistence baseline & deterministic\_persistence\_baseline & test\_sensitivity\_only \\
+0.900 & 0.796 & 0.830 & 0.813 & 0.962 & 0.942 & 232.000 & 19.333 & 0.000 & 0.000 & 0.000 & 148.000 & 148.000 & 0.000 & 0.000 & 0.000 & 0.000 & 37 & Current-state persistence baseline & deterministic\_persistence\_baseline & test\_sensitivity\_only \\
+0.100 & 0.155 & 0.997 & 0.268 & 0.025 & 0.173 & 5952.000 & 496.000 & 144.000 & 67.000 & 77.000 & 148.000 & 81.000 & 0.465 & 0.453 & 0.459 & 6.417 & 37 & Shallow ML (GBR) & scikit\_learn & test\_sensitivity\_only \\
+0.200 & 0.155 & 0.997 & 0.268 & 0.025 & 0.173 & 5952.000 & 496.000 & 144.000 & 67.000 & 77.000 & 148.000 & 81.000 & 0.465 & 0.453 & 0.459 & 6.417 & 37 & Shallow ML (GBR) & scikit\_learn & test\_sensitivity\_only \\
+0.300 & 0.155 & 0.997 & 0.268 & 0.025 & 0.173 & 5952.000 & 496.000 & 144.000 & 67.000 & 77.000 & 148.000 & 81.000 & 0.465 & 0.453 & 0.459 & 6.417 & 37 & Shallow ML (GBR) & scikit\_learn & test\_sensitivity\_only \\
+0.400 & 0.155 & 0.997 & 0.268 & 0.025 & 0.173 & 5952.000 & 496.000 & 144.000 & 67.000 & 77.000 & 148.000 & 81.000 & 0.465 & 0.453 & 0.459 & 6.417 & 37 & Shallow ML (GBR) & scikit\_learn & test\_sensitivity\_only \\
+0.500 & 0.155 & 0.997 & 0.268 & 0.025 & 0.173 & 5952.000 & 496.000 & 144.000 & 67.000 & 77.000 & 148.000 & 81.000 & 0.465 & 0.453 & 0.459 & 6.417 & 37 & Shallow ML (GBR) & scikit\_learn & test\_sensitivity\_only \\
+0.600 & 0.155 & 0.997 & 0.268 & 0.025 & 0.173 & 5952.000 & 496.000 & 144.000 & 67.000 & 77.000 & 148.000 & 81.000 & 0.465 & 0.453 & 0.459 & 6.417 & 37 & Shallow ML (GBR) & scikit\_learn & test\_sensitivity\_only \\
+0.700 & 0.155 & 0.997 & 0.268 & 0.025 & 0.173 & 5952.000 & 496.000 & 144.000 & 67.000 & 77.000 & 148.000 & 81.000 & 0.465 & 0.453 & 0.459 & 6.417 & 37 & Shallow ML (GBR) & scikit\_learn & test\_sensitivity\_only \\
+0.800 & 0.155 & 0.997 & 0.268 & 0.025 & 0.173 & 5952.000 & 496.000 & 144.000 & 67.000 & 77.000 & 148.000 & 81.000 & 0.465 & 0.453 & 0.459 & 6.417 & 37 & Shallow ML (GBR) & scikit\_learn & test\_sensitivity\_only \\
+0.900 & 0.155 & 0.997 & 0.268 & 0.025 & 0.173 & 5952.000 & 496.000 & 144.000 & 67.000 & 77.000 & 148.000 & 81.000 & 0.465 & 0.453 & 0.459 & 6.417 & 37 & Shallow ML (GBR) & scikit\_learn & test\_sensitivity\_only \\
+0.100 & 0.152 & 1.000 & 0.264 & 0.000 & 0.152 & 6106.000 & 508.833 & 127.000 & 67.000 & 60.000 & 148.000 & 81.000 & 0.528 & 0.453 & 0.487 & 5.000 & 37 & Kinetic-TopoGuard & scikit\_learn & test\_sensitivity\_only \\
+0.200 & 0.152 & 1.000 & 0.264 & 0.000 & 0.152 & 6106.000 & 508.833 & 127.000 & 67.000 & 60.000 & 148.000 & 81.000 & 0.528 & 0.453 & 0.487 & 5.000 & 37 & Kinetic-TopoGuard & scikit\_learn & test\_sensitivity\_only \\
+0.300 & 0.157 & 0.999 & 0.271 & 0.036 & 0.183 & 5884.000 & 490.333 & 130.000 & 68.000 & 62.000 & 148.000 & 80.000 & 0.523 & 0.459 & 0.489 & 5.167 & 37 & Kinetic-TopoGuard & scikit\_learn & test\_sensitivity\_only \\
+0.400 & 0.539 & 0.957 & 0.690 & 0.854 & 0.869 & 894.000 & 74.500 & 139.000 & 63.000 & 76.000 & 148.000 & 85.000 & 0.453 & 0.426 & 0.439 & 6.333 & 37 & Kinetic-TopoGuard & scikit\_learn & test\_sensitivity\_only \\
+0.500 & 0.731 & 0.895 & 0.805 & 0.941 & 0.934 & 360.000 & 30.000 & 48.000 & 36.000 & 12.000 & 148.000 & 112.000 & 0.750 & 0.243 & 0.367 & 1.000 & 37 & Kinetic-TopoGuard & scikit\_learn & test\_sensitivity\_only \\
+0.600 & 0.856 & 0.806 & 0.831 & 0.976 & 0.950 & 148.000 & 12.333 & 4.000 & 4.000 & 0.000 & 148.000 & 144.000 & 1.000 & 0.027 & 0.053 & 0.000 & 37 & Kinetic-TopoGuard & scikit\_learn & test\_sensitivity\_only \\
+0.700 & 0.924 & 0.671 & 0.778 & 0.990 & 0.942 & 60.000 & 5.000 & 0.000 & 0.000 & 0.000 & 148.000 & 148.000 & 0.000 & 0.000 & 0.000 & 0.000 & 37 & Kinetic-TopoGuard & scikit\_learn & test\_sensitivity\_only \\
+0.800 & 0.980 & 0.438 & 0.605 & 0.998 & 0.913 & 10.000 & 0.833 & 0.000 & 0.000 & 0.000 & 148.000 & 148.000 & 0.000 & 0.000 & 0.000 & 0.000 & 37 & Kinetic-TopoGuard & scikit\_learn & test\_sensitivity\_only \\
+0.900 & 1.000 & 0.084 & 0.155 & 1.000 & 0.861 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 148.000 & 148.000 & 0.000 & 0.000 & 0.000 & 0.000 & 37 & Kinetic-TopoGuard & scikit\_learn & test\_sensitivity\_only \\
 \bottomrule
 \end{tabular}

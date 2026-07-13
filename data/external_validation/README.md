@@ -46,6 +46,34 @@ The cellular evidence contains measured UAV-to-base-station LTE/5G KPIs and
 iPerf throughput. It must not be described as synchronized inter-UAV FANET
 packet-link validation.
 
+## Measured UAV-to-UAV 60 GHz links
+
+```powershell
+python scripts/run_uav_to_uav_mmwave_validation.py
+```
+
+The WiNES source supplies measured peer-link channel observations. The held-out
+test trains below 33 m and tests at 33 m or farther using a joint SNR and
+received-power viability rule. Applying its distance-success relationship to
+the forestry motion is a transported sensitivity, not same-site calibration.
+Primary topology summaries require every pair to remain within the measured
+6--40 m distance support.
+
+## MILUV measured three-UAV UWB topology
+
+```powershell
+python scripts/download_miluv_validation.py
+python scripts/run_miluv_validation.py
+```
+
+MILUV (dataset DOI `10.25452/figshare.plus.28386041.v1`) provides Vicon motion
+and UWB first-path-power observations for three quadcopters. The downloader
+range-extracts six required CSV members from the official archive and records
+archive CRC plus per-file SHA-256 values. The evaluation uses causal
+forward-hold reconstruction at 10 Hz and frozen simulation-trained models.
+The resulting topology labels represent UWB ranging-message quality, not IP
+packet delivery.
+
 ## Scope boundary
 
 - Real evidence: synchronized positions and motion from a forestry field test.
@@ -57,10 +85,12 @@ packet-link validation.
   distance, selected without reference to model outcomes.
 - Transfer protocol: models are fitted on the synthetic compact training split
   and evaluated without refitting on the measured flight trace.
-- Still not covered: measured RF links, MAC contention, packet-level traffic,
-  onboard execution, hardware-in-the-loop, or operational deployment.
+- Still not covered: synchronized outdoor FANET IP packets, onboard execution,
+  hardware-in-the-loop control, or operational deployment.
 - AERPAW cellular boundary: measured aerial RF/KPI and throughput are included,
   but peer-to-peer inter-UAV packet labels are not.
+- MILUV boundary: inter-robot UWB RF quality is measured, but the environment is
+  indoor, the swarm has three UAVs, and the labels are not IP PDR.
 
 ## Attribution
 

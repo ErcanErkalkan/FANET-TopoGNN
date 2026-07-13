@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import copy
 import json
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 import sys
 
@@ -39,55 +40,72 @@ def _mean_ci(frame: pd.DataFrame, group_cols: list[str], metrics: list[str]) -> 
     return pd.DataFrame(rows)
 
 
+def _run_seed(seed: int, raw: dict, horizons: list[int]) -> list[dict]:
+    rows: list[dict] = []
+    sim = copy.deepcopy(raw["sim"])
+    sim["forecast_horizon_steps"] = max(int(value) for value in horizons)
+    base_snapshots = build_dataset(sim, seed=seed)
+    for horizon in horizons:
+        snapshots = relabel_forecast_horizon(base_snapshots, int(horizon))
+        train, val, test = train_val_test_split(
+            snapshots,
+            split_seed=int(sim["split_seed"]),
+            stratify_by=tuple(sim.get("split_stratify_by", ["mobility"])),
+        )
+        models = [
+            fit_kinetic_topoguard(train, val, int(horizon), float(sim["dt"]), seed=seed),
+            select_best_shallow(train, val),
+            fit_current_state_persistence(),
+        ]
+        for result in models:
+            preds, scores, latency, aligned, threshold = predict_generic(result, test)
+            summary, _, _ = evaluate_predictions(
+                result.model_name,
+                aligned,
+                preds,
+                scores,
+                latency,
+                dt=float(sim["dt"]),
+                bootstrap_rounds=100,
+                horizon_steps=int(horizon),
+                risk_threshold=threshold,
+            )
+            rows.append(
+                {
+                    "seed": seed,
+                    "horizon_steps": int(horizon),
+                    "horizon_s": float(horizon) * float(sim["dt"]),
+                    **summary,
+                }
+            )
+        print(f"completed seed={seed} horizon={horizon}", flush=True)
+    return rows
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run a leakage-safe forecast-horizon sweep.")
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--horizons", type=int, nargs="+", default=[2, 4, 6, 10, 15, 20])
     parser.add_argument("--seeds", type=int, nargs="+", default=[7, 17, 27, 37, 47])
+    parser.add_argument("--workers", type=int, default=2)
     args = parser.parse_args()
 
     raw = json.loads(args.config.read_text(encoding="utf-8"))
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    rows = []
-    sim = copy.deepcopy(raw["sim"])
-    sim["forecast_horizon_steps"] = max(int(value) for value in args.horizons)
-    for seed in args.seeds:
-        base_snapshots = build_dataset(sim, seed=seed)
-        for horizon in args.horizons:
-            snapshots = relabel_forecast_horizon(base_snapshots, int(horizon))
-            train, val, test = train_val_test_split(
-                snapshots,
-                split_seed=int(sim["split_seed"]),
-                stratify_by=tuple(sim.get("split_stratify_by", ["mobility"])),
-            )
-            models = [
-                fit_kinetic_topoguard(train, val, int(horizon), float(sim["dt"]), seed=seed),
-                select_best_shallow(train, val),
-                fit_current_state_persistence(),
-            ]
-            for result in models:
-                preds, scores, latency, aligned, threshold = predict_generic(result, test)
-                summary, _, _ = evaluate_predictions(
-                    result.model_name,
-                    aligned,
-                    preds,
-                    scores,
-                    latency,
-                    dt=float(sim["dt"]),
-                    bootstrap_rounds=100,
-                    horizon_steps=int(horizon),
-                    risk_threshold=threshold,
-                )
-                rows.append(
-                    {
-                        "seed": seed,
-                        "horizon_steps": int(horizon),
-                        "horizon_s": float(horizon) * float(sim["dt"]),
-                        **summary,
-                    }
-                )
-            print(f"completed seed={seed} horizon={horizon}", flush=True)
+    rows: list[dict] = []
+    if args.workers <= 1:
+        for seed in args.seeds:
+            rows.extend(_run_seed(seed, raw, args.horizons))
+    else:
+        with ProcessPoolExecutor(max_workers=min(args.workers, len(args.seeds))) as pool:
+            for seed_rows in pool.map(
+                _run_seed,
+                args.seeds,
+                [raw] * len(args.seeds),
+                [args.horizons] * len(args.seeds),
+            ):
+                rows.extend(seed_rows)
 
     per_seed = pd.DataFrame(rows)
     per_seed["Model"] = per_seed["Model"].str.replace(
@@ -100,6 +118,9 @@ def main() -> int:
         "R2",
         "Risk_F1",
         "Risk_PR_AUC",
+        "Alert_Event_Precision",
+        "Alert_Event_Recall",
+        "Alert_Event_F1",
         "False_Alert_Events_per_minute",
         "Inference_ms",
     ]
@@ -111,9 +132,9 @@ def main() -> int:
     for model, group in summary.groupby("Model"):
         group = group.sort_values("horizon_s")
         axes[0].plot(group["horizon_s"], group["MAE_mean"], marker="o", label=model)
-        axes[1].plot(group["horizon_s"], group["Risk_F1_mean"], marker="o", label=model)
+        axes[1].plot(group["horizon_s"], group["Alert_Event_F1_mean"], marker="o", label=model)
     axes[0].set(xlabel="Forecast horizon (s)", ylabel="MAE", title="Horizon sensitivity: regression")
-    axes[1].set(xlabel="Forecast horizon (s)", ylabel="Risk F1", title="Horizon sensitivity: risk")
+    axes[1].set(xlabel="Forecast horizon (s)", ylabel="Event F1", title="Horizon sensitivity: fragmentation events")
     for axis in axes:
         axis.grid(alpha=0.25)
     axes[1].legend(frameon=False, fontsize=7)
@@ -125,6 +146,7 @@ def main() -> int:
     protocol = {
         "config": str(args.config.relative_to(ROOT)),
         "seeds": args.seeds,
+        "workers": args.workers,
         "horizon_steps": args.horizons,
         "horizon_seconds": [float(value) * float(raw["sim"]["dt"]) for value in args.horizons],
         "selection": "All model and risk hyperparameters are selected on validation runs; reported metrics use disjoint test runs.",

@@ -44,6 +44,32 @@ def bootstrap_metric_ci(
     return float(np.quantile(metrics, alpha / 2.0)), float(np.quantile(metrics, 1.0 - alpha / 2.0))
 
 
+def clustered_bootstrap_metric_ci(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    groups: np.ndarray,
+    metric_fn,
+    rounds: int = 1000,
+    alpha: float = 0.05,
+) -> tuple[float, float]:
+    """Bootstrap complete simulation/flight runs to preserve temporal dependence."""
+    labels = np.asarray(groups, dtype=object)
+    unique_groups = np.unique(labels)
+    if unique_groups.size <= 1:
+        return bootstrap_metric_ci(y_true, y_pred, metric_fn, rounds=rounds, alpha=alpha)
+    indices = {group: np.flatnonzero(labels == group) for group in unique_groups}
+    rng = np.random.default_rng(1234)
+    metrics = []
+    for _ in range(max(rounds, 1)):
+        sampled_groups = rng.choice(unique_groups, size=len(unique_groups), replace=True)
+        sampled_indices = np.concatenate([indices[group] for group in sampled_groups])
+        metrics.append(metric_fn(y_true[sampled_indices], y_pred[sampled_indices]))
+    return (
+        float(np.quantile(metrics, alpha / 2.0)),
+        float(np.quantile(metrics, 1.0 - alpha / 2.0)),
+    )
+
+
 def mean_absolute_error(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     return float(np.mean(np.abs(y_true - y_pred)))
 
@@ -172,12 +198,7 @@ def alert_event_metrics(
     horizon_steps: int,
     cooldown_steps: int | None = None,
 ) -> dict[str, float]:
-    """Count distinct warning episodes instead of positive time samples.
-
-    An alert is emitted on a threshold crossing after the cooldown period. It
-    is a true alert when physical fragmentation occurs within the forecast
-    horizon; otherwise it is a false alert event.
-    """
+    """Match connected-state alert episodes to connected-to-fragmented events."""
     cooldown = max(int(cooldown_steps if cooldown_steps is not None else horizon_steps), 1)
     run_pairs: dict[str, list[tuple[Snapshot, float]]] = {}
     for snap, score in zip(snapshots, np.asarray(scores, dtype=float)):
@@ -186,35 +207,65 @@ def alert_event_metrics(
     alert_events = 0
     true_alert_events = 0
     false_alert_events = 0
+    ground_truth_events = 0
+    missed_events = 0
     total_duration_minutes = 0.0
     for pairs in run_pairs.values():
         pairs = sorted(pairs, key=lambda item: item[0].time_index)
         run_snaps = [item[0] for item in pairs]
         run_scores = np.asarray([item[1] for item in pairs], dtype=float)
         total_duration_minutes += len(run_snaps) * float(dt) / 60.0
+        event_indices = [
+            idx
+            for idx in range(1, len(run_snaps))
+            if run_snaps[idx - 1].beta_current <= 1.0 and run_snaps[idx].beta_current > 1.0
+        ]
+        ground_truth_events += len(event_indices)
+        matched_events: set[int] = set()
+        emitted_alerts = []
         last_alert = -cooldown
         was_positive = False
         for idx, score in enumerate(run_scores):
+            if run_snaps[idx].beta_current > 1.0:
+                was_positive = False
+                continue
             positive = bool(score >= threshold)
             can_emit = idx - last_alert >= cooldown
             if positive and not was_positive and can_emit:
                 alert_events += 1
                 last_alert = idx
-                stop = min(len(run_snaps), idx + max(int(horizon_steps), 1) + 1)
-                fragments = any(run_snaps[look].beta_current > 1.0 for look in range(idx + 1, stop))
-                if fragments:
-                    true_alert_events += 1
-                else:
-                    false_alert_events += 1
+                emitted_alerts.append(idx)
             was_positive = positive
+        for alert_idx in emitted_alerts:
+            match = next(
+                (
+                    event_idx
+                    for event_idx in event_indices
+                    if event_idx not in matched_events
+                    and alert_idx < event_idx <= alert_idx + max(int(horizon_steps), 1)
+                ),
+                None,
+            )
+            if match is None:
+                false_alert_events += 1
+            else:
+                true_alert_events += 1
+                matched_events.add(match)
+        missed_events += len(event_indices) - len(matched_events)
 
     duration = max(total_duration_minutes, 1e-12)
     precision = true_alert_events / max(alert_events, 1)
+    recall = true_alert_events / max(ground_truth_events, 1)
+    event_f1 = 2.0 * precision * recall / max(precision + recall, 1e-8)
     return {
         "Alert_Events": float(alert_events),
         "True_Alert_Events": float(true_alert_events),
         "False_Alert_Events": float(false_alert_events),
+        "Ground_Truth_Fragmentation_Events": float(ground_truth_events),
+        "Missed_Fragmentation_Events": float(missed_events),
         "Alert_Event_Precision": float(precision),
+        "Alert_Event_Recall": float(recall),
+        "Alert_Event_F1": float(event_f1),
         "False_Alert_Events_per_minute": float(false_alert_events / duration),
     }
 
@@ -272,17 +323,11 @@ def predict_generic(model_result, data: list[Snapshot]) -> tuple[np.ndarray, np.
 
 
 def event_warning_leads(run_snaps: list[Snapshot], risk_scores: np.ndarray, dt: float, horizon_steps: int, risk_threshold: float) -> tuple[list[float], list[float]]:
-    """Compute event-based warning lead before physical-adjacency changes.
-
-    The fragmentation-risk target is evaluated separately as the exact-horizon event beta0(t+h) > 1.
-    This statistic measures how early a risk score crosses threshold before any
-    edge-set change in the current physical graph.
-    """
+    """Compute warning lead before connected-to-fragmented transitions."""
     flip_indices = [
         idx
         for idx in range(1, len(run_snaps))
-        if run_snaps[idx - 1].adjacency.shape == run_snaps[idx].adjacency.shape
-        and np.any(run_snaps[idx - 1].adjacency != run_snaps[idx].adjacency)
+        if run_snaps[idx - 1].beta_current <= 1.0 and run_snaps[idx].beta_current > 1.0
     ]
     if not flip_indices:
         return [], []
@@ -310,15 +355,30 @@ def evaluate_predictions(model_name: str, test_data: list[Snapshot], preds: np.n
     y_true = np.asarray([snap.beta_target for snap in aligned_test], dtype=float)
     y_risk_true = np.asarray([snap.frag_at_horizon for snap in aligned_test], dtype=int)
     y_risk_pred = (risk_scores >= risk_threshold).astype(int)
+    run_groups = np.asarray([snap.run_id for snap in aligned_test], dtype=object)
+    mae_ci = clustered_bootstrap_metric_ci(
+        y_true,
+        preds,
+        run_groups,
+        mean_absolute_error,
+        rounds=bootstrap_rounds,
+    )
+    r2_ci = clustered_bootstrap_metric_ci(
+        y_true,
+        preds,
+        run_groups,
+        r2_score,
+        rounds=bootstrap_rounds,
+    )
     summary = {
         "Model": model_name,
         "MAE": mean_absolute_error(y_true, preds),
         "MSE": mean_squared_error(y_true, preds),
         "R2": r2_score(y_true, preds),
-        "MAE_CI_low": bootstrap_metric_ci(y_true, preds, mean_absolute_error, rounds=bootstrap_rounds)[0],
-        "MAE_CI_high": bootstrap_metric_ci(y_true, preds, mean_absolute_error, rounds=bootstrap_rounds)[1],
-        "R2_CI_low": bootstrap_metric_ci(y_true, preds, r2_score, rounds=bootstrap_rounds)[0],
-        "R2_CI_high": bootstrap_metric_ci(y_true, preds, r2_score, rounds=bootstrap_rounds)[1],
+        "MAE_CI_low": mae_ci[0],
+        "MAE_CI_high": mae_ci[1],
+        "R2_CI_low": r2_ci[0],
+        "R2_CI_high": r2_ci[1],
         "Inference_ms": float(np.mean(inference_ms)),
     }
     summary.update(classification_metrics(y_risk_true, y_risk_pred))
@@ -420,9 +480,12 @@ def _select_relays(adj: np.ndarray, components: list[list[int]], max_relays: int
 
 def _steer_relays_towards_component_midpoints(
     positions: np.ndarray,
+    velocities: np.ndarray,
     components: list[list[int]],
     relays: list[int],
-    step_fraction: float = 0.35,
+    dt: float,
+    max_speed_mps: float,
+    max_acceleration_mps2: float,
     min_separation: float = 10.0,
 ) -> np.ndarray:
     if len(components) < 2 or not relays:
@@ -436,7 +499,23 @@ def _steer_relays_towards_component_midpoints(
             continue
         target_idx = min(other_indices, key=lambda idx: float(np.linalg.norm(centroids[idx] - centroids[own_idx])))
         midpoint = 0.5 * (centroids[own_idx] + centroids[target_idx])
-        adjusted[relay] = positions[relay] + step_fraction * (midpoint - positions[relay])
+        direction = midpoint - positions[relay]
+        distance = float(np.linalg.norm(direction))
+        if distance <= 1e-9:
+            continue
+        desired_speed = min(max_speed_mps, distance / max(dt, 1e-9))
+        desired_velocity = direction / distance * desired_speed
+        current_velocity = velocities[relay].astype(float)
+        velocity_delta = desired_velocity - current_velocity
+        max_delta = max_acceleration_mps2 * dt
+        delta_norm = float(np.linalg.norm(velocity_delta))
+        if delta_norm > max_delta > 0.0:
+            velocity_delta *= max_delta / delta_norm
+        commanded_velocity = current_velocity + velocity_delta
+        commanded_speed = float(np.linalg.norm(commanded_velocity))
+        if commanded_speed > max_speed_mps > 0.0:
+            commanded_velocity *= max_speed_mps / commanded_speed
+        adjusted[relay] = positions[relay] + commanded_velocity * dt
         for _ in range(4):
             deltas = adjusted[relay] - adjusted
             distances = np.linalg.norm(deltas, axis=1)
@@ -508,6 +587,7 @@ def _controlled_physical_adjacency(
     boost: float,
     relays: list[int],
     sim_cfg: dict | None,
+    relay_link_budget_boost_db: float,
 ) -> np.ndarray:
     base_adj = (snap.adjacency > 0).astype(np.float32)
     if not relays:
@@ -517,6 +597,11 @@ def _controlled_physical_adjacency(
     distances = pairwise_distances(positions)
     boosted_radius = float(snap.radius) * float(boost)
     if scenario_cfg is not None:
+        physical = dict(scenario_cfg.get("physical_layer", {}))
+        node_boost = np.zeros(snap.n_nodes, dtype=float)
+        node_boost[relays] = float(relay_link_budget_boost_db)
+        physical["node_link_budget_boost_db"] = node_boost.tolist()
+        scenario_cfg["physical_layer"] = physical
         candidate = build_link_adjacency(
             distances,
             boosted_radius,
@@ -555,6 +640,9 @@ def run_network_controller(
     risk_threshold: float,
     dtn_delivery_fraction: float = 0.65,
     sim_config: dict | None = None,
+    relay_max_speed_mps: float = 30.0,
+    relay_max_acceleration_mps2: float = 12.0,
+    relay_link_budget_boost_db: float = 3.0,
 ) -> dict:
     connected_ticks = 0
     delivered = 0
@@ -570,6 +658,9 @@ def run_network_controller(
             boost=boost,
             risk_threshold=risk_threshold,
             sim_config=sim_config,
+            relay_max_speed_mps=relay_max_speed_mps,
+            relay_max_acceleration_mps2=relay_max_acceleration_mps2,
+            relay_link_budget_boost_db=relay_link_budget_boost_db,
         )
         relay_actions += len(relays)
         beta = betti_zero(adj)
@@ -592,8 +683,8 @@ def run_network_controller(
             delays.extend([float(120.0 + max(beta - 1, 0) * 25.0)] * dtn_delivered)
     return {
         "Connectivity ratio": connected_ticks / max(len(preds), 1),
-        "PDR (%)": 100.0 * delivered / max(generated, 1),
-        "Avg. end-to-end delay (ms)": float(np.mean(delays) if delays else 0.0),
+        "Reachability-delivery proxy (%)": 100.0 * delivered / max(generated, 1),
+        "Proxy delay (ms)": float(np.mean(delays) if delays else 0.0),
         "Proactive reroute (%)": 100.0 * rerouted_pairs / max(generated, 1),
         "DTN buffered (%)": 100.0 * buffered_pairs / max(generated, 1),
         "Relay actions": float(relay_actions),
@@ -606,6 +697,9 @@ def controlled_adjacency_for_snapshot(
     boost: float,
     risk_threshold: float,
     sim_config: dict | None = None,
+    relay_max_speed_mps: float = 30.0,
+    relay_max_acceleration_mps2: float = 12.0,
+    relay_link_budget_boost_db: float = 3.0,
 ) -> tuple[np.ndarray, list[int], bool]:
     """Return the controller-adjusted physical graph for one snapshot."""
     positions = snap.positions.copy()
@@ -616,8 +710,23 @@ def controlled_adjacency_for_snapshot(
     components = sorted(connected_components(base_adj), key=len, reverse=True)
     relays = _select_relays(base_adj, components, max_relays=2)
     if len(components) > 1 and relays:
-        positions = _steer_relays_towards_component_midpoints(positions, components, relays)
-    adj = _controlled_physical_adjacency(snap, positions, boost, relays, sim_config)
+        positions = _steer_relays_towards_component_midpoints(
+            positions,
+            snap.velocities,
+            components,
+            relays,
+            dt=float((sim_config or {}).get("dt", 0.1)),
+            max_speed_mps=float(relay_max_speed_mps),
+            max_acceleration_mps2=float(relay_max_acceleration_mps2),
+        )
+    adj = _controlled_physical_adjacency(
+        snap,
+        positions,
+        boost,
+        relays,
+        sim_config,
+        relay_link_budget_boost_db,
+    )
     return adj, relays, True
 
 

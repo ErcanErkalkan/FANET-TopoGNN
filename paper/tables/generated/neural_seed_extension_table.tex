@@ -1,10 +1,11 @@
-\begin{tabular}{lrrrr}
+\begin{tabular}{lrrrrr}
 \toprule
-Model & Seeds & MAE & Risk $F_1$ & Backend \\
+Model & Seeds & MAE & Sample $F_1$ & Event $F_1$ & Backend \\
 \midrule
-Kinetic-TopoGuard & 5 & 0.309 & 0.560 & scikit-learn \\
-GraphSAGE & 5 & 0.406 & 0.483 & PyTorch \\
-STGCN (w=5) & 5 & 0.414 & 0.502 & PyTorch \\
-FANET-TopoGNN (concat) & 5 & 0.422 & 0.505 & PyTorch \\
+Kinetic-TopoGuard & 5 & 0.120 & 0.701 & 0.470 & scikit-learn \\
+STGCN (w=5) & 5 & 0.218 & 0.334 & 0.404 & PyTorch \\
+PI+MLP & 5 & 0.230 & 0.301 & 0.448 & PyTorch \\
+TGN (w=5) & 5 & 0.234 & 0.305 & 0.464 & PyTorch \\
+FANET-TopoGNN (concat) & 5 & 0.243 & 0.318 & 0.418 & PyTorch \\
 \bottomrule
 \end{tabular}

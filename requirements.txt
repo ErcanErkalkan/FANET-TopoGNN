@@ -1,6 +1,6 @@
 # Base scientific stack.
 # This file intentionally excludes PyTorch.
-# It supports dataset generation, Kinetic-TopoGuard, union-find, shallow/tabular
+# It supports dataset generation, Kinetic-TopoGuard, current-state persistence, shallow/tabular
 # baselines, smoke tests, and manuscript table/figure aggregation.
 # Configurations containing neural GNN or temporal model names use surrogate
 # estimators in this base environment. Install requirements-deep.txt or

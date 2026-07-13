@@ -1,3 +1,0 @@
-Model,MAE,MSE,R2,MAE_CI_low,MAE_CI_high,R2_CI_low,R2_CI_high,Inference_ms,Risk_Precision,Risk_Recall,Risk_F1,Risk_Specificity,Risk_Accuracy,Risk_PR_AUC,Risk_ROC_AUC,Risk_Brier,Risk_ECE,False_Alarms,False_Alarms_per_minute,Alert_Events,True_Alert_Events,False_Alert_Events,Alert_Event_Precision,False_Alert_Events_per_minute,seed,Model_Backend
-Current-state persistence baseline,0.0,0.0,1.0,0.0,0.0,1.0,1.0,0.03978333309836064,1.0,1.0,1.0,0.0,1.0,,,0.0,0.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,7,deterministic_persistence_baseline
-Density + min-distance heuristics,1.0,1.0,-1199999999.0,1.0,1.0,-1199999999.0,-1199999999.0,0.03156666692423944,1.0,1.0,1.0,0.0,1.0,,,0.0,0.0,0.0,0.0,1.0,1.0,0.0,1.0,0.0,7,deterministic_heuristic

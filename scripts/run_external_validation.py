@@ -36,6 +36,11 @@ def _aggregate(frame: pd.DataFrame) -> pd.DataFrame:
         "Risk_ROC_AUC",
         "Risk_Brier",
         "Risk_ECE",
+        "Ground_Truth_Fragmentation_Events",
+        "Alert_Event_Precision",
+        "Alert_Event_Recall",
+        "Alert_Event_F1",
+        "False_Alert_Events_per_minute",
         "False_Alarms_per_minute",
         "Inference_ms",
     ]
@@ -78,9 +83,9 @@ def _plot_trace(trace, radii: dict[float, float], output_dir: Path) -> None:
 
 def _write_latex_table(aggregate: pd.DataFrame, path: Path) -> None:
     rows = [
-        "\\begin{tabular}{llrrrrr}",
+        "\\begin{tabular}{llrrrrrr}",
         "\\toprule",
-        "Model & Radius & Frag. rate & MAE & Clip rate & Risk $F_1$ & Brier \\\\",
+        "Model & Radius & Frag. rate & MAE & Clip rate & Sample $F_1$ & Event $F_1$ & False events/min \\\\",
         "\\midrule",
     ]
     for _, item in aggregate.sort_values(["Radius_quantile", "Model"]).iterrows():
@@ -95,7 +100,8 @@ def _write_latex_table(aggregate: pd.DataFrame, path: Path) -> None:
             f"{item['MAE_mean']:.3f} $\\pm$ {item['MAE_std']:.3f} & "
             f"{item['Prediction_Clipped_Fraction_mean']:.3f} & "
             f"{item['Risk_F1_mean']:.3f} $\\pm$ {item['Risk_F1_std']:.3f} & "
-            f"{item['Risk_Brier_mean']:.3f} $\\pm$ {item['Risk_Brier_std']:.3f} \\\\" 
+            f"{item['Alert_Event_F1_mean']:.3f} & "
+            f"{item['False_Alert_Events_per_minute_mean']:.2f} \\\\"
         )
     rows.extend(["\\bottomrule", "\\end{tabular}"])
     path.write_text("\n".join(rows), encoding="utf-8")
@@ -106,7 +112,15 @@ def main() -> None:
     parser.add_argument("--config", default="configs/publication_compact_provenance.json")
     parser.add_argument("--trace", type=Path, default=Path("data/external_validation/derived/forestry_multidrone_trace.csv"))
     parser.add_argument("--output-dir", type=Path, default=Path("outputs/external_validation"))
+    parser.add_argument("--aggregate-only", action="store_true")
     args = parser.parse_args()
+    if args.aggregate_only:
+        raw = pd.read_csv(args.output_dir / "external_metrics_per_seed.csv")
+        aggregate = _aggregate(raw)
+        aggregate.to_csv(args.output_dir / "external_metrics_summary.csv", index=False)
+        _write_latex_table(aggregate, args.output_dir / "external_metrics_table.tex")
+        print(f"Rebuilt aggregate outputs in {args.output_dir}")
+        return
     config = load_config(args.config)
     trace = load_flight_trace_csv(args.trace)
     radius_quantiles = (0.25, 0.50, 0.75)

@@ -318,13 +318,10 @@ def _write_table(out_path: Path, availability: pd.DataFrame, throughput: pd.Data
         .groupby("dataset", as_index=False)
         .first()
     )
-    primary_throughput = throughput[throughput["split"] == "final-30%-by-time"]
-    best_throughput = primary_throughput[primary_throughput["model"] == "RF/KPI random forest"].iloc[0]
-    baseline_throughput = primary_throughput[primary_throughput["model"] == "Training-mean baseline"].iloc[0]
     lines = [
-        r"\begin{tabular}{llrrrr}",
+        r"\begin{tabular}{lllrrr}",
         r"\toprule",
-        r"External evidence & Target & Test $n$ & Metric & Baseline & Best model \\",
+        r"Evidence & Target/split & Metric & Test $n$ & Baseline & RF/KPI model \\",
         r"\midrule",
     ]
     for _, row in best_availability.iterrows():
@@ -334,14 +331,24 @@ def _write_table(out_path: Path, availability: pd.DataFrame, throughput: pd.Data
             & availability["model"].astype(str).str.startswith("RSRP threshold")
         ].iloc[0]
         lines.append(
-            f"{label} & Link state & {int(row['test_n'])} & $F_1$ & "
+            f"{label} & Link state/final 30\\% & $F_1$ & {int(row['test_n'])} & "
             f"{baseline['f1']:.3f} & {row['f1']:.3f} \\\\"
         )
-    lines.append(
-        "AERPAW D23 iPerf & Throughput & "
-        f"{int(best_throughput['test_n'])} & MAE & "
-        f"{baseline_throughput['mae_mbps']:.1f} & {best_throughput['mae_mbps']:.1f} \\\\"
-    )
+    for split, label in [
+        ("final-30%-by-time", "Final 30\\%"),
+        ("first-half-to-second-half", "First half $\\rightarrow$ second half"),
+    ]:
+        subset = throughput[throughput["split"] == split]
+        model = subset[subset["model"] == "RF/KPI random forest"].iloc[0]
+        baseline = subset[subset["model"] == "Training-mean baseline"].iloc[0]
+        lines.append(
+            f"AERPAW D23 iPerf & {label} & MAE & {int(model['test_n'])} & "
+            f"{baseline['mae_mbps']:.1f} & {model['mae_mbps']:.1f} \\\\"
+        )
+        lines.append(
+            f"AERPAW D23 iPerf & {label} & $R^2$ & {int(model['test_n'])} & "
+            f"{baseline['r2']:.3f} & {model['r2']:.3f} \\\\"
+        )
     lines.extend([r"\bottomrule", r"\end{tabular}"])
     out_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 

@@ -18,9 +18,9 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from fanet.dataset import Snapshot, build_dataset, train_val_test_split
+from fanet.evaluation import alert_event_metrics
 from fanet.geometry import pairwise_distances
 from fanet.graph_utils import adjacency_from_radius, betti_zero
-from fanet.training import shallow_feature_vector
 
 
 DEFAULT_CONFIG = ROOT / "configs" / "publication_compact.json"
@@ -52,7 +52,18 @@ def _components(snapshot: Snapshot, previous: Snapshot | None, horizon_steps: in
         ],
         dtype=np.float32,
     )
-    graph = shallow_feature_vector(snapshot)
+    graph = np.asarray(
+        [
+            snapshot.stats[4] / max(snapshot.n_nodes - 1, 1),
+            snapshot.stats[5] / max(snapshot.n_nodes - 1, 1),
+            snapshot.stats[6] / max(snapshot.n_nodes - 1, 1),
+            snapshot.stats[7],
+            snapshot.stats[8],
+            snapshot.stats[9] / max(snapshot.n_nodes - 1, 1),
+            snapshot.stats[16],
+        ],
+        dtype=np.float32,
+    )
     topology = np.concatenate([snapshot.pi, _summary(snapshot.pi)]).astype(np.float32)
     tau = float(horizon_steps) * float(dt)
     current_dist = pairwise_distances(snapshot.positions.astype(float))
@@ -88,10 +99,11 @@ def _component_matrices(
     snapshots: list[Snapshot],
     horizon_steps: int,
     dt: float,
-) -> tuple[dict[str, np.ndarray], np.ndarray, np.ndarray]:
+) -> tuple[dict[str, np.ndarray], np.ndarray, np.ndarray, list[Snapshot]]:
     rows = {"current": [], "graph": [], "topology": [], "kinematic": []}
     targets = []
     risks = []
+    aligned = []
     grouped: dict[str, list[Snapshot]] = {}
     for snap in snapshots:
         grouped.setdefault(snap.run_id, []).append(snap)
@@ -103,11 +115,13 @@ def _component_matrices(
                 rows[name].append(parts[name])
             targets.append(float(snap.beta_target))
             risks.append(int(snap.frag_at_horizon))
+            aligned.append(snap)
             previous = snap
     return (
         {name: np.asarray(values) for name, values in rows.items()},
         np.asarray(targets),
         np.asarray(risks),
+        aligned,
     )
 
 
@@ -115,20 +129,36 @@ def _select_matrix(parts: dict[str, np.ndarray], selected_sources: tuple[str, ..
     return np.concatenate([parts["current"], *(parts[name] for name in selected_sources)], axis=1)
 
 
-def _select_threshold(labels: np.ndarray, scores: np.ndarray) -> float:
+def _select_threshold(
+    labels: np.ndarray,
+    scores: np.ndarray,
+    snapshots: list[Snapshot],
+    dt: float,
+    horizon_steps: int,
+) -> float:
     candidates = np.linspace(0.05, 0.95, 19)
     ranked = [
-        (f1_score(labels, scores >= threshold, zero_division=0), float(threshold))
+        (
+            alert_event_metrics(
+                snapshots,
+                scores,
+                threshold=float(threshold),
+                dt=dt,
+                horizon_steps=horizon_steps,
+            )["Alert_Event_F1"],
+            f1_score(labels, scores >= threshold, zero_division=0),
+            float(threshold),
+        )
         for threshold in candidates
     ]
-    return max(ranked, key=lambda item: (item[0], item[1]))[1]
+    return max(ranked, key=lambda item: (item[0], item[1], item[2]))[2]
 
 
 def _mean_ci(frame: pd.DataFrame) -> pd.DataFrame:
     rows = []
     for model, group in frame.groupby("feature_sources"):
         row = {"feature_sources": model, "seeds": int(group["seed"].nunique())}
-        for metric in ["MAE", "R2", "Risk_F1"]:
+        for metric in ["MAE", "R2", "Risk_F1", "Alert_Event_F1"]:
             values = group[metric].astype(float)
             spread = 1.96 * float(values.std(ddof=1)) / len(values) ** 0.5
             row[f"{metric}_mean"] = float(values.mean())
@@ -146,9 +176,9 @@ def _run_seed(seed: int, sim: dict, combinations: list[tuple[str, ...]]) -> list
         split_seed=int(sim["split_seed"]),
         stratify_by=tuple(sim.get("split_stratify_by", ["mobility"])),
     )
-    train_parts, y_train, risk_train = _component_matrices(train, horizon, float(sim["dt"]))
-    val_parts, y_val, risk_val = _component_matrices(val, horizon, float(sim["dt"]))
-    test_parts, y_test, risk_test = _component_matrices(test, horizon, float(sim["dt"]))
+    train_parts, y_train, risk_train, _ = _component_matrices(train, horizon, float(sim["dt"]))
+    val_parts, y_val, risk_val, val_aligned = _component_matrices(val, horizon, float(sim["dt"]))
+    test_parts, y_test, risk_test, test_aligned = _component_matrices(test, horizon, float(sim["dt"]))
     rows = []
     for sources in combinations:
         x_train = _select_matrix(train_parts, sources)
@@ -181,8 +211,21 @@ def _run_seed(seed: int, sim: dict, combinations: list[tuple[str, ...]]) -> list
         )
         classifier.fit(x_train, risk_train)
         val_score = classifier.predict_proba(x_val)[:, 1]
-        threshold = _select_threshold(risk_val, val_score)
+        threshold = _select_threshold(
+            risk_val,
+            val_score,
+            val_aligned,
+            float(sim["dt"]),
+            horizon,
+        )
         test_score = classifier.predict_proba(x_test)[:, 1]
+        event_metrics = alert_event_metrics(
+            test_aligned,
+            test_score,
+            threshold=threshold,
+            dt=float(sim["dt"]),
+            horizon_steps=horizon,
+        )
         label = "current-only" if not sources else "+".join(sources)
         rows.append(
             {
@@ -194,6 +237,7 @@ def _run_seed(seed: int, sim: dict, combinations: list[tuple[str, ...]]) -> list
                 "MAE": float(mean_absolute_error(y_test, prediction)),
                 "R2": float(r2_score(y_test, prediction)),
                 "Risk_F1": float(f1_score(risk_test, test_score >= threshold, zero_division=0)),
+                "Alert_Event_F1": float(event_metrics["Alert_Event_F1"]),
             }
         )
     print(f"completed seed={seed}", flush=True)
@@ -239,9 +283,9 @@ def main() -> int:
     plot = summary.sort_values("MAE_mean", ascending=True)
     fig, axes = plt.subplots(1, 2, figsize=(10, 4.2))
     axes[0].barh(plot["feature_sources"], plot["MAE_mean"], color="#2f6db3")
-    axes[1].barh(plot["feature_sources"], plot["Risk_F1_mean"], color="#3b7a57")
+    axes[1].barh(plot["feature_sources"], plot["Alert_Event_F1_mean"], color="#3b7a57")
     axes[0].set_xlabel("MAE")
-    axes[1].set_xlabel("Risk F1")
+    axes[1].set_xlabel("Fragmentation-event F1")
     for axis in axes:
         axis.grid(axis="x", alpha=0.25)
     fig.tight_layout()
@@ -254,8 +298,14 @@ def main() -> int:
         "seeds": args.seeds,
         "parallel_workers": worker_count,
         "feature_sources": list(SOURCES),
+        "source_isolation": {
+            "state_context": "current and lagged beta0, node count, and active radius",
+            "graph": "current physical-adjacency degree, component, clustering, path, and edge-density statistics only",
+            "topology": "H0 persistence image and persistence-image distribution summaries only",
+            "kinematic": "current/projected pair-distance, velocity, projected-component, and radius-crossing summaries only",
+        },
         "learner": "128-tree ExtraTrees regression on current-beta residual plus 128-tree ExtraTrees risk classifier for every row",
-        "selection": "Residual scale and risk threshold selected on validation runs; final metrics use disjoint test runs.",
+        "selection": "Residual scale and risk threshold (event F1 first, sample F1 tie-break) selected on validation runs; final metrics use disjoint test runs.",
     }
     (args.output_dir / "factorial_ablation_protocol.json").write_text(
         json.dumps(protocol, indent=2),

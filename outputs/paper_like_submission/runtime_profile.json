@@ -1,7 +1,7 @@
 {
   "experiment_name": "paper_like_submission",
-  "runtime_seconds": 11700.425,
-  "runtime_minutes": 195.007,
+  "runtime_seconds": 45.342,
+  "runtime_minutes": 0.756,
   "n_seeds": 20,
   "total_snapshots": 432000,
   "forecast_horizon_steps": 6,
@@ -17,7 +17,7 @@
   "platform": "Windows-11-10.0.26200-SP0",
   "cuda_available": false,
   "model_backend": {
-    "union_find": "diagnostic_reference",
+    "current_state_persistence": "deterministic_persistence_baseline",
     "shallow": "scikit_learn",
     "kinetic_topoguard": "scikit_learn"
   },

@@ -1,7 +1,7 @@
 {
   "experiment_name": "publication_compact",
-  "runtime_seconds": 4582.501,
-  "runtime_minutes": 76.375,
+  "runtime_seconds": 4017.053,
+  "runtime_minutes": 66.951,
   "n_seeds": 3,
   "total_snapshots": 64800,
   "forecast_horizon_steps": 6,
@@ -17,7 +17,7 @@
   "platform": "Windows-11-10.0.26200-SP0",
   "cuda_available": false,
   "model_backend": {
-    "union_find": "diagnostic_reference",
+    "current_state_persistence": "deterministic_persistence_baseline",
     "shallow": "scikit_learn",
     "kinetic_topoguard": "scikit_learn",
     "GCN": "pytorch",
@@ -49,7 +49,6 @@
       "scope": "Base scientific environment without PyTorch; use requirements-deep.txt or pip install -e .[deep] for actual PyTorch neural GNN and temporal baselines."
     }
   },
-  "scope": "End-to-end provenance rerun on the local CPU host while confirmatory and data-preparation jobs were also active; this duration is not an isolated performance benchmark.",
-  "note": "Use metrics_overall.csv for model inference measurements. The concurrent wall-clock duration is retained for execution provenance only and is not used for a speed claim.",
-  "source_experiment_name": "publication_compact_provenance"
+  "scope": "End-to-end pipeline wall-clock time for the configured benchmark on the local host; reproducibility environment metadata is recorded separately below.",
+  "note": "Wall-clock runtime is environment-specific. The author-recorded runtime environment and the distributed reproducibility environment are intentionally separated; per-snapshot inference latency is reported in metrics_overall.csv."
 }

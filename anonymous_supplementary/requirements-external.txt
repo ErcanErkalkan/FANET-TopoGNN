@@ -1,5 +1,0 @@
-# Optional dependency for extracting the public ROS1 forestry flight trace.
-rosbags>=0.11
-
-# Optional helper for downloading the public AERPAW Google Drive folders.
-gdown>=5.2

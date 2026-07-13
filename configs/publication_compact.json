@@ -34,6 +34,8 @@
       "system_loss_db": 2.0,
       "link_margin_db": 10.0,
       "chain_asymmetry_sigma_db": 1.0,
+      "shadowing_temporal_rho": 0.96,
+      "fading_temporal_rho": 0.80,
       "apply_radius_cap": true,
       "tx_probability": 0.35,
       "noise_floor_dbm": -101.0,
@@ -69,7 +71,7 @@
     "dropout": 0.15,
     "temporal_windows": [5],
     "selected_models": [
-      "union_find",
+      "current_state_persistence",
       "shallow",
       "kinetic_topoguard",
       "GCN",
@@ -86,6 +88,9 @@
   "evaluation": {
     "bootstrap_rounds": 200,
     "network_radius_boost": 1.15,
+    "relay_max_speed_mps": 30.0,
+    "relay_max_acceleration_mps2": 12.0,
+    "relay_link_budget_boost_db": 3.0,
     "warning_horizon_steps": 6,
     "risk_threshold": 0.5,
     "false_alert_event_budgets_per_minute": [2.0, 1.0]

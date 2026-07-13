@@ -20,18 +20,20 @@ PAPER_FIGURE_PNG = ROOT / "paper" / "figures" / "generated" / "operating_point_s
 
 def _write_table(summary: pd.DataFrame, output_path: Path) -> None:
     lines = [
-        r"\begin{tabular}{lrrrrr}",
+        r"\begin{tabular}{lrrrrrrr}",
         r"\toprule",
-        r"Policy & Validation budget & $\tau$ & Test precision & Test recall & Test false alerts/min \\",
+        r"Policy & Validation budget & Feasible seeds & $\tau$ & Event precision & Event recall & Event F1 & False events/min \\",
         r"\midrule",
     ]
     for _, row in summary.iterrows():
         lines.append(
             f"{str(row['Policy']).title()} & "
             f"{row['Validation_False_Alert_Budget_per_minute_mean']:.1f} & "
+            f"{100.0 * row['Validation_Constraint_Met_mean']:.0f}\\% & "
             f"{row['Selected_Threshold_mean']:.2f} & "
-            f"{row['Test_Risk_Precision_mean']:.3f} & "
-            f"{row['Test_Risk_Recall_mean']:.3f} & "
+            f"{row['Test_Alert_Event_Precision_mean']:.3f} & "
+            f"{row['Test_Alert_Event_Recall_mean']:.3f} & "
+            f"{row['Test_Alert_Event_F1_mean']:.3f} & "
             f"{row['Test_False_Alert_Events_per_minute_mean']:.2f} \\\\"
         )
     lines.extend([r"\bottomrule", r"\end{tabular}"])
@@ -41,8 +43,8 @@ def _write_table(summary: pd.DataFrame, output_path: Path) -> None:
 def _plot(summary: pd.DataFrame, output_dir: Path) -> None:
     labels = summary["Policy"].str.title()
     fig, axes = plt.subplots(1, 2, figsize=(8.4, 3.5))
-    axes[0].bar(labels, summary["Test_Risk_F1_mean"], color=["#2f6db3", "#3b7a57"])
-    axes[0].set_ylabel("Independent-test risk F1")
+    axes[0].bar(labels, summary["Test_Alert_Event_F1_mean"], color=["#2f6db3", "#3b7a57"])
+    axes[0].set_ylabel("Independent-test event F1")
     axes[0].set_ylim(0, 1)
     axes[1].bar(
         labels,
@@ -99,7 +101,7 @@ def main() -> int:
         "selection_split": "validation",
         "evaluation_split": "test",
         "selection_rule": (
-            "For each seed and policy, maximize validation F1 among thresholds satisfying the "
+            "For each seed and policy, maximize validation event F1 among thresholds satisfying the "
             "validation false-alert-event budget; evaluate that fixed threshold once on disjoint test runs."
         ),
         "policies": summary.to_dict(orient="records"),

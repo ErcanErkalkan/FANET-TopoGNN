@@ -64,7 +64,11 @@ NUMERIC_METRICS = [
     "Alert_Events",
     "True_Alert_Events",
     "False_Alert_Events",
+    "Ground_Truth_Fragmentation_Events",
+    "Missed_Fragmentation_Events",
     "Alert_Event_Precision",
+    "Alert_Event_Recall",
+    "Alert_Event_F1",
     "False_Alert_Events_per_minute",
 ]
 
@@ -87,7 +91,11 @@ METRIC_BOUNDS = {
     "Alert_Events": (0.0, None),
     "True_Alert_Events": (0.0, None),
     "False_Alert_Events": (0.0, None),
+    "Ground_Truth_Fragmentation_Events": (0.0, None),
+    "Missed_Fragmentation_Events": (0.0, None),
     "Alert_Event_Precision": (0.0, 1.0),
+    "Alert_Event_Recall": (0.0, 1.0),
+    "Alert_Event_F1": (0.0, 1.0),
     "False_Alert_Events_per_minute": (0.0, None),
     "Lead_5th_ms": (0.0, None),
     "Lead_median_ms": (0.0, None),
@@ -96,8 +104,8 @@ METRIC_BOUNDS = {
     "Lead_mean_ms": (0.0, None),
     "Lead_norm_mean": (0.0, None),
     "Connectivity ratio": (0.0, 1.0),
-    "PDR (%)": (0.0, 100.0),
-    "Avg. end-to-end delay (ms)": (0.0, None),
+    "Reachability-delivery proxy (%)": (0.0, 100.0),
+    "Proxy delay (ms)": (0.0, None),
     "Proactive reroute (%)": (0.0, 100.0),
     "DTN buffered (%)": (0.0, 100.0),
     "Relay actions": (0.0, None),
@@ -114,7 +122,7 @@ SEED_REQUIRED_FILES = [
     "operating_point_metrics.csv",
 ]
 
-CACHE_VERSION = "kinetic_topoguard_v5_64tree_online_model"
+CACHE_VERSION = "kinetic_topoguard_v6_fragmentation_events_correlated_radio"
 
 
 def _mean_ci(values: pd.Series, bounds: tuple[float | None, float | None] | None = None) -> pd.Series:
@@ -175,10 +183,10 @@ def _backend_metadata(tasks: list[str]) -> dict:
 
         torch_version = str(torch.__version__)
         device = "cuda" if torch.cuda.is_available() else "cpu"
-    neural_tasks = [task for task in tasks if task not in {"heuristic", "union_find", "shallow", "kinetic_topoguard"}]
+    neural_tasks = [task for task in tasks if task not in {"heuristic", "current_state_persistence", "shallow", "kinetic_topoguard"}]
     backends = {}
     for task in tasks:
-        if task == "union_find":
+        if task == "current_state_persistence":
             backends[task] = "deterministic_persistence_baseline"
         elif task == "heuristic":
             backends[task] = "deterministic_heuristic"
@@ -246,8 +254,6 @@ def _write_runtime_profile(out_path: Path, summary: dict, runtime_seconds: float
 
 def _canonical_model_name(name: object) -> str:
     text = str(name)
-    if text == "Union-Find detection oracle":
-        return "Current-state persistence baseline"
     if text.startswith("Shallow ML"):
         return "Shallow ML"
     match = re.fullmatch(r"(tgcn|stgcn|tgn):(\d+)", text)
@@ -268,7 +274,7 @@ def _canonicalise_model_labels(df: pd.DataFrame) -> pd.DataFrame:
 def _training_tasks(config: ExperimentConfig) -> list[str]:
     tasks = [
         "heuristic",
-        "union_find",
+        "current_state_persistence",
         "shallow",
         "kinetic_topoguard",
         "GCN",
@@ -293,7 +299,7 @@ def _training_tasks(config: ExperimentConfig) -> list[str]:
 def _train_task(task_name: str, train_data, val_data, config: ExperimentConfig, pi_dim: int, seed: int):
     if task_name == "heuristic":
         return fit_heuristic(train_data)
-    if task_name == "union_find":
+    if task_name == "current_state_persistence":
         return fit_current_state_persistence()
     if task_name == "shallow":
         return select_best_shallow(train_data, val_data)
@@ -532,7 +538,11 @@ def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool 
             "Alert_Events": summary["Alert_Events"],
             "True_Alert_Events": summary["True_Alert_Events"],
             "False_Alert_Events": summary["False_Alert_Events"],
+            "Ground_Truth_Fragmentation_Events": summary["Ground_Truth_Fragmentation_Events"],
+            "Missed_Fragmentation_Events": summary["Missed_Fragmentation_Events"],
             "Alert_Event_Precision": summary["Alert_Event_Precision"],
+            "Alert_Event_Recall": summary["Alert_Event_Recall"],
+            "Alert_Event_F1": summary["Alert_Event_F1"],
             "False_Alert_Events_per_minute": summary["False_Alert_Events_per_minute"],
             "Model_Backend": summary["Model_Backend"],
         }
@@ -589,8 +599,8 @@ def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool 
                     constraint_met = False
                 else:
                     selected = feasible.sort_values(
-                        ["Risk_F1", "Risk_Recall", "Alert_Event_Precision"],
-                        ascending=[False, False, False],
+                        ["Alert_Event_F1", "Alert_Event_Recall", "Risk_F1", "Risk_Recall"],
+                        ascending=[False, False, False, False],
                     ).iloc[0]
                     constraint_met = True
                 selected_threshold = float(selected["Threshold"])
@@ -631,6 +641,13 @@ def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool 
                 boost=config.evaluation["network_radius_boost"],
                 risk_threshold=risk_threshold,
                 sim_config=config.sim,
+                relay_max_speed_mps=float(config.evaluation.get("relay_max_speed_mps", 30.0)),
+                relay_max_acceleration_mps2=float(
+                    config.evaluation.get("relay_max_acceleration_mps2", 12.0)
+                ),
+                relay_link_budget_boost_db=float(
+                    config.evaluation.get("relay_link_budget_boost_db", 3.0)
+                ),
             )
             network_metrics["Model"] = result.model_name
             network_metrics["seed"] = seed
@@ -854,8 +871,8 @@ def run_experiment(config: ExperimentConfig, resume: bool = False, seed_workers:
     leads_df = _aggregate_metrics(leads_seed_df, ["Model"], ["Lead_5th_ms", "Lead_median_ms", "Lead_IQR_ms", "Lead_95th_ms", "Lead_mean_ms", "Lead_norm_mean"]).sort_values("Lead_median_ms_mean", ascending=False).reset_index(drop=True)
     network_metric_cols = [
         "Connectivity ratio",
-        "PDR (%)",
-        "Avg. end-to-end delay (ms)",
+        "Reachability-delivery proxy (%)",
+        "Proxy delay (ms)",
         "Proactive reroute (%)",
         "DTN buffered (%)",
         "Relay actions",
@@ -879,10 +896,14 @@ def run_experiment(config: ExperimentConfig, resume: bool = False, seed_workers:
         "Alert_Events",
         "True_Alert_Events",
         "False_Alert_Events",
+        "Ground_Truth_Fragmentation_Events",
+        "Missed_Fragmentation_Events",
         "Alert_Event_Precision",
+        "Alert_Event_Recall",
+        "Alert_Event_F1",
         "False_Alert_Events_per_minute",
     ]
-    risk_df = _aggregate_metrics(risk_seed_df, ["Model"], risk_metric_cols).sort_values("Risk_F1_mean", ascending=False).reset_index(drop=True)
+    risk_df = _aggregate_metrics(risk_seed_df, ["Model"], risk_metric_cols).sort_values("Alert_Event_F1_mean", ascending=False).reset_index(drop=True)
     threshold_df = pd.DataFrame()
     if not threshold_seed_df.empty:
         threshold_metric_cols = [
@@ -896,7 +917,11 @@ def run_experiment(config: ExperimentConfig, resume: bool = False, seed_workers:
             "Alert_Events",
             "True_Alert_Events",
             "False_Alert_Events",
+            "Ground_Truth_Fragmentation_Events",
+            "Missed_Fragmentation_Events",
             "Alert_Event_Precision",
+            "Alert_Event_Recall",
+            "Alert_Event_F1",
             "False_Alert_Events_per_minute",
         ]
         threshold_df = _aggregate_metrics(threshold_seed_df, ["Model", "Threshold"], threshold_metric_cols)
@@ -912,16 +937,21 @@ def run_experiment(config: ExperimentConfig, resume: bool = False, seed_workers:
                 "Risk_F1",
                 "False_Alarms_per_minute",
                 "Alert_Event_Precision",
+                "Alert_Event_Recall",
+                "Alert_Event_F1",
                 "False_Alert_Events_per_minute",
             ],
         )
 
     operating_point_df = pd.DataFrame()
     if not operating_point_seed_df.empty:
+        operating_point_seed_df["Validation_Constraint_Met"] = (
+            operating_point_seed_df["Validation_Constraint_Met"].astype(float)
+        )
         numeric_operating_cols = [
             column
             for column in operating_point_seed_df.columns
-            if column not in {"seed", "Model", "Policy", "Validation_Constraint_Met"}
+            if column not in {"seed", "Model", "Policy"}
             and pd.api.types.is_numeric_dtype(operating_point_seed_df[column])
         ]
         operating_point_df = _aggregate_metrics(
@@ -979,7 +1009,16 @@ def run_experiment(config: ExperimentConfig, resume: bool = False, seed_workers:
     plot_metric_bars(risk_df.rename(columns={"Risk_F1_mean": "Risk_F1"}), "Risk_F1", figures_dir / "risk_f1_comparison.png")
     plot_latency(metrics_df.rename(columns={"Inference_ms_mean": "Inference_ms"}), figures_dir / "latency_budget.png")
     if not network_df.empty:
-        plot_network_metrics(network_df.rename(columns={"Connectivity ratio_mean": "Connectivity ratio", "PDR (%)_mean": "PDR (%)", "Avg. end-to-end delay (ms)_mean": "Avg. end-to-end delay (ms)"}), figures_dir / "network_metrics.png")
+        plot_network_metrics(
+            network_df.rename(
+                columns={
+                    "Connectivity ratio_mean": "Connectivity ratio",
+                    "Reachability-delivery proxy (%)_mean": "Reachability-delivery proxy (%)",
+                    "Proxy delay (ms)_mean": "Proxy delay (ms)",
+                }
+            ),
+            figures_dir / "network_metrics.png",
+        )
     plot_publication_performance(metrics_df, figures_dir / "publication_performance_ci.png")
     plot_lead_time_summary(leads_df, figures_dir / "publication_lead_time_ci.png")
     plot_dataset_overview(dataset_summary_df, figures_dir / "dataset_overview.png")
@@ -1010,6 +1049,7 @@ def run_experiment(config: ExperimentConfig, resume: bool = False, seed_workers:
         "best_model_by_lead": ", ".join(lead_models) if lead_models else None,
         "best_models_by_lead": lead_models,
         "output_dir": str(out_dir),
+        "cache_version": CACHE_VERSION,
     }
     summary.update(_backend_metadata(_training_tasks(config)))
     runtime_seconds = time.perf_counter() - run_start

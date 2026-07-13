@@ -1,13 +1,21 @@
 from __future__ import annotations
 
+from dataclasses import replace
 import unittest
 
 import numpy as np
 
 from fanet.dataset import Snapshot, build_dataset, relabel_forecast_horizon, to_frame, train_val_test_split
-from fanet.evaluation import alert_event_metrics, evaluate_predictions, event_warning_leads, run_network_controller
+from fanet.evaluation import (
+    _steer_relays_towards_component_midpoints,
+    alert_event_metrics,
+    evaluate_predictions,
+    event_warning_leads,
+    run_network_controller,
+)
 from fanet.packet_sim import PacketSimulationConfig, simulate_packet_tick
 from fanet.pyg_utils import snapshot_to_pyg_data, torch_geometric_available
+from fanet.radio import TemporalRadioState, received_power_dbm
 from fanet.training import fit_kinetic_topoguard, kinetic_topoguard_feature_vector
 
 
@@ -173,7 +181,10 @@ class CorePipelineTests(unittest.TestCase):
         self.assertIn("Proactive reroute (%)", metrics)
         self.assertIn("DTN buffered (%)", metrics)
         self.assertIn("Relay actions", metrics)
-        self.assertGreaterEqual(metrics["PDR (%)"], 0.0)
+        self.assertIn("Reachability-delivery proxy (%)", metrics)
+        self.assertIn("Proxy delay (ms)", metrics)
+        self.assertNotIn("PDR (%)", metrics)
+        self.assertGreaterEqual(metrics["Reachability-delivery proxy (%)"], 0.0)
 
     def test_network_controller_uses_snapshot_adjacency_for_delivery_metrics(self) -> None:
         adjacency = np.zeros((2, 2), dtype=np.float32)
@@ -215,7 +226,7 @@ class CorePipelineTests(unittest.TestCase):
             risk_threshold=0.5,
         )
         self.assertEqual(metrics["Connectivity ratio"], 0.0)
-        self.assertEqual(metrics["PDR (%)"], 0.0)
+        self.assertEqual(metrics["Reachability-delivery proxy (%)"], 0.0)
 
     def test_alert_metric_counts_episodes_not_positive_samples(self) -> None:
         adjacency = np.asarray([[0.0, 1.0], [1.0, 0.0]], dtype=np.float32)
@@ -257,6 +268,32 @@ class CorePipelineTests(unittest.TestCase):
         metrics = alert_event_metrics(snapshots, scores, threshold=0.5, dt=0.1, horizon_steps=2)
         self.assertEqual(metrics["Alert_Events"], 1.0)
         self.assertEqual(metrics["False_Alert_Events"], 1.0)
+        self.assertEqual(metrics["Ground_Truth_Fragmentation_Events"], 0.0)
+        self.assertEqual(metrics["Alert_Event_Recall"], 0.0)
+
+    def test_alert_metric_matches_fragmentation_transitions_one_to_one(self) -> None:
+        base = build_dataset(self._small_config(), seed=31)[0]
+        beta = [1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 2.0]
+        snapshots = [
+            replace(
+                base,
+                run_id="event_run",
+                split_group_id="event_run",
+                time_index=index,
+                beta_current=value,
+                is_connected=int(value == 1.0),
+            )
+            for index, value in enumerate(beta)
+        ]
+        scores = np.asarray([0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0])
+        metrics = alert_event_metrics(snapshots, scores, threshold=0.5, dt=0.1, horizon_steps=2)
+        self.assertEqual(metrics["Alert_Events"], 1.0)
+        self.assertEqual(metrics["True_Alert_Events"], 1.0)
+        self.assertEqual(metrics["Ground_Truth_Fragmentation_Events"], 2.0)
+        self.assertEqual(metrics["Missed_Fragmentation_Events"], 1.0)
+        self.assertAlmostEqual(metrics["Alert_Event_Precision"], 1.0)
+        self.assertAlmostEqual(metrics["Alert_Event_Recall"], 0.5)
+        self.assertAlmostEqual(metrics["Alert_Event_F1"], 2.0 / 3.0)
 
     def test_packet_simulator_reports_contention_and_delivery(self) -> None:
         connected = np.ones((4, 4), dtype=np.float32) - np.eye(4, dtype=np.float32)
@@ -269,6 +306,59 @@ class CorePipelineTests(unittest.TestCase):
         self.assertGreater(metrics["delivered"], 0.0)
         self.assertGreater(metrics["pdr"], 0.0)
         self.assertLessEqual(metrics["pdr"], 1.0)
+        self.assertEqual(len(metrics["delay_samples_ms"]), int(metrics["delivered"]))
+
+    def test_temporal_radio_state_keeps_hardware_chain_static(self) -> None:
+        distances = np.asarray(
+            [[0.0, 20.0, 30.0], [20.0, 0.0, 15.0], [30.0, 15.0, 0.0]],
+            dtype=float,
+        )
+        config = {
+            "shadowing_sigma_db": 3.0,
+            "chain_asymmetry_sigma_db": 1.0,
+            "shadowing_temporal_rho": 0.95,
+            "fading_temporal_rho": 0.8,
+        }
+        state = TemporalRadioState()
+        rng = np.random.default_rng(7)
+        first = received_power_dbm(distances, rng, config, state=state)
+        tx_chain = state.tx_chain_db.copy()
+        rx_chain = state.rx_chain_db.copy()
+        shadow = state.shadowing_db.copy()
+        second = received_power_dbm(distances, rng, config, state=state)
+        self.assertTrue(np.array_equal(tx_chain, state.tx_chain_db))
+        self.assertTrue(np.array_equal(rx_chain, state.rx_chain_db))
+        self.assertFalse(np.array_equal(shadow, state.shadowing_db))
+        self.assertFalse(np.array_equal(first, second))
+
+    def test_relay_link_budget_boost_only_changes_incident_links(self) -> None:
+        distances = np.asarray(
+            [[0.0, 20.0, 30.0], [20.0, 0.0, 15.0], [30.0, 15.0, 0.0]],
+            dtype=float,
+        )
+        base = {"shadowing_sigma_db": 0.0, "chain_asymmetry_sigma_db": 0.0}
+        boosted = {**base, "node_link_budget_boost_db": [3.0, 0.0, 0.0]}
+        plain_power = received_power_dbm(distances, np.random.default_rng(9), base)
+        boosted_power = received_power_dbm(distances, np.random.default_rng(9), boosted)
+        self.assertAlmostEqual(float(boosted_power[0, 1] - plain_power[0, 1]), 3.0, places=5)
+        self.assertAlmostEqual(float(boosted_power[1, 0] - plain_power[1, 0]), 3.0, places=5)
+        self.assertAlmostEqual(float(boosted_power[1, 2] - plain_power[1, 2]), 0.0, places=5)
+
+    def test_relay_motion_respects_speed_and_acceleration_limits(self) -> None:
+        positions = np.asarray([[0.0, 0.0], [100.0, 0.0]], dtype=float)
+        moved = _steer_relays_towards_component_midpoints(
+            positions,
+            np.zeros_like(positions),
+            [[0], [1]],
+            [0],
+            dt=0.1,
+            max_speed_mps=30.0,
+            max_acceleration_mps2=12.0,
+            min_separation=0.0,
+        )
+        displacement = float(np.linalg.norm(moved[0] - positions[0]))
+        self.assertLessEqual(displacement, 12.0 * 0.1 * 0.1 + 1e-9)
+        self.assertTrue(np.array_equal(moved[1], positions[1]))
 
     def test_kinetic_topoguard_fits_and_scores_snapshots(self) -> None:
         config = self._small_config()

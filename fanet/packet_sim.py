@@ -122,6 +122,7 @@ def simulate_packet_tick(
         "pdr": float(results["delivered"] / generated),
         "mean_delay_ms": float(delay_values.mean() * 1000.0) if delay_values.size else float("nan"),
         "p95_delay_ms": float(np.quantile(delay_values, 0.95) * 1000.0) if delay_values.size else float("nan"),
+        "delay_samples_ms": (delay_values * 1000.0).tolist(),
         "mean_hops": float(hop_values.mean()) if hop_values.size else float("nan"),
         "connected_pair_ratio": float(np.isfinite(shortest_path_matrix(adjacency)).sum() - n_nodes)
         / max(n_nodes * (n_nodes - 1), 1),

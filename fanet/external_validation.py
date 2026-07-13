@@ -165,6 +165,111 @@ def build_trace_snapshots(
     return snapshots
 
 
+def build_measured_link_snapshots(
+    trace: FlightTrace,
+    adjacencies: np.ndarray,
+    radius_m: float,
+    horizon_steps: int,
+    pi_resolution: int = 16,
+    pi_sigma: float = 20.0,
+    pi_max_radius: float = 600.0,
+    run_label: str = "measured_link_trace",
+    radio_scenario: str = "measured_rf",
+) -> list[Snapshot]:
+    """Build snapshots from measured motion and a synchronized measured link graph."""
+    trace.validate()
+    adjacency_array = np.asarray(adjacencies, dtype=np.float32)
+    expected_shape = (len(trace.timestamps_s), len(trace.vehicle_ids), len(trace.vehicle_ids))
+    if adjacency_array.shape != expected_shape:
+        raise ValueError(f"adjacencies must have shape {expected_shape}")
+    if horizon_steps < 1:
+        raise ValueError("horizon_steps must be at least one")
+
+    positions_3d = trace.positions_m.astype(np.float32)
+    positions_2d = positions_3d[:, :, :2]
+    velocities_3d = trace_velocities(trace)
+    velocities_2d = velocities_3d[:, :, :2]
+    velocity_scale = max(
+        float(np.quantile(np.linalg.norm(velocities_2d, axis=2), 0.99)),
+        30.0,
+    )
+    raw = []
+    for positions, velocities, adjacency in zip(
+        positions_2d,
+        velocities_2d,
+        adjacency_array,
+    ):
+        adjacency = ((adjacency > 0) | (adjacency.T > 0)).astype(np.float32)
+        np.fill_diagonal(adjacency, 0.0)
+        beta = float(betti_zero(adjacency))
+        pi = persistence_image(
+            positions,
+            pi_resolution,
+            pi_sigma,
+            pi_max_radius,
+        ).reshape(-1)
+        node_features = np.concatenate(
+            [normalize_positions(positions), velocities / velocity_scale],
+            axis=1,
+        ).astype(np.float32)
+        raw.append(
+            {
+                "positions": positions,
+                "velocities": velocities,
+                "adjacency": adjacency,
+                "beta": beta,
+                "pi": pi.astype(np.float32),
+                "node_features": node_features,
+            }
+        )
+
+    snapshots = []
+    run_id = f"{run_label}_{radio_scenario}"
+    for time_idx, item in enumerate(raw):
+        future_idx = min(time_idx + horizon_steps, len(raw) - 1)
+        future_beta = float(raw[future_idx]["beta"])
+        adjacency = item["adjacency"]
+        edge_count = int(adjacency.sum() / 2)
+        snapshots.append(
+            Snapshot(
+                run_id=run_id,
+                split_group_id=run_id,
+                time_index=time_idx,
+                mobility="measured_multi_uav",
+                n_nodes=len(trace.vehicle_ids),
+                positions=item["positions"],
+                velocities=item["velocities"],
+                node_features=item["node_features"],
+                adjacency=adjacency,
+                adjacency_fixed=adjacency.copy(),
+                adjacency_adaptive=adjacency.copy(),
+                pi=item["pi"],
+                stats=graph_stats(
+                    item["positions"],
+                    item["velocities"],
+                    adjacency,
+                    item["beta"],
+                ),
+                beta_current=item["beta"],
+                beta_target=future_beta,
+                beta_fixed=item["beta"],
+                beta_adaptive=item["beta"],
+                radius=float(radius_m),
+                radius_fixed=float(radius_m),
+                radius_adaptive=float(radius_m),
+                edge_count_fixed=edge_count,
+                edge_count_adaptive=edge_count,
+                link_model="measured_uwb_first_path_power",
+                graph_policy="measured",
+                radio_scenario=radio_scenario,
+                is_connected=int(item["beta"] == 1.0),
+                future_time_index=future_idx,
+                frag_at_horizon=int(future_beta > 1.0),
+            )
+        )
+    return snapshots
+
+
 def pairwise_distance_quantiles(trace: FlightTrace, quantiles: tuple[float, ...]) -> dict[float, float]:
     trace.validate()
     distances = []

@@ -21,8 +21,8 @@ rectangle "H0 persistence\nimage features" as persistence #E6F4EA
 rectangle "Motion-conditioned\ntopological AI\nresidual forecast" as ai #EADCF8
 rectangle "Future beta0\nfragmentation state" as beta #FCE8E6
 rectangle "Risk score\nwarning threshold" as risk #DDF2F2
-rectangle "Engineering\nwarning/action\nrelay + routing" as action #EDF6DF
-rectangle "Goal and validation\nshort-horizon fragmentation-risk forecasting;\nimplemented baselines, MAE/R2, risk-F1, lead-time,\nstatistical tests, and network-level metrics" as validation #F5F5F5
+rectangle "Bounded one-step\nwarning/action\nrelay + routing" as action #EDF6DF
+rectangle "Validation\n20 seeds; event precision/recall/F1;\nhorizon + factorial sweeps; measured UWB;\npacket load + full-path latency" as validation #F5F5F5
 
 motion --> projected
 motion --> persistence

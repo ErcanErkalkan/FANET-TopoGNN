@@ -406,9 +406,10 @@ def _lead_median_for_threshold(
         run_snaps = [snap for snap, _ in pairs]
         run_scores = np.asarray([score for _, score in pairs], dtype=float)
         for idx in range(1, len(run_snaps)):
-            if run_snaps[idx - 1].adjacency.shape != run_snaps[idx].adjacency.shape:
-                continue
-            if not np.any(run_snaps[idx - 1].adjacency != run_snaps[idx].adjacency):
+            if not (
+                run_snaps[idx - 1].beta_current <= 1.0
+                and run_snaps[idx].beta_current > 1.0
+            ):
                 continue
             warned_idx = None
             start = max(0, idx - horizon_steps)
@@ -435,9 +436,7 @@ def _warning_event_windows(
         for idx in range(1, len(ordered)):
             previous = ordered[idx - 1][1]
             current = ordered[idx][1]
-            if previous.adjacency.shape != current.adjacency.shape:
-                continue
-            if not np.any(previous.adjacency != current.adjacency):
+            if not (previous.beta_current <= 1.0 and current.beta_current > 1.0):
                 continue
             eligible_indices = []
             lead_steps = []
@@ -612,6 +611,28 @@ class KineticTopoGuardPredictor:
         preds = self._predict_from_matrix(x, aligned)
         risk = self._risk_from_matrix(x, aligned, kinetic_scores, preds)
         return preds, risk, aligned
+
+    def predict_one(
+        self,
+        snapshot: Snapshot,
+        previous: Snapshot | None,
+    ) -> tuple[float, float]:
+        features, kinetic_score = kinetic_topoguard_feature_vector(
+            snapshot,
+            previous,
+            self.horizon_steps,
+            self.dt,
+        )
+        matrix = features.reshape(1, -1)
+        aligned = [snapshot]
+        prediction = self._predict_from_matrix(matrix, aligned)
+        risk = self._risk_from_matrix(
+            matrix,
+            aligned,
+            np.asarray([kinetic_score], dtype=float),
+            prediction,
+        )
+        return float(prediction[0]), float(risk[0])
 
 
 def fit_kinetic_topoguard(
@@ -896,11 +917,6 @@ def fit_current_state_persistence() -> TrainResult:
         model_name="Current-state persistence baseline",
         inference_ms=0.02,
     )
-
-
-def fit_union_find_oracle() -> TrainResult:
-    """Backward-compatible alias for older experiment configurations."""
-    return fit_current_state_persistence()
 
 
 def fit_shallow_models(train_data: list[Snapshot]) -> dict[str, object]:

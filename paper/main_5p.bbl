@@ -14,6 +14,15 @@ I.~Bekmezci, O.~K. Sahingoz, S.~Temel,
   {\path{doi:10.1016/j.adhoc.2012.12.004}}.
 \newline\urlprefix\url{https://www.sciencedirect.com/science/article/pii/S1570870512002193}
 
+\bibitem{pasandideh2023review}
+F.~Pasandideh, J.~P. J.~d. Costa, R.~Kunst, W.~Hardjawana, E.~P. de~Freitas,
+  \href{https://onlinelibrary.wiley.com/doi/abs/10.1002/rob.22157}{A systematic
+  literature review of flying ad hoc networks: State-of-the-art, challenges,
+  and perspectives}, Journal of Field Robotics 40~(4) (2023) 955--979.
+\newblock \href {https://doi.org/10.1002/rob.22157}
+  {\path{doi:10.1002/rob.22157}}.
+\newline\urlprefix\url{https://onlinelibrary.wiley.com/doi/abs/10.1002/rob.22157}
+
 \bibitem{tarjan1975efficiency}
 R.~E. Tarjan, \href{https://doi.org/10.1145/321879.321884}{Efficiency of a good
   but not linear set union algorithm}, J. ACM 22~(2) (1975) 215--225.
@@ -33,35 +42,26 @@ H.~Adams, T.~Emerson, M.~Kirby, R.~Neville, C.~Peterson, P.~Shipman,
   stable vector representation of persistent homology, J. Mach. Learn. Res.
   18~(1) (2017) 218–252.
 
-\bibitem{kipf2016semi}
-T.~N. Kipf, M.~Welling, Semi-supervised classification with graph convolutional
-  networks, arXiv preprint arXiv:1609.02907 (2016).
+\bibitem{lu2023uav}
+Y.~Lu, W.~Wen, P.~Ren, et~al., Uav ad hoc network routing algorithms in
+  space–air–ground integrated networks: Challenges and directions, Drones
+  7~(7) (2023) 448.
+\newblock \href {https://doi.org/10.3390/drones7070448}
+  {\path{doi:10.3390/drones7070448}}.
 
-\bibitem{velivckovic2018graph}
-P.~Veličković, G.~Cucurull, A.~Casanova, A.~Romero, P.~Liò, Y.~Bengio,
-  \href{https://arxiv.org/abs/1710.10903}{Graph attention networks} (2018).
-\newblock \href {http://arxiv.org/abs/1710.10903} {\path{arXiv:1710.10903}}.
-\newline\urlprefix\url{https://arxiv.org/abs/1710.10903}
+\bibitem{song2025gnnppor}
+J.~Song, J.~Li, Q.~Wang, Y.~Gu, T.~Shen, Gnnppor: A proximal policy
+  optimization multi-factor joint routing approach based on graph neural
+  networks in fanets, IEEE Networking Letters 7~(2) (2025) 130--134.
+\newblock \href {https://doi.org/10.1109/LNET.2025.3542762}
+  {\path{doi:10.1109/LNET.2025.3542762}}.
 
-\bibitem{hamilton2017inductive}
-W.~L. Hamilton, R.~Ying, J.~Leskovec, Inductive representation learning on
-  large graphs, in: Proceedings of the 31st International Conference on Neural
-  Information Processing Systems, NIPS'17, Curran Associates Inc., Red Hook,
-  NY, USA, 2017, p. 1025–1035.
-
-\bibitem{tekdogan2022manetgnn}
-T.~Tekdogan, Analyzing the traffic of manets using graph neural networks, in:
-  2022 IEEE International Conference on Machine Learning and Applied Network
-  Technologies (ICMLANT), 2022, pp. 1--4.
-\newblock \href {https://doi.org/10.1109/ICMLANT56191.2022.9996518}
-  {\path{doi:10.1109/ICMLANT56191.2022.9996518}}.
-
-\bibitem{cheng2022vanetgnn}
-H.~Hu, M.~J. Lee, Graph neural network-based clustering enhancement in vanet
-  for cooperative driving, in: 2022 International Conference on Artificial
-  Intelligence in Information and Communication (ICAIIC), 2022, pp. 162--167.
-\newblock \href {https://doi.org/10.1109/ICAIIC54071.2022.9722625}
-  {\path{doi:10.1109/ICAIIC54071.2022.9722625}}.
+\bibitem{ye2022multi}
+Z.~Ye, K.~Wang, Y.~Chen, X.~Jiang, G.~Song, Multi-uav navigation for partially
+  observable communication coverage by graph reinforcement learning, IEEE
+  Transactions on Mobile Computing 22~(7) (2023) 4056--4069.
+\newblock \href {https://doi.org/10.1109/TMC.2022.3146881}
+  {\path{doi:10.1109/TMC.2022.3146881}}.
 
 \bibitem{hofer2017deep}
 C.~Hofer, R.~Kwitt, M.~Niethammer, A.~Uhl, Deep learning with topological
@@ -84,50 +84,49 @@ Y.~Luo, K.~Zhou, W.~Zhang, Persistent homology enhanced graph attention network
 \newblock \href {https://doi.org/10.1016/j.neucom.2022.11.079}
   {\path{doi:10.1016/j.neucom.2022.11.079}}.
 
-\bibitem{pasandideh2023review}
-F.~Pasandideh, J.~P. J.~d. Costa, R.~Kunst, W.~Hardjawana, E.~P. de~Freitas,
-  \href{https://onlinelibrary.wiley.com/doi/abs/10.1002/rob.22157}{A systematic
-  literature review of flying ad hoc networks: State-of-the-art, challenges,
-  and perspectives}, Journal of Field Robotics 40~(4) (2023) 955--979.
-\newblock \href {https://doi.org/10.1002/rob.22157}
-  {\path{doi:10.1002/rob.22157}}.
-\newline\urlprefix\url{https://onlinelibrary.wiley.com/doi/abs/10.1002/rob.22157}
+\bibitem{jasinski2026predictive}
+M.~Jasinski, M.~Fawad, A.~Sabzi~Khoshraftar, A.~Abbozzo, Y.~Tao, M.~Salamak,
+  B.~Kopec, Q.~Chen,
+  \href{https://doi.org/10.1016/j.engappai.2026.115458}{Model-based predictive
+  digital twin for bridge structural health monitoring: The integration of
+  building information modeling, finite element analysis, and machine learning
+  in a netherlands case study}, Engineering Applications of Artificial
+  Intelligence 181 (2026) 115458.
+\newblock \href {https://doi.org/10.1016/j.engappai.2026.115458}
+  {\path{doi:10.1016/j.engappai.2026.115458}}.
+\newline\urlprefix\url{https://doi.org/10.1016/j.engappai.2026.115458}
 
-\bibitem{su16219239}
-W.~Jiang, H.~Han, Y.~Zhang, J.~Wang, M.~He, W.~Gu, J.~Mu, X.~Cheng,
-  \href{https://www.mdpi.com/2071-1050/16/21/9239}{Graph neural networks for
-  routing optimization: Challenges and opportunities}, Sustainability 16~(21)
-  (2024).
-\newblock \href {https://doi.org/10.3390/su16219239}
-  {\path{doi:10.3390/su16219239}}.
-\newline\urlprefix\url{https://www.mdpi.com/2071-1050/16/21/9239}
+\bibitem{shalaby2026miluv}
+M.~A. Shalaby, N.~Dahdah, S.~S. Ahmed, C.~C. Cossette, J.~Le~Ny, J.~R. Forbes,
+  \href{https://doi.org/10.1177/02783649251405898}{{MILUV}: A multi-uav indoor
+  localization dataset with {UWB} and vision}, The International Journal of
+  Robotics ResearchDataset:
+  \url{https://doi.org/10.25452/figshare.plus.28386041.v1} (2026).
+\newblock \href {https://doi.org/10.1177/02783649251405898}
+  {\path{doi:10.1177/02783649251405898}}.
+\newline\urlprefix\url{https://doi.org/10.1177/02783649251405898}
 
-\bibitem{lu2023uav}
-Y.~Lu, W.~Wen, P.~Ren, et~al., Uav ad hoc network routing algorithms in
-  space–air–ground integrated networks: Challenges and directions, Drones
-  7~(7) (2023) 448.
-\newblock \href {https://doi.org/10.3390/drones7070448}
-  {\path{doi:10.3390/drones7070448}}.
+\bibitem{kipf2016semi}
+T.~N. Kipf, M.~Welling, Semi-supervised classification with graph convolutional
+  networks, arXiv preprint arXiv:1609.02907 (2016).
 
-\bibitem{song2025gnnppor}
-J.~Song, J.~Li, Q.~Wang, Y.~Gu, T.~Shen, Gnnppor: A proximal policy
-  optimization multi-factor joint routing approach based on graph neural
-  networks in fanets, IEEE Networking Letters 7~(2) (2025) 130--134.
-\newblock \href {https://doi.org/10.1109/LNET.2025.3542762}
-  {\path{doi:10.1109/LNET.2025.3542762}}.
+\bibitem{velivckovic2018graph}
+P.~Veličković, G.~Cucurull, A.~Casanova, A.~Romero, P.~Liò, Y.~Bengio,
+  \href{https://arxiv.org/abs/1710.10903}{Graph attention networks} (2018).
+\newblock \href {http://arxiv.org/abs/1710.10903} {\path{arXiv:1710.10903}}.
+\newline\urlprefix\url{https://arxiv.org/abs/1710.10903}
+
+\bibitem{hamilton2017inductive}
+W.~L. Hamilton, R.~Ying, J.~Leskovec, Inductive representation learning on
+  large graphs, in: Proceedings of the 31st International Conference on Neural
+  Information Processing Systems, NIPS'17, Curran Associates Inc., Red Hook,
+  NY, USA, 2017, p. 1025–1035.
 
 \bibitem{nemati2022ntn}
 M.~Nemati, B.~Al~Homssi, S.~Krishnan, et~al., Non-terrestrial networks with
   uavs: A projection on flying ad-hoc networks, Drones 6~(11) (2022) 334.
 \newblock \href {https://doi.org/10.3390/drones6110334}
   {\path{doi:10.3390/drones6110334}}.
-
-\bibitem{ye2022multi}
-Z.~Ye, K.~Wang, Y.~Chen, X.~Jiang, G.~Song, Multi-uav navigation for partially
-  observable communication coverage by graph reinforcement learning, IEEE
-  Transactions on Mobile Computing 22~(7) (2023) 4056--4069.
-\newblock \href {https://doi.org/10.1109/TMC.2022.3146881}
-  {\path{doi:10.1109/TMC.2022.3146881}}.
 
 \bibitem{REN2025103801}
 Q.~Ren, Y.~Wang, H.~Liu, Y.~Dai, W.~Ye, Y.~Tang,
@@ -137,47 +136,6 @@ Q.~Ren, Y.~Wang, H.~Liu, Y.~Dai, W.~Ye, Y.~Tang,
 \newblock \href {https://doi.org/10.1016/j.adhoc.2025.103801}
   {\path{doi:10.1016/j.adhoc.2025.103801}}.
 \newline\urlprefix\url{https://www.sciencedirect.com/science/article/pii/S1570870525000496}
-
-\bibitem{SAADATI2024103432}
-M.~Saadati, S.~M. Mazinani, A.~A. Khazaei, S.~J. S.~M. Chabok,
-  \href{https://www.sciencedirect.com/science/article/pii/S157087052400043X}{Energy
-  efficient clustering for dense wireless sensor network by applying graph
-  neural networks with coverage metrics}, Ad Hoc Networks 156 (2024) 103432.
-\newblock \href {https://doi.org/10.1016/j.adhoc.2024.103432}
-  {\path{doi:10.1016/j.adhoc.2024.103432}}.
-\newline\urlprefix\url{https://www.sciencedirect.com/science/article/pii/S157087052400043X}
-
-\bibitem{AZADANI2023103021}
-M.~N. Azadani, A.~Boukerche,
-  \href{https://www.sciencedirect.com/science/article/pii/S1570870522001937}{Stag:
-  A novel interaction-aware path prediction method based on spatio-temporal
-  attention graphs for connected automated vehicles}, Ad Hoc Networks 138
-  (2023) 103021.
-\newblock \href {https://doi.org/10.1016/j.adhoc.2022.103021}
-  {\path{doi:10.1016/j.adhoc.2022.103021}}.
-\newline\urlprefix\url{https://www.sciencedirect.com/science/article/pii/S1570870522001937}
-
-\bibitem{CAPANEMA2023103016}
-C.~G. Capanema, G.~S. {de Oliveira}, F.~A. Silva, T.~R. Silva, A.~A. Loureiro,
-  \href{https://www.sciencedirect.com/science/article/pii/S1570870522001883}{Combining
-  recurrent and graph neural networks to predict the next place’s category},
-  Ad Hoc Networks 138 (2023) 103016.
-\newblock \href {https://doi.org/10.1016/j.adhoc.2022.103016}
-  {\path{doi:10.1016/j.adhoc.2022.103016}}.
-\newline\urlprefix\url{https://www.sciencedirect.com/science/article/pii/S1570870522001883}
-
-\bibitem{kanatsoulis2024powerful}
-C.~I. Kanatsoulis, A.~Ribeiro, Graph neural networks are more powerful than we
-  think, in: ICASSP 2024 - 2024 IEEE International Conference on Acoustics,
-  Speech and Signal Processing (ICASSP), 2024, pp. 7550--7554.
-\newblock \href {https://doi.org/10.1109/ICASSP48485.2024.10447704}
-  {\path{doi:10.1109/ICASSP48485.2024.10447704}}.
-
-\bibitem{kingma2017adam}
-D.~P. Kingma, J.~Ba, \href{https://arxiv.org/abs/1412.6980}{Adam: A method for
-  stochastic optimization} (2017).
-\newblock \href {http://arxiv.org/abs/1412.6980} {\path{arXiv:1412.6980}}.
-\newline\urlprefix\url{https://arxiv.org/abs/1412.6980}
 
 \bibitem{araujo2025multidrone}
 A.~Ara\'ujo, C.~A. Pontes~Pizzino, M.~Couceiro, R.~P. Rocha,

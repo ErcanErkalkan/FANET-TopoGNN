@@ -1,29 +1,19 @@
 # Final EAAI submission checklist
 
-- [x] Format-aware length gate passes: 51-page single-column anonymous manuscript (limit 55) and 25-page Elsevier 5p proof (limit 30)
-- [x] Title has no undefined abbreviations
-- [x] Abstract has no undefined abbreviations
-- [x] Anonymous manuscript has no author identity
-- [x] Separate title page exists
-- [x] Anonymous supplementary ZIP exists
-- [x] Smoke test passes
-- [x] Compact benchmark artifacts are present and reproducibility commands are documented
-- [x] Focused 20-seed benchmark completed with all 20 per-seed outputs
-- [x] Neural vs surrogate backend metadata is produced by new runs
-- [x] Compact neural backend provenance verified by a fresh PyTorch rerun
-- [x] Real three-UAV field-motion transfer outputs and source checksums archived
-- [x] Measured AERPAW aerial cellular RF/KPI and throughput validation archived
-- [x] Measured peer-to-peer UAV 60 GHz RF validation archived with checksum and held-out-distance evaluation
-- [x] False-alarm-constrained operating points selected from executed threshold sweeps
-- [x] Five-seed PyTorch neural-family extension completed and aggregated
-- [x] Digital-twin evidence dashboard built from generated results
-- [x] PersLay bibliography repaired from the official PMLR record
-- [x] Union-Find is marked as a diagnostic reference
-- [x] Risk metrics include false-alarm-aware interpretation
-- [x] README files updated
-- [x] No fabricated claims or results
-- [x] Journal-portal metadata, cover letter, ORCID, declarations, and file map cross-checked
+- [x] Format-normalized length verified: 17-page preprint and 10-page Elsevier two-column proof
+- [x] Anonymous 17-page manuscript contains no author identity
+- [x] Separate two-page title/declaration file exists
+- [x] Twenty-seed primary study contains all configured seeds and current event metrics
+- [x] Five-seed PyTorch neural-family aggregate exists
+- [x] Six-horizon and full 2^3 factorial studies exist
+- [x] Forestry, AERPAW, WiNES 60 GHz, and MILUV evidence layers exist with source provenance
+- [x] Validation-selected operating points, packet-load study, and host-loop latency study exist
+- [x] Offline dashboard exists and states that it is not a live digital twin
+- [x] Current PDFs compile without undefined references or overfull boxes
+- [x] Obsolete packages, audits, smoke outputs, raw ROS bags, caches, logs, and temporary renders removed
+- [ ] Regenerate `anonymous_supplementary.zip` from current evidence
+- [ ] Regenerate `submission_readiness_audit.json` after packaging
+- [ ] Run the final test suite after package regeneration
 - [ ] Author completes account-only attestations and conflict checks in the journal portal
-- [x] Final PDF rebuild, render inspection, identity scan, and supplementary repack completed
 
-Current package status: **READY FOR AUTHOR PORTAL ATTESTATIONS**. Repository-completable evidence includes the compact and focused 20-seed studies, five-seed PyTorch neural stability, real-flight motion, measured UAV-to-UAV RF, measured AERPAW RF/throughput, operating-point selection, and the generated digital-twin dashboard. The remaining unchecked item requires the corresponding author's authenticated journal-portal account.
+Current repository status: the scientific outputs and PDFs are current. The previous anonymous ZIP and readiness JSON were deliberately removed because they predated the final event, MILUV, factorial, packet, latency, and manuscript revisions. Use `python scripts/build_anonymous_supplementary.py` and then `python scripts/audit_submission_readiness.py` to create current submission artifacts.

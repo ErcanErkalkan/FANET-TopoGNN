@@ -1,2 +1,2 @@
-Connectivity ratio,PDR (%),Avg. end-to-end delay (ms),Proactive reroute (%),DTN buffered (%),Relay actions,Model,seed
-0.8856944444444445,99.54623756218905,21.14641312397955,16.48973880597015,0.848973880597015,5664.0,Kinetic-TopoGuard,17
+Connectivity ratio,Reachability-delivery proxy (%),Proxy delay (ms),Proactive reroute (%),DTN buffered (%),Relay actions,Model,seed
+0.9534722222222223,99.83028606965173,18.37725374718661,1.7353855721393034,0.28016169154228854,1810.0,Kinetic-TopoGuard,17

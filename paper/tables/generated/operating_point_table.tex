@@ -1,9 +1,8 @@
-\begin{tabular}{llllllr}
+\begin{tabular}{lrrrrrrr}
 \toprule
-Policy & $\tau_{\mathrm{frag}}$ & Precision & Recall & F1 & False alarms/min & Reduction \\
+Policy & Validation budget & Feasible seeds & $\tau$ & Event precision & Event recall & Event F1 & False events/min \\
 \midrule
-F1-max reference & 0.5 & 0.778 [0.748, 0.808] & 0.783 [0.739, 0.827] & 0.775 [0.751, 0.798] & 36.8 [29.9, 43.7] & 0.0\% \\
-Deployable <= 25/min & 0.6 & 0.846 [0.825, 0.868] & 0.689 [0.641, 0.737] & 0.754 [0.723, 0.785] & 20.2 [16.8, 23.6] & 45.1\% \\
-Strict <= 10/min & 0.7 & 0.904 [0.888, 0.921] & 0.581 [0.530, 0.632] & 0.701 [0.662, 0.741] & 9.6 [8.1, 11.2] & 73.8\% \\
+Deployable & 2.0 & 100\% & 0.39 & 0.743 & 0.303 & 0.421 & 1.85 \\
+Strict & 1.0 & 100\% & 0.44 & 0.816 & 0.230 & 0.351 & 0.90 \\
 \bottomrule
 \end{tabular}

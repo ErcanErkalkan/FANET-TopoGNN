@@ -6,20 +6,20 @@
 - Graph policies: adaptive, fixed
 - Radio scenarios: degraded, nominal
 - Forecast horizon steps: 6
-- Recorded wall-clock runtime: 11700.4 s.
+- Recorded wall-clock runtime: 45.3 s.
 - CUDA available during recorded run: false.
 
 ## Data-supported claims
-- Lowest MAE: Kinetic-TopoGuard with MAE=0.3077.
-- Highest R2: Kinetic-TopoGuard with R2=0.5391.
-- Best fragmentation-risk F1: Union-Find detection oracle with F1=0.7545.
-- Longest median topology-change lead: Shallow ML with 495.00 ms.
-- Best/tied controller connectivity ratio: Kinetic-TopoGuard with 0.8412.
+- Lowest MAE: Current-state persistence baseline with MAE=0.1319.
+- Highest R2: Kinetic-TopoGuard with R2=0.4570.
+- Best fragmentation-risk F1: Current-state persistence baseline with F1=0.7581.
+- Longest median topology-change lead: Shallow ML with 595.00 ms.
+- Best/tied controller connectivity ratio: Kinetic-TopoGuard with 0.8947.
 
 ## Kinetic-TopoGuard status
-- MAE=0.3077, R2=0.5391.
-- Risk-F1=0.5871.
-- Median topology-change lead=230.00 ms.
+- MAE=0.1325, R2=0.4570.
+- Risk-F1=0.7278.
+- Median topology-change lead=260.00 ms.
 
 ## Statistical testing
 - Paired tests and FDR-adjusted p-values are available in `stats_tests.csv` and `stats_tests.tex`.

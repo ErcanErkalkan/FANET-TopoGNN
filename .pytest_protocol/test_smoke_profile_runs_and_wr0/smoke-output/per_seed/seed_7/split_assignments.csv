@@ -1,4 +1,0 @@
-run_id,split_group_id,mobility,n_nodes,link_model,graph_policy,radio_scenario,snapshots,split
-rwp_N6_fixed_default_seed7,rwp_N6_seed7,rwp,6,distance,fixed,default,12,val
-rwp_N6_fixed_default_seed8,rwp_N6_seed8,rwp,6,distance,fixed,default,12,train
-rwp_N6_fixed_default_seed9,rwp_N6_seed9,rwp,6,distance,fixed,default,12,test

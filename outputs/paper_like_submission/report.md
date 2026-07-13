@@ -2,26 +2,26 @@
 
 - Seeds: 20
 - Forecast horizon steps: 6
-- Best model by MAE: Kinetic-TopoGuard
+- Best model by MAE: Current-state persistence baseline
 - Best model by lead: Shallow ML
-- Wall-clock runtime: 11700.4 s
+- Wall-clock runtime: 45.3 s
 - CUDA available during run: false
 
 ## Accuracy
-- Best MAE model: Kinetic-TopoGuard
-- MAE mean: 0.3077
-- R2 mean: 0.5391
+- Best MAE model: Current-state persistence baseline
+- MAE mean: 0.1319
+- R2 mean: 0.4493
 
 ## Early warning
 - Best median lead model: Shallow ML
-- Median lead mean: 495.00 ms
+- Median lead mean: 595.00 ms
 
 ## Risk detection
-                      Model  Risk_F1_mean  Risk_Recall_mean  Risk_Precision_mean
-Union-Find detection oracle      0.754459          0.760507             0.748520
-          Kinetic-TopoGuard      0.587066          0.995549             0.418609
-                 Shallow ML      0.503403          0.975555             0.343349
+                             Model  Risk_F1_mean  Risk_Recall_mean  Risk_Precision_mean
+                 Kinetic-TopoGuard      0.727802          0.870056             0.634079
+                        Shallow ML      0.353488          0.975079             0.223733
+Current-state persistence baseline      0.758144          0.766140             0.750380
 
 ## Network impact
-            Model  Connectivity ratio_mean  PDR (%)_mean  Avg. end-to-end delay (ms)_mean  Proactive reroute (%)_mean  DTN buffered (%)_mean  Relay actions_mean
-Kinetic-TopoGuard                 0.841153     99.331567                        21.499666                   18.362444               1.251953             6589.85
+            Model  Connectivity ratio_mean  Reachability-delivery proxy (%)_mean  Proxy delay (ms)_mean  Proactive reroute (%)_mean  DTN buffered (%)_mean  Relay actions_mean
+Kinetic-TopoGuard                 0.894653                             99.653137              18.596993                    2.789627               0.564636             2773.35

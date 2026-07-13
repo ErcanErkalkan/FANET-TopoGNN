@@ -38,6 +38,9 @@ METRIC_COLS = [
     "Risk_F1",
     "Risk_PR_AUC",
     "Risk_ROC_AUC",
+    "Alert_Event_Recall",
+    "Alert_Event_F1",
+    "False_Alert_Events_per_minute",
     "False_Alarms_per_minute",
     "Inference_ms",
 ]
@@ -79,9 +82,9 @@ def _write_table(metrics: pd.DataFrame, output_path: Path, models: list[str]) ->
     display = metrics[metrics["Model"].isin(models)].copy()
     display = display.sort_values("MAE_mean")
     lines = [
-        "\\begin{tabular}{lrrrr}",
+        "\\begin{tabular}{lrrrrr}",
         "\\toprule",
-        "Model & Seeds & MAE & Risk $F_1$ & Backend \\\\",
+        "Model & Seeds & MAE & Sample $F_1$ & Event $F_1$ & Backend \\\\",
         "\\midrule",
     ]
     for _, row in display.iterrows():
@@ -89,6 +92,7 @@ def _write_table(metrics: pd.DataFrame, output_path: Path, models: list[str]) ->
         lines.append(
             f"{row['Model']} & {int(row['seed_count'])} & "
             f"{float(row['MAE_mean']):.3f} & {float(row['Risk_F1_mean']):.3f} & "
+            f"{float(row['Alert_Event_F1_mean']):.3f} & "
             f"{backend} \\\\"
         )
     lines.extend(["\\bottomrule", "\\end{tabular}"])
@@ -124,7 +128,13 @@ def main() -> int:
     _write_table(
         metrics,
         args.output_dir / "neural_seed_extension_table.tex",
-        ["Kinetic-TopoGuard", "GraphSAGE", "FANET-TopoGNN (concat)", "STGCN (w=5)"],
+        [
+            "Kinetic-TopoGuard",
+            "STGCN (w=5)",
+            "TGN (w=5)",
+            "PI+MLP",
+            "FANET-TopoGNN (concat)",
+        ],
     )
     _write_table(
         metrics,
@@ -139,6 +149,10 @@ def main() -> int:
         "n_seeds": 5,
         "models": metrics["Model"].astype(str).tolist(),
         "neural_backend": "pytorch",
+        "source_cache_versions": {
+            "canonical": json.loads((CANONICAL_DIR / "summary.json").read_text(encoding="utf-8")).get("cache_version"),
+            "extension": json.loads((EXTENSION_DIR / "summary.json").read_text(encoding="utf-8")).get("cache_version"),
+        },
         "scope": "Five-seed extension for neural-family stability; primary confirmatory inference remains the 20-seed Kinetic-TopoGuard-versus-shallow profile.",
     }
     (args.output_dir / "summary.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
