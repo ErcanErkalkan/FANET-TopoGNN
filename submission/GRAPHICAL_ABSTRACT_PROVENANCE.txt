@@ -1,0 +1,13 @@
+Graphical abstract provenance statement
+
+Manuscript: A Reproducible Benchmark and Cross-Domain Stress Test for
+Fragmentation-Event Forecasting in Unmanned Aerial Vehicle Networks
+
+The graphical abstract was assembled programmatically from project results using
+Matplotlib and vector primitives. No generative-AI or AI-assisted image-generation or
+image-alteration tool was used to create or modify the artwork.
+
+Verified submission asset: EAAI_graphical_abstract.pdf
+PDF metadata: Matplotlib 3.10.8 PDF backend; one page; 966.56 x 392.72 pt
+SHA-256: b5022b1a032853a0112218f8211f343593c3c8f6f504c1c3338bde7a2a4e5bd9
+Verification date: 18 July 2026

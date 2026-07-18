@@ -4,6 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fanet-topognn"
+# Working-tree package version. The cited Zenodo DOI archives v0.1.0-q1-compact.
 version = "0.1.12"
 description = "Reproducibility suite for FANET-TopoGNN-style experiments"
 readme = "README.md"
@@ -20,6 +21,9 @@ dependencies = [
 [project.optional-dependencies]
 deep = [
     "torch>=2.1",
+]
+explain = [
+    "shap>=0.46",
 ]
 pyg = [
     "torch>=2.1",

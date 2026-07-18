@@ -17,6 +17,7 @@ from fanet.config import load_config
 from fanet.dataset import build_dataset, train_val_test_split
 from fanet.evaluation import evaluate_predictions, predict_generic
 from fanet.external_validation import build_trace_snapshots, load_flight_trace_csv, pairwise_distance_quantiles
+from fanet.provenance import build_file_manifest, relative_repo_path, verify_manifest
 from fanet.training import fit_current_state_persistence, fit_kinetic_topoguard, select_best_shallow
 
 
@@ -109,10 +110,15 @@ def _write_latex_table(aggregate: pd.DataFrame, path: Path) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Train on simulation and evaluate on a public real-flight motion trace.")
-    parser.add_argument("--config", default="configs/publication_compact_provenance.json")
-    parser.add_argument("--trace", type=Path, default=Path("data/external_validation/derived/forestry_multidrone_trace.csv"))
-    parser.add_argument("--output-dir", type=Path, default=Path("outputs/external_validation"))
+    parser.add_argument("--config", type=Path, default=ROOT / "configs" / "publication_compact_provenance.json")
+    parser.add_argument("--trace", type=Path, default=ROOT / "data" / "external_validation" / "derived" / "forestry_multidrone_trace.csv")
+    parser.add_argument("--output-dir", type=Path, default=ROOT / "outputs" / "external_validation")
     parser.add_argument("--aggregate-only", action="store_true")
+    parser.add_argument(
+        "--protocol-only",
+        action="store_true",
+        help="Verify source provenance and refresh only the existing protocol JSON.",
+    )
     args = parser.parse_args()
     if args.aggregate_only:
         raw = pd.read_csv(args.output_dir / "external_metrics_per_seed.csv")
@@ -120,6 +126,53 @@ def main() -> None:
         aggregate.to_csv(args.output_dir / "external_metrics_summary.csv", index=False)
         _write_latex_table(aggregate, args.output_dir / "external_metrics_table.tex")
         print(f"Rebuilt aggregate outputs in {args.output_dir}")
+        return
+    manifest_path = args.trace.parent / "forestry_multidrone_trace_manifest.json"
+    if not manifest_path.is_file():
+        raise FileNotFoundError(
+            f"Forestry provenance manifest is missing: {relative_repo_path(manifest_path, ROOT)}"
+        )
+    forestry_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    derived_manifest = forestry_manifest.get("files") or [
+        {
+            "relative_path": relative_repo_path(args.trace, ROOT),
+            "bytes": args.trace.stat().st_size if args.trace.is_file() else None,
+            "sha256": forestry_manifest.get("derived_sha256"),
+        }
+    ]
+    derived_verification = verify_manifest(derived_manifest, ROOT)
+    if not derived_verification["valid"]:
+        raise RuntimeError(
+            "Forestry derived-trace provenance verification failed:\n"
+            + "\n".join(derived_verification["errors"])
+        )
+    if args.protocol_only:
+        protocol_path = args.output_dir / "external_validation_protocol.json"
+        if not protocol_path.is_file():
+            raise FileNotFoundError(
+                f"Cannot refresh missing protocol: {relative_repo_path(protocol_path, ROOT)}"
+            )
+        protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+        protocol.update(
+            {
+                "evidence_schema_version": 1,
+                "training_config": relative_repo_path(args.config, ROOT),
+                "test_trace": relative_repo_path(args.trace, ROOT),
+                "source_files": build_file_manifest([args.trace, manifest_path], ROOT),
+                "source_identifier": forestry_manifest.get("doi") or forestry_manifest.get("record_url"),
+                "license": forestry_manifest.get("license", "not stated in local source manifest"),
+                "directly_measured_variables": ["per-UAV GNSS latitude", "longitude", "altitude", "measurement timestamps"],
+                "derived_variables": ["aligned 10 Hz local ENU trajectories", "pair distances", "counterfactual radius graphs", "component-count targets"],
+                "raw_to_derived_transform": forestry_manifest.get("coordinate_transform"),
+                "sampling": {"sample_rate_hz": forestry_manifest.get("sample_rate_hz"), "max_interpolation_gap_s": forestry_manifest.get("max_interpolation_gap_s")},
+                "exclusions": ["invalid GNSS fixes", "non-overlapping time ranges", "interpolation gaps above the declared maximum", "peer RF and packet labels, which are absent"],
+                "allowed_claim": ["measured three-UAV field motion", "simulation-model sensitivity to a measured mobility trace under counterfactual radius graphs"],
+                "prohibited_claim": ["measured peer RF", "measured packet delivery", "field-validated radius-graph connectivity"],
+                "measurement_boundary": {"motion_measured": True, "peer_rf_labels_present": False, "packet_labels_present": False, "radius_graph_counterfactual": True},
+            }
+        )
+        protocol_path.write_text(json.dumps(protocol, indent=2), encoding="utf-8")
+        print(f"Refreshed {relative_repo_path(protocol_path, ROOT)}")
         return
     config = load_config(args.config)
     trace = load_flight_trace_csv(args.trace)
@@ -218,10 +271,13 @@ def main() -> None:
     aggregate.to_csv(args.output_dir / "external_metrics_summary.csv", index=False)
     _write_latex_table(aggregate, args.output_dir / "external_metrics_table.tex")
     _plot_trace(trace, radii, args.output_dir)
+    source_files = build_file_manifest([args.trace, manifest_path], ROOT)
     protocol = {
-        "training_config": args.config,
+        "evidence_schema_version": 1,
+        "training_config": relative_repo_path(args.config, ROOT),
         "training_seeds": [int(seed) for seed in config.training["seed_list"]],
-        "test_trace": str(args.trace),
+        "test_trace": relative_repo_path(args.trace, ROOT),
+        "source_files": source_files,
         "test_vehicle_count": len(trace.vehicle_ids),
         "test_duration_s": float(trace.timestamps_s[-1] - trace.timestamps_s[0]),
         "test_sample_interval_s": dt,
@@ -230,6 +286,16 @@ def main() -> None:
         "radius_selection": "25th, 50th, and 75th percentiles of all observed pairwise distances; selected without reference to model outcomes",
         "radii_m": {str(key): value for key, value in radii.items()},
         "scope_boundary": "Real flight motion only. The source has no packet/RF ground truth; graph labels are deterministic radius sensitivity scenarios.",
+        "source_identifier": forestry_manifest.get("doi") or forestry_manifest.get("record_url"),
+        "license": forestry_manifest.get("license", "not stated in local source manifest"),
+        "directly_measured_variables": ["per-UAV GNSS latitude", "longitude", "altitude", "measurement timestamps"],
+        "derived_variables": ["aligned 10 Hz local ENU trajectories", "pair distances", "counterfactual radius graphs", "component-count targets"],
+        "raw_to_derived_transform": forestry_manifest.get("coordinate_transform"),
+        "sampling": {"sample_rate_hz": forestry_manifest.get("sample_rate_hz"), "max_interpolation_gap_s": forestry_manifest.get("max_interpolation_gap_s")},
+        "exclusions": ["invalid GNSS fixes", "non-overlapping time ranges", "interpolation gaps above the declared maximum", "peer RF and packet labels, which are absent"],
+        "allowed_claim": ["measured three-UAV field motion", "simulation-model sensitivity to a measured mobility trace under counterfactual radius graphs"],
+        "prohibited_claim": ["measured peer RF", "measured packet delivery", "field-validated radius-graph connectivity"],
+        "measurement_boundary": {"motion_measured": True, "peer_rf_labels_present": False, "packet_labels_present": False, "radius_graph_counterfactual": True},
     }
     (args.output_dir / "external_validation_protocol.json").write_text(json.dumps(protocol, indent=2), encoding="utf-8")
     print(f"Wrote external validation outputs to {args.output_dir}")

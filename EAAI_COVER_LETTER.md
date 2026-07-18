@@ -1,41 +1,16 @@
 Dear Editor,
 
-Please consider the manuscript "Motion-Conditioned Topological Artificial
-Intelligence for Fragmentation-Risk Forecasting in Unmanned Aerial Vehicle
-Networks" as an original research article for *Engineering Applications of
-Artificial Intelligence*.
+Please consider the manuscript "A Reproducible Benchmark and Cross-Domain Stress Test for Fragmentation-Event Forecasting in Unmanned Aerial Vehicle Networks" as an original research article for *Engineering Applications of Artificial Intelligence*.
 
-The study addresses an engineering decision-support problem: forecasting
-short-horizon fragmentation in rapidly changing unmanned aerial vehicle
-networks. Kinetic-TopoGuard combines motion projection, zero-dimensional
-persistent-homology descriptors, graph statistics, residual forecasting, and
-calibrated risk scoring. The submission includes a reproducible simulation
-benchmark, verified model-backend provenance, a focused 20-seed confirmatory
-evaluation, and an external transfer evaluation using measured motion from a
-public three-drone forestry field experiment. The revised evidence also includes
-chronological AERPAW cellular checks, held-out UAV-to-UAV 60 GHz links, direct
-three-UAV MILUV UWB topology transfer, a full feature-source factorial, six
-forecast horizons, a load-swept SimPy packet experiment, and complete host-loop
-timing. The sources are deliberately separated: forestry labels are
-counterfactual radius graphs, AERPAW is UAV-to-infrastructure, the transported
-60 GHz forestry analysis is not same-site calibration, and MILUV ranging quality
-is not IP packet delivery.
+The work studies an engineering decision-support problem: whether an artificial-intelligence warning of imminent network fragmentation remains useful after false alerts, packet traffic, controller action cost, domain shift, and host-side computation are considered together. Its artificial-intelligence contribution is a leakage-controlled comparison of current-state, topology, motion, source-gated, shallow, and neural predictors, including a locked 20-seed evaluation. Its engineering application couples validation-selected warnings to a bounded simulated relay policy and a discrete-event packet model; it does not claim field control or deployment readiness.
 
-The manuscript is relevant to the journal because it integrates an artificial
-intelligence method with a concrete networked-engineering application and
-evaluates both predictive and decision-support behavior. Negative results are
-retained: current-state persistence has the lowest count MAE, robust AERPAW
-throughput transfer fails, forestry event recall is zero, MILUV event transfer
-is weak, and the complete CPU path misses a 20 ms tail-latency target. Claims
-are restricted to executed artifacts, and limitations concerning outdoor FANET
-IP ground truth, onboard profiling, and deployment readiness are explicit.
+The submission emphasizes reproducibility and evidence boundaries. It provides seed-level outputs, machine-readable protocols, complete baseline accounting, public-data transfer checks, packet/controller experiments, and measured host-loop timing. Forestry motion, AERPAW cellular links, WiNES peer-link measurements, and MILUV indoor ranging are kept as distinct evidence layers rather than treated as interchangeable field packet-delivery data.
 
-Before submission, the author will confirm in the portal that the manuscript is
-original, is not under consideration by another journal, and is approved for
-submission. The author declares no competing interests and no specific funding.
-The code and reproducibility artifacts are archived;
-an identity-scanned supplementary package is supplied for double-anonymous
-review. Author-identifying information is confined to the separate title page.
+Negative and mixed findings are reported directly. The locked source-gated model does not establish superiority over Current-state ExtraTrees, richer feature sources do not improve the primary event metric in the equal-learner factorial, the residual count branch is unsupported, and no closed-loop comparison satisfies the predeclared engineering-benefit rule. These results motivate the manuscript's benchmark and stress-test positioning and define where additional synchronized outdoor radio, packet, onboard-timing, and actuation evidence is needed.
+
+The study fits the journal's scope by connecting artificial-intelligence evaluation to a concrete networked-engineering decision while testing prediction-to-action consequences and deployment boundaries. The author declares no competing interests and no specific funding. The cited DOI archives the earlier `v0.1.0-q1-compact` snapshot; the current identity-scanned supplementary package is provided separately for double-anonymous review and is not attributed to that older archive.
+
+The submission includes the anonymous manuscript, editable highlights, a separate title page, a separate Declaration of Competing Interest, named figure files, the graphical abstract with a non-generative-artwork provenance note, and the executable anonymous package labelled Supplementary Material S1.
 
 Sincerely,
 

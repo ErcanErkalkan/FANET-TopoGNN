@@ -1,5 +1,5 @@
 cff-version: "1.2.0"
-message: "If you use this software or benchmark artefacts, please cite this repository and the associated manuscript."
+message: "If you use the archived software snapshot, cite the v0.1.0-q1-compact Zenodo record; the repository working tree may be newer."
 title: "FANET-TopoGNN / Kinetic-TopoGuard Reproducibility Suite"
 authors:
   - family-names: Erkalkan
@@ -8,6 +8,6 @@ authors:
     orcid: "https://orcid.org/0000-0001-9259-7112"
 repository-code: "https://github.com/ErcanErkalkan/FANET-TopoGNN"
 doi: "10.5281/zenodo.20226053"
-version: "0.1.12"
-date-released: "2026-06-20"
+version: "v0.1.0-q1-compact"
+date-released: "2026-05-16"
 abstract: "Executable FANET topology forecasting reproducibility suite with compact manuscript-facing result artefacts."

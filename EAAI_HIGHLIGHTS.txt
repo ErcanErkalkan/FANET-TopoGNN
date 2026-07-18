@@ -1,0 +1,5 @@
+- The locked primary test finds no supported source-gated superiority.
+- A full factorial isolates current, graph, topology, and motion sources.
+- Packet and controller experiments expose prediction-to-action limits.
+- Cross-domain tests reveal severe fragmentation-event transfer failure.
+- Runtime measurements bound claims to the host-side algorithm loop.

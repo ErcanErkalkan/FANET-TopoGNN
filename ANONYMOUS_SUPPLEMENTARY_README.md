@@ -1,4 +1,4 @@
-# Anonymous supplementary reproducibility package
+# Supplementary Material S1 — anonymous reproducibility package
 
 This review package contains the code, configurations, compact and 20-seed outputs, derived public flight trace, AERPAW aerial cellular outputs, external-transfer outputs, and focused tests needed to inspect and rerun the Kinetic-TopoGuard study. Author names, affiliations, email addresses, public repository identifiers, software-archive identifiers, and personal license fields have been removed.
 
@@ -18,6 +18,11 @@ python -m pip install -r requirements-deep.txt
 ```
 
 Without PyTorch, the pipeline can use deterministic scikit-learn surrogates for those model names. New summaries record the backend; surrogate rows are not valid neural baseline evidence.
+
+The completed five-seed PyTorch model-family table is descriptive context only. A
+20-new-seed neural extension is specified separately but remains unexecuted unless a
+verified PyTorch backend is available; S1 contains no surrogate or fabricated result for
+that pending protocol.
 
 ## Smoke test
 
@@ -71,10 +76,15 @@ The public AERPAW Dataset-22 and Dataset-23 CSV folders remain outside the packa
 
 ## Output interpretation
 
-`Current-state persistence baseline` carries the observed component count forward unchanged to the forecast horizon and is ranked as a deployable no-change forecast.
+`Current-state persistence baseline` carries the observed component count forward unchanged to the forecast horizon and is used as a non-learning no-change reference. This label does not imply field or onboard deployability.
 
 Current runs export PR-AUC, ROC-AUC, Brier score, expected calibration error, sample false alarms, one-to-one fragmentation-event precision/recall/F1, false alert events per minute, and threshold-sensitivity data. The 600 ms nominal horizon is one point in the executed 0.2--2.0 s sweep and is not a deployment guarantee.
 
+The event-protocol sensitivity keeps the fitted score and validation-selected threshold
+fixed while varying the warning window and refractory period over 0.3, 0.6, and 1.2 s and
+stratifying held-out runs by measured event-density tertiles. See
+`outputs/event_protocol_sensitivity/` and `SUPPLEMENTARY_TABLE_INDEX.md`.
+
 ## Evidence boundary
 
-The evidence includes temporally correlated simulated-radio experiments, a real-field-motion transfer test, measured AERPAW aerial cellular RF/KPI and throughput checks, measured 60 GHz peer-link modelling with an explicitly transported forestry sensitivity, and measured MILUV three-UAV UWB topology transfer. A simplified SimPy queue/contention experiment reports simulated packet-level PDR and delay over the physical-radio graphs. The forestry bags still lack RF labels, AERPAW is UAV-to-infrastructure, and MILUV first-path power is not IP packet delivery. Hardware-in-the-loop control, synchronized outdoor FANET IP packets, onboard profiling, and deployment-level validation remain outside the completed package.
+The evidence includes temporally correlated simulated-radio experiments, a real-field-motion transfer test, measured AERPAW aerial cellular RF/KPI and throughput checks, measured 60 GHz peer-link modelling with an explicitly transported forestry sensitivity, and measured MILUV three-UAV UWB topology transfer. A simplified SimPy queue/contention experiment reports simulated packet-level PDR and delay over the physical-radio graphs. The forestry bags still lack RF labels, AERPAW is UAV-to-infrastructure, and MILUV first-path power is not IP packet delivery. The one compatible MILUV sequence contains only one or two connected-to-fragmented events per evaluated threshold; repeated seeds do not create independent measured scenarios. Hardware-in-the-loop control, synchronized outdoor FANET IP packets, onboard profiling, and deployment-level validation remain outside the completed package.

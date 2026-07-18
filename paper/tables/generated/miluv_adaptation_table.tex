@@ -1,0 +1,21 @@
+\begin{tabular}{llrrrr}
+\toprule
+Protocol & Model & Seeds & MAE & Event F1 & Brier \\
+\midrule
+Chronological calibration & Current-state ExtraTrees & 5 & 0.044 & 0.000 & 0.022 \\
+Chronological calibration & Current-state persistence baseline & 5 & 0.044 & 0.000 & 0.022 \\
+Chronological calibration & Kinetic-TopoGuard & 5 & 0.044 & 0.000 & 0.021 \\
+Chronological calibration & Shallow ML & 5 & 1.273 & 0.000 & 0.022 \\
+Chronological calibration & Source-Gated Kinetic-TopoGuard & 5 & 0.190 & 0.000 & 0.021 \\
+Few-shot prediction head & Current-state ExtraTrees & 5 & 0.055 & 0.000 & 0.022 \\
+Few-shot prediction head & Current-state persistence baseline & 5 & 0.055 & 0.000 & 0.022 \\
+Few-shot prediction head & Kinetic-TopoGuard & 5 & 0.055 & 0.000 & 0.021 \\
+Few-shot prediction head & Shallow ML & 5 & 0.046 & 0.000 & 0.022 \\
+Few-shot prediction head & Source-Gated Kinetic-TopoGuard & 5 & 0.053 & 0.000 & 0.021 \\
+Zero-shot frozen & Current-state ExtraTrees & 5 & 0.044 & 0.000 & 0.243 \\
+Zero-shot frozen & Current-state persistence baseline & 5 & 0.044 & 0.000 & 0.044 \\
+Zero-shot frozen & Kinetic-TopoGuard & 5 & 0.044 & 0.000 & 0.054 \\
+Zero-shot frozen & Shallow ML & 5 & 1.273 & 0.000 & 0.974 \\
+Zero-shot frozen & Source-Gated Kinetic-TopoGuard & 5 & 0.190 & 0.000 & 0.039 \\
+\bottomrule
+\end{tabular}

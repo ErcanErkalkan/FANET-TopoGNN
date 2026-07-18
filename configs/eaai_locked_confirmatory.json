@@ -1,0 +1,83 @@
+{
+  "extends": "paper_like_submission.json",
+  "experiment_name": "eaai_locked_confirmatory",
+  "output_dir": "outputs/eaai_locked_confirmatory",
+  "sim": {
+    "forecast_horizon_steps": 6
+  },
+  "training": {
+    "seed_list": [
+      792544334,
+      987416920,
+      1921516227,
+      553942641,
+      1095639595,
+      1556154620,
+      1925325213,
+      1799036037,
+      320532424,
+      1202194162,
+      1496187211,
+      571040038,
+      288752871,
+      129980784,
+      782306477,
+      966785030,
+      378748553,
+      1849599976,
+      1888828831,
+      1470515591
+    ],
+    "selected_models": [
+      "source_gated_kinetic_topoguard"
+    ],
+    "source_gated": {
+      "n_splits": 5,
+      "n_estimators": 64,
+      "frozen_count_min_samples_leaf": 2,
+      "frozen_risk_min_samples_leaf": 5,
+      "frozen_ridge_alpha": 1.0,
+      "frozen_logistic_c": 0.1,
+      "frozen_calibration_type": "isotonic",
+      "threshold_grid": [
+        0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50,
+        0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95
+      ]
+    }
+  },
+  "confirmatory": {
+    "primary_model": "Source-Gated Kinetic-TopoGuard",
+    "primary_comparator": "Current-state ExtraTrees",
+    "primary_metric": "Alert_Event_F1",
+    "direction": "higher_is_better",
+    "hypothesis": "Source-Gated Kinetic-TopoGuard versus Current-state ExtraTrees on event F1.",
+    "primary_decision_rule": "superiority requires a positive paired mean event-F1 difference, a seed-bootstrap 95% confidence interval excluding zero, and a two-sided paired-permutation p-value below 0.05",
+    "evaluation_models": [
+      "Current-state persistence baseline",
+      "Current-state ExtraTrees",
+      "Kinetic-TopoGuard",
+      "Source-Gated Kinetic-TopoGuard",
+      "Shallow ML"
+    ],
+    "frozen_feature_definitions": {
+      "current": "current and lagged component count, component-count change, node count, and active radius",
+      "graph": "degree, largest-component, clustering, path-length, and edge-density statistics without component-count state",
+      "topology": "zero-dimensional persistence image and fixed distribution summaries",
+      "kinematic": "current/projected pair-distance, velocity, projected-component, and radius-crossing summaries without component-count state"
+    },
+    "frozen_threshold_selection_rule": {
+      "partition": "validation only",
+      "primary": "maximum fragmentation-event F1",
+      "tie_break_order": [
+        "maximum sample-level F1",
+        "minimum false alert events per minute",
+        "maximum threshold"
+      ]
+    },
+    "test_partition_role": "single locked evaluation after all model and threshold choices",
+    "seed_selection": {
+      "method": "SHA-256 domain-separated counter stream; map first 64 digest bits to [100000, 2000099999], discard prior or duplicate seeds",
+      "domain": "FANET-TopoGNN:EAAI:locked-confirmatory:v1"
+    }
+  }
+}

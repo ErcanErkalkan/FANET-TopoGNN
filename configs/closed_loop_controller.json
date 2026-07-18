@@ -1,0 +1,46 @@
+{
+  "extends": "source_gated_development.json",
+  "experiment_name": "closed_loop_controller",
+  "output_dir": "outputs/closed_loop_controller_packet_v2",
+  "closed_loop": {
+    "seeds": [7, 17, 27, 37, 47],
+    "traffic_loads": [8, 16, 32],
+    "topology_density_nodes": [10, 20, 30],
+    "snapshot_stride": 10,
+    "primary_metric": "Packet_Delivery_Ratio",
+    "reaction_delay_steps": 1,
+    "action_duration_steps": 6,
+    "cooldown_steps": 3,
+    "reactive_confirmation_steps": 2,
+    "max_relays": 2,
+    "max_speed_mps": 30.0,
+    "max_acceleration_mps2": 12.0,
+    "radius_boost": 1.15,
+    "relay_link_budget_boost_db": 3.0,
+    "energy_speed_weight": 1.0,
+    "energy_acceleration_weight": 0.1,
+    "acceptable_action_cost": {
+      "max_travel_m_per_simulated_minute": 300.0,
+      "max_action_duty_cycle": 0.25
+    },
+    "bootstrap_rounds": 2000
+  },
+  "packet_simulation": {
+    "arrival_model": "fixed-size batch at the start of each sampled controller tick",
+    "packet_deadline_s": 0.1,
+    "packet_bytes": 1200,
+    "bitrate_mbps": 6.0,
+    "queue_limit": 64,
+    "queue_discipline": "single collision-domain FIFO SimPy Resource",
+    "difs_us": 34.0,
+    "slot_us": 9.0,
+    "max_backoff_slots": 15,
+    "propagation_us_per_hop": 5.0,
+    "routing": "unweighted shortest path recomputed for each packet on the current controlled adjacency",
+    "link_failure_probability_per_attempt": 0.0,
+    "intervention_transition_failure_probability_per_attempt": 0.0,
+    "max_retransmissions": 0,
+    "link_failure_interpretation": "physical-radio link absence is realized before packet routing and therefore contributes to no-route drops; additional within-tick link failures are disabled",
+    "intervention_transition_interpretation": "relay transition loss is reported separately but disabled because no measured handover-loss parameter is available"
+  }
+}

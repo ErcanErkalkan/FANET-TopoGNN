@@ -4,18 +4,35 @@ import argparse
 import json
 import shutil
 from pathlib import Path
+import sys
 
 import matplotlib.pyplot as plt
 import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from fanet.provenance import relative_repo_path
+
+
 DEFAULT_INPUT = ROOT / "outputs" / "paper_like_submission" / "operating_point_metrics.csv"
 DEFAULT_PER_SEED = ROOT / "outputs" / "paper_like_submission" / "per_seed_operating_point_metrics.csv"
 DEFAULT_OUTPUT = ROOT / "outputs" / "operating_point"
 PAPER_TABLE = ROOT / "paper" / "tables" / "generated" / "operating_point_table.tex"
 PAPER_FIGURE_PDF = ROOT / "paper" / "figures" / "generated" / "operating_point_selection.pdf"
 PAPER_FIGURE_PNG = ROOT / "paper" / "figures" / "generated" / "operating_point_selection.png"
+
+POLICY_DISPLAY_LABELS = {
+    "deployable": "Two-alert budget",
+    "strict": "One-alert budget",
+}
+
+
+def _policy_display_label(value: object) -> str:
+    key = str(value)
+    return POLICY_DISPLAY_LABELS.get(key, key.replace("_", " ").title())
 
 
 def _write_table(summary: pd.DataFrame, output_path: Path) -> None:
@@ -27,7 +44,7 @@ def _write_table(summary: pd.DataFrame, output_path: Path) -> None:
     ]
     for _, row in summary.iterrows():
         lines.append(
-            f"{str(row['Policy']).title()} & "
+            f"{_policy_display_label(row['Policy'])} & "
             f"{row['Validation_False_Alert_Budget_per_minute_mean']:.1f} & "
             f"{100.0 * row['Validation_Constraint_Met_mean']:.0f}\\% & "
             f"{row['Selected_Threshold_mean']:.2f} & "
@@ -41,7 +58,7 @@ def _write_table(summary: pd.DataFrame, output_path: Path) -> None:
 
 
 def _plot(summary: pd.DataFrame, output_dir: Path) -> None:
-    labels = summary["Policy"].str.title()
+    labels = summary["Policy"].map(_policy_display_label)
     fig, axes = plt.subplots(1, 2, figsize=(8.4, 3.5))
     axes[0].bar(labels, summary["Test_Alert_Event_F1_mean"], color=["#2f6db3", "#3b7a57"])
     axes[0].set_ylabel("Independent-test event F1")
@@ -96,8 +113,8 @@ def main() -> int:
     _plot(summary, args.output_dir)
 
     payload = {
-        "source": str(args.input.relative_to(ROOT)),
-        "per_seed_source": str(args.per_seed.relative_to(ROOT)),
+        "source": relative_repo_path(args.input, ROOT),
+        "per_seed_source": relative_repo_path(args.per_seed, ROOT),
         "selection_split": "validation",
         "evaluation_split": "test",
         "selection_rule": (

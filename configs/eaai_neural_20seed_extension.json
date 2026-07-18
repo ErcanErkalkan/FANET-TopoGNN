@@ -1,0 +1,32 @@
+{
+  "experiment_name": "eaai_neural_20seed_extension_pending",
+  "base_config": "configs/publication_compact.json",
+  "output_dir": "outputs/eaai_neural_20seed_extension",
+  "protocol_status": "prepared_not_executed",
+  "seed_generation_domain": "FANET-TopoGNN:EAAI:P1:neural-20seed-extension:v1",
+  "seed_list": [
+    605087566, 685337342, 614438215, 501057944, 1875982389,
+    590510519, 1211625617, 707501182, 1569433442, 1378833720,
+    1435261200, 850705477, 1639049496, 840683328, 877317518,
+    1959387774, 436034371, 673415761, 205422734, 816758018
+  ],
+  "selected_models": [
+    "current_state_extratrees",
+    "kinetic_topoguard",
+    "FANET-TopoGNN",
+    "stgcn:5",
+    "tgn:5"
+  ],
+  "training_overrides": {
+    "epochs": 100,
+    "patience": 12,
+    "hidden_dim": 64,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "dropout": 0.15,
+    "temporal_windows": [5]
+  },
+  "execution_rule": "The launcher must verify that every seed is absent from prior configs and outputs and that PyTorch is available before invoking the pipeline. Surrogate execution is forbidden.",
+  "claim_rule": "Pending until all five models cover all 20 seeds. Do not cite or aggregate partial results."
+}

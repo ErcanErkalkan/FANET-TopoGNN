@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 from pathlib import Path
+import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -27,6 +27,12 @@ from sklearn.preprocessing import StandardScaler
 
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from fanet.provenance import build_file_manifest, relative_repo_path
+
+
 RAW_ROOT = ROOT / "data" / "external_validation" / "raw"
 DEFAULT_OUTPUT = ROOT / "outputs" / "aerpaw_cellular_validation"
 DEFAULT_MANUSCRIPT = ROOT / "paper"
@@ -59,18 +65,15 @@ DATASETS = {
 }
 
 SENTINELS = {2147483647, -2147483648}
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+AERPAW_LICENSE_STATUS = "not stated on the AERPAW dataset landing pages; reuse terms require confirmation"
 
 
 def _require_inputs() -> None:
-    missing = [str(meta["path"].relative_to(ROOT)) for meta in DATASETS.values() if not meta["path"].exists()]
+    missing = [
+        relative_repo_path(meta["path"], ROOT)
+        for meta in DATASETS.values()
+        if not meta["path"].is_file()
+    ]
     if missing:
         commands = [
             "python -m pip install -r requirements-external.txt",
@@ -423,7 +426,13 @@ def main() -> int:
     _write_table(table_path, availability_df, throughput_df)
     _plot_outputs(args.output_dir, availability_records, throughput_frame)
 
+    source_files = build_file_manifest(
+        [meta["path"] for meta in DATASETS.values()],
+        ROOT,
+    )
+    records_by_path = {item["relative_path"]: item for item in source_files}
     manifest = {
+        "evidence_schema_version": 1,
         "scope": (
             "Measured aerial cellular RF/KPI validation. This is real UAV-to-cellular infrastructure evidence; "
             "it is not an inter-UAV FANET packet-link dataset."
@@ -431,14 +440,50 @@ def main() -> int:
         "sources": {
             key: {
                 "source": meta["source"],
+                "source_identifier": meta["url"],
+                "license": AERPAW_LICENSE_STATUS,
                 "url": meta["url"],
                 "drive": meta["drive"],
-                "relative_path": str(meta["path"].relative_to(ROOT)),
-                "sha256": _sha256(meta["path"]),
-                "bytes": meta["path"].stat().st_size,
+                **records_by_path[relative_repo_path(meta["path"], ROOT)],
             }
             for key, meta in DATASETS.items()
         },
+        "source_files": source_files,
+        "directly_measured_variables": {
+            "lte_connection_state": ["is_connected", "RSRP", "RSRQ", "RSSI", "ASU", "PCI", "position", "altitude", "timestamps"],
+            "nr_kpis": ["SS-RSRP", "SS-RSRQ", "SS-SINR", "position", "altitude", "timestamps"],
+            "iperf_throughput": ["iPerf throughput", "position", "altitude", "timestamps"],
+        },
+        "derived_variables": {
+            "geometry": ["local x/y coordinates", "distance from median coordinate"],
+            "connection_state_models": ["RSRP threshold score", "logistic connection probability"],
+            "throughput_models": ["training-mean prediction", "RF/KPI random-forest prediction"],
+        },
+        "raw_to_derived_transform": [
+            "replace Android sentinel values with missing values",
+            "sort by measurement time",
+            "project latitude/longitude to local metric coordinates",
+            "align iPerf and LTE records by nearest timestamp within 1500 source-time units",
+        ],
+        "sampling": {
+            "dataset22_lte": "nominal one-second logging stated by the source page",
+            "dataset23": "native irregular source timestamps; chronological order retained",
+        },
+        "exclusions": [
+            "sentinel-valued and missing required KPI/position rows",
+            "iPerf rows without a matched connected LTE record inside the alignment tolerance",
+            "random or interleaved train/test splits",
+        ],
+        "allowed_claim": [
+            "chronological UAV-to-infrastructure LTE connection-state prediction",
+            "chronological UAV-to-infrastructure iPerf throughput prediction, including negative R2",
+            "measured aerial cellular KPI characterization",
+        ],
+        "prohibited_claim": [
+            "inter-UAV or peer-link validation",
+            "FANET packet-delivery validation",
+            "robust throughput transfer when chronological R2 is negative",
+        ],
         "availability_rows": int(len(availability_df)),
         "throughput_rows": int(len(throughput_df)),
         "throughput_protocol": {
@@ -446,6 +491,11 @@ def main() -> int:
             "robustness_split": "first-half-to-second-half",
             "interleaved_blocks_used": False,
             **throughput_diagnostics,
+        },
+        "throughput_outcomes": {
+            "negative_r2_preserved": bool((throughput_df["r2"] < 0.0).any()),
+            "connection_state_results_separate": True,
+            "throughput_results_separate": True,
         },
         "nr_summary": nr_summary,
     }
@@ -461,7 +511,7 @@ def main() -> int:
             target = figure_dest / f"aerpaw_cellular_validation.{suffix}"
             target.write_bytes((args.output_dir / f"aerpaw_cellular_validation.{suffix}").read_bytes())
 
-    print(f"Wrote {args.output_dir.relative_to(ROOT)}")
+    print(f"Wrote {relative_repo_path(args.output_dir, ROOT)}")
     print(availability_df.to_string(index=False))
     print(throughput_df.to_string(index=False))
     return 0

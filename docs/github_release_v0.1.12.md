@@ -1,4 +1,8 @@
-# FANET-TopoGNN v0.1.12 publication consistency artefacts
+# DRAFT: FANET-TopoGNN v0.1.12 publication consistency artefacts
+
+This is a release draft, not an archived release record. DOI
+`10.5281/zenodo.20226053` identifies `v0.1.0-q1-compact` and must not be cited as
+the archive of `v0.1.12`.
 
 ## Release fields
 
@@ -14,13 +18,13 @@ Set as latest release: checked
 
 ## Release notes
 
-This release archives the executable FANET-TopoGNN / Kinetic-TopoGuard reproducibility suite and the compact manuscript-facing artefact bundle after the consistency cleanup.
+This draft describes a future release of the executable FANET-TopoGNN / Kinetic-TopoGuard reproducibility suite and the compact manuscript-facing artefact bundle after consistency cleanup.
 
 Repository: `ErcanErkalkan/FANET-TopoGNN`
 
 Repository URL: <https://github.com/ErcanErkalkan/FANET-TopoGNN>
 
-Archived release DOI: <https://doi.org/10.5281/zenodo.20226053>
+Existing earlier archive DOI (`v0.1.0-q1-compact`): <https://doi.org/10.5281/zenodo.20226053>
 
 ### Included artefacts
 
@@ -57,10 +61,12 @@ python main.py --config configs/publication_compact.json --resume
 
 ### Zenodo
 
-This release is intended for Zenodo archival. The repository includes:
+This release requires a new Zenodo version before it can be described as archived. The repository includes:
 
 - `.zenodo.json` for Zenodo metadata
 - `CITATION.cff` for citation metadata
 - `docs/zenodo_release.md` with the Zenodo publication checklist
 
-Zenodo archived DOI: <https://doi.org/10.5281/zenodo.20226053>
+Existing Zenodo DOI for `v0.1.0-q1-compact`: <https://doi.org/10.5281/zenodo.20226053>
+
+Do not attach that DOI to `v0.1.12`; record the new version DOI only after Zenodo mints it.

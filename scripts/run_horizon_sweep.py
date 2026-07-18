@@ -16,6 +16,7 @@ if str(ROOT) not in sys.path:
 
 from fanet.dataset import build_dataset, relabel_forecast_horizon, train_val_test_split
 from fanet.evaluation import evaluate_predictions, predict_generic
+from fanet.provenance import relative_repo_path
 from fanet.training import fit_current_state_persistence, fit_kinetic_topoguard, select_best_shallow
 
 
@@ -144,7 +145,7 @@ def main() -> int:
     plt.close(fig)
 
     protocol = {
-        "config": str(args.config.relative_to(ROOT)),
+        "config": relative_repo_path(args.config, ROOT),
         "seeds": args.seeds,
         "workers": args.workers,
         "horizon_steps": args.horizons,

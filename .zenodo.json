@@ -1,6 +1,6 @@
 {
   "title": "FANET-TopoGNN / Kinetic-TopoGuard Reproducibility Suite",
-  "version": "0.1.12",
+  "version": "v0.1.0-q1-compact",
   "upload_type": "software",
   "description": "Executable reproducibility suite and compact manuscript-facing benchmark artefacts for Kinetic-TopoGuard: Risk-Aware Topological Connectivity Forecasting in Dynamic Flying Ad Hoc Networks.",
   "creators": [
@@ -26,5 +26,5 @@
     }
   ],
   "access_right": "open",
-  "notes": "The repository is ErcanErkalkan/FANET-TopoGNN. The custom academic research and education license in LICENSE applies; commercial use requires prior written permission from the author."
+  "notes": "Metadata aligned to archived DOI 10.5281/zenodo.20226053 (v0.1.0-q1-compact, 2026-05-16). The repository working-tree Python package version is 0.1.12 and is not archived by that DOI."
 }

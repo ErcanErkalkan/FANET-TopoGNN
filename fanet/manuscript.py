@@ -128,7 +128,7 @@ def export_manuscript_tables(
             risk,
             "Fragmentation-risk forecasting metrics.",
             "tab:risk_metrics_auto",
-            "Current-state persistence is a deployable no-change forecasting baseline.",
+            "Current-state persistence is a non-learning no-change forecasting reference; the label does not imply field deployment.",
         )
     )
     out_path.write_text("\n".join(blocks), encoding="utf-8")

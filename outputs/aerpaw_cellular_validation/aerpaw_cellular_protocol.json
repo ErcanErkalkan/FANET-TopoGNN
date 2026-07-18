@@ -1,39 +1,136 @@
 {
+  "evidence_schema_version": 1,
   "scope": "Measured aerial cellular RF/KPI validation. This is real UAV-to-cellular infrastructure evidence; it is not an inter-UAV FANET packet-link dataset.",
   "sources": {
     "dataset22_lte_semicircle": {
       "source": "AERPAW Dataset-22",
+      "source_identifier": "https://aerpaw.org/dataset/dataset-22-android-based-4g-lte-measurements-for-semi-circular-uav-trajectory-around-a-private-aerpaw-base-station/",
+      "license": "not stated on the AERPAW dataset landing pages; reuse terms require confirmation",
       "url": "https://aerpaw.org/dataset/dataset-22-android-based-4g-lte-measurements-for-semi-circular-uav-trajectory-around-a-private-aerpaw-base-station/",
       "drive": "https://drive.google.com/drive/folders/1S7jqTYkPfZD9gf_5tFq1ufyuqEnXgQPn",
-      "relative_path": "data\\external_validation\\raw\\aerpaw_dataset22\\Logs\\lte.csv",
-      "sha256": "3dedd744e0eb286dfe89228646a5f7f6d743be7ac814e39762c4307d706265ce",
-      "bytes": 368491
+      "relative_path": "data/external_validation/raw/aerpaw_dataset22/Logs/lte.csv",
+      "bytes": 368491,
+      "sha256": "3dedd744e0eb286dfe89228646a5f7f6d743be7ac814e39762c4307d706265ce"
     },
     "dataset23_lte_two_sweeps": {
       "source": "AERPAW Dataset-23 LTE",
+      "source_identifier": "https://aerpaw.org/dataset/dataset-23-android-based-4g-lte-5g-nr-and-throughput-measurements-for-two-sweeps-of-a-uav-near-a-private-aerpaw-base-station/",
+      "license": "not stated on the AERPAW dataset landing pages; reuse terms require confirmation",
       "url": "https://aerpaw.org/dataset/dataset-23-android-based-4g-lte-5g-nr-and-throughput-measurements-for-two-sweeps-of-a-uav-near-a-private-aerpaw-base-station/",
       "drive": "https://drive.google.com/drive/folders/1yo3B6xCxHx46ceTwO_NL6zhvplD0l-RV",
-      "relative_path": "data\\external_validation\\raw\\aerpaw_dataset23\\Logs\\4G_lte.csv",
-      "sha256": "2756e94614628df0c223414918780e4fc9c0f04fd51603affbbd7a24bb7be09f",
-      "bytes": 619957
+      "relative_path": "data/external_validation/raw/aerpaw_dataset23/Logs/4G_lte.csv",
+      "bytes": 619957,
+      "sha256": "2756e94614628df0c223414918780e4fc9c0f04fd51603affbbd7a24bb7be09f"
     },
     "dataset23_nr_two_sweeps": {
       "source": "AERPAW Dataset-23 NR",
+      "source_identifier": "https://aerpaw.org/dataset/dataset-23-android-based-4g-lte-5g-nr-and-throughput-measurements-for-two-sweeps-of-a-uav-near-a-private-aerpaw-base-station/",
+      "license": "not stated on the AERPAW dataset landing pages; reuse terms require confirmation",
       "url": "https://aerpaw.org/dataset/dataset-23-android-based-4g-lte-5g-nr-and-throughput-measurements-for-two-sweeps-of-a-uav-near-a-private-aerpaw-base-station/",
       "drive": "https://drive.google.com/drive/folders/1yo3B6xCxHx46ceTwO_NL6zhvplD0l-RV",
-      "relative_path": "data\\external_validation\\raw\\aerpaw_dataset23\\Logs\\5G_nr.csv",
-      "sha256": "deb655f1cc39553343391aa2b06b2945f8c9bdd80afba2adb6ebfb11722da4f6",
-      "bytes": 108763
+      "relative_path": "data/external_validation/raw/aerpaw_dataset23/Logs/5G_nr.csv",
+      "bytes": 108763,
+      "sha256": "deb655f1cc39553343391aa2b06b2945f8c9bdd80afba2adb6ebfb11722da4f6"
     },
     "dataset23_iperf_two_sweeps": {
       "source": "AERPAW Dataset-23 iPerf",
+      "source_identifier": "https://aerpaw.org/dataset/dataset-23-android-based-4g-lte-5g-nr-and-throughput-measurements-for-two-sweeps-of-a-uav-near-a-private-aerpaw-base-station/",
+      "license": "not stated on the AERPAW dataset landing pages; reuse terms require confirmation",
       "url": "https://aerpaw.org/dataset/dataset-23-android-based-4g-lte-5g-nr-and-throughput-measurements-for-two-sweeps-of-a-uav-near-a-private-aerpaw-base-station/",
       "drive": "https://drive.google.com/drive/folders/1yo3B6xCxHx46ceTwO_NL6zhvplD0l-RV",
-      "relative_path": "data\\external_validation\\raw\\aerpaw_dataset23\\Logs\\iperf_throughput.csv",
-      "sha256": "2199c5d5b0a40fb5a8e7905c02701d7e4c724e0a51a07e767c883b6492a96bbb",
-      "bytes": 63969
+      "relative_path": "data/external_validation/raw/aerpaw_dataset23/Logs/iperf_throughput.csv",
+      "bytes": 63969,
+      "sha256": "2199c5d5b0a40fb5a8e7905c02701d7e4c724e0a51a07e767c883b6492a96bbb"
     }
   },
+  "source_files": [
+    {
+      "relative_path": "data/external_validation/raw/aerpaw_dataset22/Logs/lte.csv",
+      "bytes": 368491,
+      "sha256": "3dedd744e0eb286dfe89228646a5f7f6d743be7ac814e39762c4307d706265ce"
+    },
+    {
+      "relative_path": "data/external_validation/raw/aerpaw_dataset23/Logs/4G_lte.csv",
+      "bytes": 619957,
+      "sha256": "2756e94614628df0c223414918780e4fc9c0f04fd51603affbbd7a24bb7be09f"
+    },
+    {
+      "relative_path": "data/external_validation/raw/aerpaw_dataset23/Logs/5G_nr.csv",
+      "bytes": 108763,
+      "sha256": "deb655f1cc39553343391aa2b06b2945f8c9bdd80afba2adb6ebfb11722da4f6"
+    },
+    {
+      "relative_path": "data/external_validation/raw/aerpaw_dataset23/Logs/iperf_throughput.csv",
+      "bytes": 63969,
+      "sha256": "2199c5d5b0a40fb5a8e7905c02701d7e4c724e0a51a07e767c883b6492a96bbb"
+    }
+  ],
+  "directly_measured_variables": {
+    "lte_connection_state": [
+      "is_connected",
+      "RSRP",
+      "RSRQ",
+      "RSSI",
+      "ASU",
+      "PCI",
+      "position",
+      "altitude",
+      "timestamps"
+    ],
+    "nr_kpis": [
+      "SS-RSRP",
+      "SS-RSRQ",
+      "SS-SINR",
+      "position",
+      "altitude",
+      "timestamps"
+    ],
+    "iperf_throughput": [
+      "iPerf throughput",
+      "position",
+      "altitude",
+      "timestamps"
+    ]
+  },
+  "derived_variables": {
+    "geometry": [
+      "local x/y coordinates",
+      "distance from median coordinate"
+    ],
+    "connection_state_models": [
+      "RSRP threshold score",
+      "logistic connection probability"
+    ],
+    "throughput_models": [
+      "training-mean prediction",
+      "RF/KPI random-forest prediction"
+    ]
+  },
+  "raw_to_derived_transform": [
+    "replace Android sentinel values with missing values",
+    "sort by measurement time",
+    "project latitude/longitude to local metric coordinates",
+    "align iPerf and LTE records by nearest timestamp within 1500 source-time units"
+  ],
+  "sampling": {
+    "dataset22_lte": "nominal one-second logging stated by the source page",
+    "dataset23": "native irregular source timestamps; chronological order retained"
+  },
+  "exclusions": [
+    "sentinel-valued and missing required KPI/position rows",
+    "iPerf rows without a matched connected LTE record inside the alignment tolerance",
+    "random or interleaved train/test splits"
+  ],
+  "allowed_claim": [
+    "chronological UAV-to-infrastructure LTE connection-state prediction",
+    "chronological UAV-to-infrastructure iPerf throughput prediction, including negative R2",
+    "measured aerial cellular KPI characterization"
+  ],
+  "prohibited_claim": [
+    "inter-UAV or peer-link validation",
+    "FANET packet-delivery validation",
+    "robust throughput transfer when chronological R2 is negative"
+  ],
   "availability_rows": 4,
   "throughput_rows": 4,
   "throughput_protocol": {
@@ -42,6 +139,11 @@
     "interleaved_blocks_used": false,
     "aligned_rows": 1206,
     "throughput_lag1_autocorrelation": 0.9818357687972855
+  },
+  "throughput_outcomes": {
+    "negative_r2_preserved": true,
+    "connection_state_results_separate": true,
+    "throughput_results_separate": true
   },
   "nr_summary": {
     "rows": 796,

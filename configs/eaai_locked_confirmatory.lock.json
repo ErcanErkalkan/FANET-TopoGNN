@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-07-14T18:25:17.838140+00:00",
+  "config": "configs/eaai_locked_confirmatory.json",
+  "config_sha256": "b6f0a819545634af3ab7d1b31f65c20ba6bc3949763e5966c1eec95b7de21e42",
+  "resolved_config_sha256": "bd80337024a679a5992f781acfe8a3b5d1f84b0bbc9ead333a9bbcf180804474",
+  "git": {
+    "commit": "6f56581b0606c913c6a74d74bf2cc23b180ac1cd",
+    "dirty": true
+  },
+  "excluded_prior_seeds": [
+    0,
+    1,
+    2,
+    3,
+    5,
+    7,
+    12,
+    17,
+    19,
+    20,
+    27,
+    28,
+    35,
+    37,
+    47,
+    57,
+    67,
+    77,
+    87,
+    97,
+    100,
+    107,
+    117,
+    127,
+    137,
+    147,
+    157,
+    167,
+    177,
+    187,
+    197,
+    266,
+    273,
+    289,
+    296,
+    2026,
+    20260714
+  ],
+  "excluded_seed_source_count": 883,
+  "seed_selection": {
+    "domain": "FANET-TopoGNN:EAAI:locked-confirmatory:v1",
+    "method": "SHA-256 counter stream mapped to positive 31-bit-range integers; prior and duplicate seeds discarded",
+    "selected_seeds": [
+      792544334,
+      987416920,
+      1921516227,
+      553942641,
+      1095639595,
+      1556154620,
+      1925325213,
+      1799036037,
+      320532424,
+      1202194162,
+      1496187211,
+      571040038,
+      288752871,
+      129980784,
+      782306477,
+      966785030,
+      378748553,
+      1849599976,
+      1888828831,
+      1470515591
+    ]
+  },
+  "model_selection_source_artifacts": [
+    {
+      "relative_path": "configs/source_gated_development.json",
+      "bytes": 753,
+      "sha256": "34144c75c4c973a80786ac67d26cb9c521fb1488d5afd54a2598209ddea7d6f5"
+    },
+    {
+      "relative_path": "outputs/source_gated_development/calibration_metrics.csv",
+      "bytes": 8357,
+      "sha256": "a65b98560588c380f25ac64f7b2def6b942bc4c74dd2e8dfa11b95a973e7c1e8"
+    },
+    {
+      "relative_path": "outputs/source_gated_development/per_seed/seed_17/source_gated_model_metadata.json",
+      "bytes": 551295,
+      "sha256": "91f850c04d604be399af539971a2a33a3f85a2ca190fc3d6aaf69f002fe71e57"
+    },
+    {
+      "relative_path": "outputs/source_gated_development/per_seed/seed_27/source_gated_model_metadata.json",
+      "bytes": 551291,
+      "sha256": "c3447daa79f3a9f8b98198b0fdd314d6ef6cedbd7647eedfdb32e2275eaa9215"
+    },
+    {
+      "relative_path": "outputs/source_gated_development/per_seed/seed_37/source_gated_model_metadata.json",
+      "bytes": 551294,
+      "sha256": "6e15eaf8aec6ee33de5d96ddd44666d56db6ed00cba0ae8ef394b5cbd45f25e0"
+    },
+    {
+      "relative_path": "outputs/source_gated_development/per_seed/seed_47/source_gated_model_metadata.json",
+      "bytes": 551289,
+      "sha256": "f20a227d9f72dedb146a7d15ab00cc985fd83a84431382d7dddd18490cb23a30"
+    },
+    {
+      "relative_path": "outputs/source_gated_development/per_seed/seed_7/source_gated_model_metadata.json",
+      "bytes": 551274,
+      "sha256": "ff0f42d746edfc2b5868c45aec48a60402f7fcdb6420d4b36b10545fe0b3b4f5"
+    }
+  ],
+  "locked_code_and_parent_config": [
+    {
+      "relative_path": "fanet/source_gated.py",
+      "bytes": 27320,
+      "sha256": "325bc015a45ae3a2a18da395f289b0948d9d55e69ff72e52482d75a7a7ada008"
+    },
+    {
+      "relative_path": "fanet/seed_audit.py",
+      "bytes": 3740,
+      "sha256": "b512ddd85f8535cc6f7ad81baa33c0f7a9b229cbc534046d7795258b40513dc0"
+    },
+    {
+      "relative_path": "scripts/run_eaai_locked_confirmatory.py",
+      "bytes": 22824,
+      "sha256": "26a24bc8e94312fa6454b5d625fc65aba0b944eb730ea4eb01d5f70a1ce25581"
+    },
+    {
+      "relative_path": "configs/paper_like_submission.json",
+      "bytes": 2791,
+      "sha256": "a99228d0d870048e06de50928aae1b4fb4dcd0294698265ac33ffd983fee63cc"
+    }
+  ],
+  "frozen_primary_model": "Source-Gated Kinetic-TopoGuard",
+  "primary_comparator": "Current-state ExtraTrees",
+  "primary_metric": "Alert_Event_F1",
+  "primary_hypothesis": "Source-Gated Kinetic-TopoGuard versus Current-state ExtraTrees on event F1.",
+  "primary_decision_rule": "superiority requires a positive paired mean event-F1 difference, a seed-bootstrap 95% confidence interval excluding zero, and a two-sided paired-permutation p-value below 0.05",
+  "frozen_package_derivation": {
+    "source": "modal validation-selected values across five development seeds; development test metrics were not used",
+    "count_min_samples_leaf": 2,
+    "risk_min_samples_leaf": 5,
+    "ridge_alpha": 1.0,
+    "logistic_c": 0.1,
+    "calibration_type": "isotonic",
+    "threshold": "selected per seed using the frozen validation-only rule and grid"
+  }
+}

@@ -1,0 +1,13 @@
+\begin{tabular}{p{0.20\linewidth}p{0.22\linewidth}p{0.20\linewidth}p{0.30\linewidth}}
+\toprule
+Domain & Parameter & Value & Status and source \\
+\midrule
+Radio propagation & Path-loss exponent; shadowing SD & 2.35, \SI{3.0}{dB} (nominal); 2.65, \SI{4.5}{dB} (degraded) & Scenario values in the log-distance and correlated-shadowing abstractions \cite{goldsmith2005wireless,gudmundson1991correlation}; not site-calibrated measurements. \\
+Small-scale fading & Nakagami $m$; temporal correlations & $m=1$; $\rho_{\rm shadow}=0.96$; $\rho_{\rm fade}=0.80$ & $m=1$ gives Rayleigh-equivalent severity in the Nakagami model \cite{nakagami1960mdistribution}; correlations are stress-test settings. \\
+Link budget & $P_{\rm tx}$; antenna gains; system loss; margin; sensitivity & \SI{20}{dBm}; $5+5$ dBi; \SI{2}{dB}; \SI{10}{dB}; $-96/-92$ dBm & Fixed simulation protocol; values are not hardware certification or spectrum-authorization claims. \\
+Interference abstraction & Transmission probability; noise floor; SINR threshold & 0.35; \SI{-101}{dBm}; \SI{8}{dB} & Packet/radio stress settings used identically in paired comparisons. \\
+Forecast and alerting & Tick; horizon; default refractory period & \SI{0.1}{s}; 6 ticks (\SI{0.6}{s}); 6 ticks & Prespecified evaluation protocol; window and refractory sensitivity is reported separately. \\
+Relay controller & Maximum speed; acceleration; link-budget boost & \SI{30}{m.s^{-1}}; \SI{12}{m.s^{-2}}; \SI{3}{dB} & Bounded simulated intervention, motivated by aerial-relay positioning \cite{yanmaz2022positioning}; not airframe limits. \\
+Relay state machine & Reaction; action; cooldown & 2, 12, 6 ticks & Fixed controller stress settings (\SI{0.2}{s}, \SI{1.2}{s}, \SI{0.6}{s}). \\
+\bottomrule
+\end{tabular}

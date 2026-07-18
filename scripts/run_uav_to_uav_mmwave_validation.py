@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 from pathlib import Path
 import sys
@@ -27,6 +26,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from fanet.external_validation import load_flight_trace_csv
+from fanet.provenance import build_file_manifest, relative_repo_path
 
 RAW_PATH = ROOT / "data" / "external_validation" / "raw" / "uav_to_uav_mmwave" / "dataset.csv"
 DEFAULT_TRACE = ROOT / "data" / "external_validation" / "derived" / "forestry_multidrone_trace.csv"
@@ -34,24 +34,17 @@ DEFAULT_OUTPUT = ROOT / "outputs" / "uav_to_uav_mmwave_validation"
 DEFAULT_MANUSCRIPT = ROOT / "paper"
 DATASET_URL = "https://github.com/wineslab/uav-to-uav-60-ghz-channel-model"
 RAW_URL = "https://raw.githubusercontent.com/wineslab/uav-to-uav-60-ghz-channel-model/master/dataset.csv"
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+REPOSITORY_LICENSE = "GPL-3.0 (repository-level license)"
 
 
 def _require_input(path: Path) -> None:
-    if path.exists():
+    if path.is_file():
         return
     raise FileNotFoundError(
-        f"Missing {path.relative_to(ROOT)}\n"
+        f"Missing {relative_repo_path(path, ROOT)}\n"
         "Download with:\n"
-        "New-Item -ItemType Directory -Force data\\external_validation\\raw\\uav_to_uav_mmwave | Out-Null\n"
-        f"curl.exe -L --fail -o data\\external_validation\\raw\\uav_to_uav_mmwave\\dataset.csv {RAW_URL}"
+        "New-Item -ItemType Directory -Force data/external_validation/raw/uav_to_uav_mmwave | Out-Null\n"
+        f"curl.exe -L --fail -o data/external_validation/raw/uav_to_uav_mmwave/dataset.csv {RAW_URL}"
     )
 
 
@@ -302,6 +295,7 @@ def main() -> int:
     args = parser.parse_args()
 
     _require_input(args.dataset)
+    _require_input(args.trace)
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     frame = _load_a2a(args.dataset, args.link_snr_db, args.link_prx_dbm)
@@ -322,21 +316,59 @@ def main() -> int:
     _write_table(table_path, metrics, beta_summary)
     _plot(args.output_dir, distance_table, beta_series)
 
+    source_files = build_file_manifest([args.dataset, args.trace], ROOT)
+    dataset_record, trace_record = source_files
     protocol = {
+        "evidence_schema_version": 1,
         "scope": "Measured UAV-to-UAV 60 GHz RF validation plus a transported forestry sensitivity analysis; this is not same-site calibration or packet-delivery ground truth.",
         "source": "WiNES/Northeastern UAV-to-UAV 60 GHz experimental channel model",
+        "source_identifier": "wineslab/uav-to-uav-60-ghz-channel-model",
+        "license": REPOSITORY_LICENSE,
         "dataset_url": DATASET_URL,
         "raw_url": RAW_URL,
-        "relative_path": str(args.dataset.relative_to(ROOT)),
-        "sha256": _sha256(args.dataset),
-        "bytes": args.dataset.stat().st_size,
+        "relative_path": dataset_record["relative_path"],
+        "sha256": dataset_record["sha256"],
+        "bytes": dataset_record["bytes"],
+        "source_files": source_files,
+        "directly_measured_variables": [
+            "UAV-to-UAV distance", "altitude", "TX/RX beam indices", "SNR", "received power",
+            "path loss", "gain indices", "link direction",
+        ],
+        "derived_variables": [
+            "link viability from frozen SNR and received-power thresholds",
+            "held-out link probability", "distance-conditioned empirical success probability",
+            "transported forestry expected component count and fragmentation probability",
+        ],
+        "raw_to_derived_transform": [
+            "drop rows missing required measured RF/geometry variables",
+            "derive link viability with the declared SNR and pRx thresholds",
+            "fit link models below 33 m and evaluate once at distances of at least 33 m",
+            "interpolate measured distance-success rates onto forestry pair distances; clamp only for secondary out-of-support sensitivity",
+        ],
+        "sampling": "6896 usable beam-scan observations at discrete distances; not a uniformly sampled time series",
+        "exclusions": ["three rows missing required variables", "packet delivery and MAC outcomes", "same-site forestry RF calibration"],
+        "allowed_claim": [
+            "measured UAV-to-UAV 60 GHz held-out-distance link-viability evidence",
+            "in-support transported RF sensitivity on independently measured forestry motion",
+            "clamped out-of-support forestry sensitivity only when explicitly labelled secondary",
+        ],
+        "prohibited_claim": [
+            "same-site forestry RF calibration", "forestry measured-RF validation", "packet-delivery validation",
+            "unqualified extrapolation beyond measured distance support",
+        ],
         "link_viability_rule": {
             "post_snr_db_min": args.link_snr_db,
             "pRx_dbm_min": args.link_prx_dbm,
         },
         "a2a_rows": int(len(frame)),
         "held_out_distance_split": "train distance < 33 m, test distance >= 33 m",
-        "forestry_trace": str(args.trace.relative_to(ROOT)),
+        "distance_support": {
+            "training_m": [float(frame.loc[frame["distance"] < 33, "distance"].min()), float(frame.loc[frame["distance"] < 33, "distance"].max())],
+            "held_out_test_m": [float(frame.loc[frame["distance"] >= 33, "distance"].min()), float(frame.loc[frame["distance"] >= 33, "distance"].max())],
+            "support_overlap": False,
+            "split_verified_from_rows": True,
+        },
+        "forestry_trace": trace_record["relative_path"],
         "forestry_beta0": "Pairwise SNR-and-pRx link probabilities are interpolated from measured UAV-to-UAV beam-scan success rates and converted to three-node expected beta0 under an explicit independent-edge sensitivity assumption.",
         "measured_distance_support_m": [
             float(distance_table["distance"].min()),
@@ -344,6 +376,7 @@ def main() -> int:
         ],
         "primary_forestry_scope": "all_pairs_within_measured_distance_support",
         "out_of_support_policy": "Full-trace rows are clamped to nearest measured distance and reported only as secondary sensitivity; primary summaries require all three pairs in support.",
+        "support_scopes_reported_separately": sorted(beta_summary["support_scope"].unique().tolist()),
     }
     (args.output_dir / "uav_to_uav_mmwave_protocol.json").write_text(json.dumps(protocol, indent=2), encoding="utf-8")
 
@@ -358,7 +391,7 @@ def main() -> int:
                 (args.output_dir / f"uav_to_uav_mmwave_validation.{suffix}").read_bytes()
             )
 
-    print(f"Wrote {args.output_dir.relative_to(ROOT)}")
+    print(f"Wrote {relative_repo_path(args.output_dir, ROOT)}")
     print(metrics.to_string(index=False))
     print(beta_summary.to_string(index=False))
     return 0
