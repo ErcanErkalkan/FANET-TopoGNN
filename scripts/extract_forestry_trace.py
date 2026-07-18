@@ -5,10 +5,18 @@ import hashlib
 import json
 import math
 from pathlib import Path
+import sys
 
 import numpy as np
 import pandas as pd
 from rosbags.highlevel import AnyReader
+
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from fanet.provenance import build_file_manifest, relative_repo_path, sha256_file
 
 
 RECORD_DOI = "10.5281/zenodo.14701641"
@@ -153,8 +161,8 @@ def _to_local_xyz(frames: dict[str, pd.DataFrame], sample_rate_hz: float, max_ga
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Extract an aligned real multi-UAV GNSS trace from public forestry ROS bags.")
-    parser.add_argument("--raw-dir", type=Path, default=Path("data/external_validation/raw"))
-    parser.add_argument("--output-dir", type=Path, default=Path("data/external_validation/derived"))
+    parser.add_argument("--raw-dir", type=Path, default=ROOT / "data" / "external_validation" / "raw")
+    parser.add_argument("--output-dir", type=Path, default=ROOT / "data" / "external_validation" / "derived")
     parser.add_argument("--sample-rate-hz", type=float, default=10.0)
     parser.add_argument("--max-gap-s", type=float, default=0.5)
     args = parser.parse_args()
@@ -178,8 +186,10 @@ def main() -> None:
             {
                 "vehicle_id": vehicle_id,
                 "file": bag.name,
+                "relative_path": relative_repo_path(bag, ROOT),
                 "bytes": bag.stat().st_size,
                 "md5": actual_md5,
+                "sha256": sha256_file(bag),
                 "topic": topic,
                 "valid_navsat_samples": len(frame),
             }
@@ -197,9 +207,16 @@ def main() -> None:
         "doi": RECORD_DOI,
         "license": "CC-BY-4.0",
         "source_kind": "real multi-drone forestry field experiment",
+        "directly_measured_variables": ["GNSS latitude", "GNSS longitude", "GNSS altitude", "ROS message timestamp"],
+        "derived_variables": ["shared-time local ENU position trace"],
+        "raw_to_derived_transform": "valid NavSatFix filtering, shared-interval selection, bounded-gap interpolation, and local equirectangular ENU projection",
+        "allowed_claim": ["measured multi-UAV field motion"],
+        "prohibited_claim": ["measured peer RF", "measured packet delivery", "measured radius-graph connectivity"],
+        "measurement_boundary": {"motion_measured": True, "peer_rf_labels_present": False, "packet_labels_present": False},
         "sources": sources,
-        "derived_file": trace_path.name,
-        "derived_sha256": hashlib.sha256(trace_path.read_bytes()).hexdigest(),
+        "files": build_file_manifest([trace_path], ROOT),
+        "derived_file": relative_repo_path(trace_path, ROOT),
+        "derived_sha256": sha256_file(trace_path),
         **metadata,
     }
     manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")

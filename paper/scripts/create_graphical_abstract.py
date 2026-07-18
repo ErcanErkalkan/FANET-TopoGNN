@@ -55,30 +55,26 @@ def main() -> None:
     ax.axis("off")
 
     boxes = [
-        ((0.035, 0.56), 0.16, 0.28, "UAV motion\npositions + velocities\nphysical graph", "#e7f0fb"),
-        ((0.235, 0.72), 0.16, 0.20, "Projected\ntopology", "#f4eddf"),
-        ((0.235, 0.36), 0.16, 0.20, "H0 persistence\nimage features", "#e8f4ea"),
-        ((0.445, 0.54), 0.16, 0.28, "Motion-conditioned\ntopological AI\nresidual forecast", "#efe8fb"),
-        ((0.655, 0.72), 0.14, 0.20, "Future beta0\nfragmentation\nstate", "#f9e4e2"),
-        ((0.655, 0.36), 0.14, 0.20, "Risk score\nwarning threshold", "#dff3f2"),
-        ((0.835, 0.54), 0.13, 0.28, "Bounded one-step\nwarning/action\nrelay + routing", "#edf6df"),
+        ((0.025, 0.54), 0.14, 0.30, "Observations\nflight motion\nradio graph", "#e7f0fb"),
+        ((0.19, 0.54), 0.17, 0.30, "Candidate predictors\ncurrent state | topology\nmotion | source gated", "#f4eddf"),
+        ((0.385, 0.54), 0.15, 0.30, "Leakage controls\ntrain/validation selection\nlocked seeds", "#e8f4ea"),
+        ((0.56, 0.54), 0.13, 0.30, "Warning output\nevent risk\nvalidated threshold", "#efe8fb"),
+        ((0.715, 0.54), 0.13, 0.30, "Engineering tests\ndomain | packet\ncontroller | runtime", "#dff3f2"),
+        ((0.87, 0.54), 0.105, 0.30, "Evidence\ndecision\nclaim boundary", "#f9e4e2"),
     ]
     for xy, width, height, label, face in boxes:
         add_box(ax, xy, width, height, label, face)
 
-    add_arrow(ax, (0.195, 0.70), (0.235, 0.82))
-    add_arrow(ax, (0.195, 0.66), (0.235, 0.46))
-    add_arrow(ax, (0.395, 0.82), (0.445, 0.69))
-    add_arrow(ax, (0.395, 0.46), (0.445, 0.62))
-    add_arrow(ax, (0.605, 0.68), (0.655, 0.82))
-    add_arrow(ax, (0.605, 0.61), (0.655, 0.46))
-    add_arrow(ax, (0.795, 0.82), (0.835, 0.70))
-    add_arrow(ax, (0.795, 0.46), (0.835, 0.62))
+    add_arrow(ax, (0.165, 0.69), (0.19, 0.69))
+    add_arrow(ax, (0.36, 0.69), (0.385, 0.69))
+    add_arrow(ax, (0.535, 0.69), (0.56, 0.69))
+    add_arrow(ax, (0.69, 0.69), (0.715, 0.69))
+    add_arrow(ax, (0.845, 0.69), (0.87, 0.69))
 
     ax.text(
         0.5,
         0.18,
-        "Goal: short-horizon, interpretable fragmentation-risk forecasting for proactive UAV-network connectivity management",
+        "Reproducible benchmark: richer sources do not consistently beat the current-state comparator",
         ha="center",
         va="center",
         fontsize=12,
@@ -88,7 +84,7 @@ def main() -> None:
     ax.text(
         0.5,
         0.10,
-        "Validation: 20 seeds, event precision/recall/F1, horizon/factorial sweeps, measured UWB, packet load, and full-path latency",
+        "Locked paired tests | source factorial | domain transfer | packet/controller cost | measured host-side runtime",
         ha="center",
         va="center",
         fontsize=9.5,

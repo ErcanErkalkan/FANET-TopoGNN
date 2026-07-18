@@ -8,29 +8,42 @@
     {
       "vehicle_id": "uav6",
       "file": "uav6_swarm_formation_2024-12-04-15-29-12_0_ok1.bag",
+      "relative_path": "data/external_validation/raw/uav6_swarm_formation_2024-12-04-15-29-12_0_ok1.bag",
       "bytes": 2988460592,
       "md5": "d9d88fbb378e51bdf6ac57a4ca2be08f",
+      "sha256": null,
       "topic": "/uav6/gnss_verifier/gnss_wstatus",
       "valid_navsat_samples": 15372
     },
     {
       "vehicle_id": "uav8",
       "file": "uav8_swarm_formation_2024-12-04-15-29-08_0_ok1.bag",
+      "relative_path": "data/external_validation/raw/uav8_swarm_formation_2024-12-04-15-29-08_0_ok1.bag",
       "bytes": 3571349832,
       "md5": "ef86998f372689d95a4be696b3d92b88",
+      "sha256": null,
       "topic": "/uav8/gnss_verifier/gnss_wstatus",
       "valid_navsat_samples": 15819
     },
     {
       "vehicle_id": "uav9",
       "file": "uav9_swarm_formation_2024-12-04-15-29-04_0_ok1.bag",
+      "relative_path": "data/external_validation/raw/uav9_swarm_formation_2024-12-04-15-29-04_0_ok1.bag",
       "bytes": 3212142336,
       "md5": "adb55c9c6282b7bbd609cda5361b00f6",
+      "sha256": null,
       "topic": "/uav9/gnss_verifier/gnss_wstatus",
       "valid_navsat_samples": 16244
     }
   ],
-  "derived_file": "forestry_multidrone_trace.csv",
+  "files": [
+    {
+      "relative_path": "data/external_validation/derived/forestry_multidrone_trace.csv",
+      "bytes": 558838,
+      "sha256": "589b21bc1bf5014bb97ae6ddece5797e200cc25d767c2f55406252cf8c1be1b0"
+    }
+  ],
+  "derived_file": "data/external_validation/derived/forestry_multidrone_trace.csv",
   "derived_sha256": "589b21bc1bf5014bb97ae6ddece5797e200cc25d767c2f55406252cf8c1be1b0",
   "sample_rate_hz": 10.0,
   "max_interpolation_gap_s": 0.5,

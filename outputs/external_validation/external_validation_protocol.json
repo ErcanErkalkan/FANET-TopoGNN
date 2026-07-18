@@ -5,7 +5,7 @@
     17,
     27
   ],
-  "test_trace": "data\\external_validation\\derived\\forestry_multidrone_trace.csv",
+  "test_trace": "data/external_validation/derived/forestry_multidrone_trace.csv",
   "test_vehicle_count": 3,
   "test_duration_s": 398.89962,
   "test_sample_interval_s": 0.09999999999999432,
@@ -17,5 +17,58 @@
     "0.5": 9.613877296447754,
     "0.75": 13.815892457962036
   },
-  "scope_boundary": "Real flight motion only. The source has no packet/RF ground truth; graph labels are deterministic radius sensitivity scenarios."
+  "scope_boundary": "Real flight motion only. The source has no packet/RF ground truth; graph labels are deterministic radius sensitivity scenarios.",
+  "source_files": [
+    {
+      "relative_path": "data/external_validation/derived/forestry_multidrone_trace.csv",
+      "bytes": 558838,
+      "sha256": "589b21bc1bf5014bb97ae6ddece5797e200cc25d767c2f55406252cf8c1be1b0"
+    },
+    {
+      "relative_path": "data/external_validation/derived/forestry_multidrone_trace_manifest.json",
+      "bytes": 2395,
+      "sha256": "ea44af244ec5b29aac72c5981c480519be0c5715c768935e6fe142e24398f14f"
+    }
+  ],
+  "evidence_schema_version": 1,
+  "source_identifier": "10.5281/zenodo.14701641",
+  "license": "CC-BY-4.0",
+  "directly_measured_variables": [
+    "per-UAV GNSS latitude",
+    "longitude",
+    "altitude",
+    "measurement timestamps"
+  ],
+  "derived_variables": [
+    "aligned 10 Hz local ENU trajectories",
+    "pair distances",
+    "counterfactual radius graphs",
+    "component-count targets"
+  ],
+  "raw_to_derived_transform": "local equirectangular ENU approximation around the joint median GNSS origin",
+  "sampling": {
+    "sample_rate_hz": 10.0,
+    "max_interpolation_gap_s": 0.5
+  },
+  "exclusions": [
+    "invalid GNSS fixes",
+    "non-overlapping time ranges",
+    "interpolation gaps above the declared maximum",
+    "peer RF and packet labels, which are absent"
+  ],
+  "allowed_claim": [
+    "measured three-UAV field motion",
+    "simulation-model sensitivity to a measured mobility trace under counterfactual radius graphs"
+  ],
+  "prohibited_claim": [
+    "measured peer RF",
+    "measured packet delivery",
+    "field-validated radius-graph connectivity"
+  ],
+  "measurement_boundary": {
+    "motion_measured": true,
+    "peer_rf_labels_present": false,
+    "packet_labels_present": false,
+    "radius_graph_counterfactual": true
+  }
 }

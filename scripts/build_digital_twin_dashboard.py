@@ -372,8 +372,8 @@ def _render_html(payload: dict, assets: dict[str, str | None]) -> str:
       <div class="panel">
         <h2>Validation-Selected Operating Point</h2>
         <div class="controls">
-          <button class="policy active" data-policy="deployable" title="Deployable policy">D</button>
-          <button class="policy" data-policy="strict" title="Strict policy">S</button>
+          <button class="policy active" data-policy="deployable" title="Two-alert budget">2</button>
+          <button class="policy" data-policy="strict" title="One-alert budget">1</button>
         </div>
         <table class="readout">
           <tr><th>Validation budget</th><td id="o-budget"></td></tr>

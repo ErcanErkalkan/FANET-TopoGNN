@@ -1,0 +1,14 @@
+\begin{tabular}{llrrrr}
+\toprule
+Model & Threads & P50 & P95 & P99 (ms) & Size (MiB) \\
+\midrule
+Current-state ExtraTrees & default & 43.31 & 44.52 & 44.64 & 0.18 \\
+Current-state ExtraTrees & single & 43.14 & 44.18 & 44.90 & 0.18 \\
+FANET-TopoGNN & default & 7.42 & 7.82 & 7.97 & 0.11 \\
+FANET-TopoGNN & single & 8.17 & 8.75 & 8.91 & 0.11 \\
+Kinetic-TopoGuard & default & 12.65 & 13.23 & 13.39 & 0.12 \\
+Kinetic-TopoGuard & single & 12.69 & 13.16 & 13.56 & 0.12 \\
+Source-Gated Kinetic-TopoGuard & default & 87.77 & 90.81 & 91.24 & 25.77 \\
+Source-Gated Kinetic-TopoGuard & single & 89.66 & 92.60 & 93.26 & 25.77 \\
+\bottomrule
+\end{tabular}

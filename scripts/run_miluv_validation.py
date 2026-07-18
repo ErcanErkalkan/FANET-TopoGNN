@@ -17,6 +17,7 @@ from fanet.config import load_config
 from fanet.dataset import build_dataset, train_val_test_split
 from fanet.evaluation import evaluate_predictions, predict_generic
 from fanet.external_validation import FlightTrace, build_measured_link_snapshots
+from fanet.provenance import build_file_manifest, relative_repo_path, verify_manifest
 from fanet.training import (
     fit_current_state_persistence,
     fit_kinetic_topoguard,
@@ -214,9 +215,42 @@ def main() -> int:
     parser.add_argument("--thresholds-dbm", type=float, nargs="+", default=[-90.0, -92.0, -95.0])
     parser.add_argument("--sample-period-s", type=float, default=0.1)
     parser.add_argument("--max-hold-s", type=float, default=6.0)
+    parser.add_argument(
+        "--protocol-only",
+        action="store_true",
+        help="Verify source provenance and refresh only the existing protocol JSON.",
+    )
     args = parser.parse_args()
 
-    manifest = json.loads((args.input_dir / "manifest.json").read_text(encoding="utf-8"))
+    manifest_path = args.input_dir / "manifest.json"
+    if not manifest_path.is_file():
+        raise FileNotFoundError(
+            f"MILUV source manifest is missing: {relative_repo_path(manifest_path, ROOT)}"
+        )
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    source_verification = verify_manifest(manifest, ROOT)
+    if not source_verification["valid"]:
+        raise RuntimeError(
+            "MILUV source provenance verification failed:\n"
+            + "\n".join(source_verification["errors"])
+        )
+    if args.protocol_only:
+        protocol_path = args.output_dir / "miluv_protocol.json"
+        if not protocol_path.is_file():
+            raise FileNotFoundError(
+                f"Cannot refresh missing protocol: {relative_repo_path(protocol_path, ROOT)}"
+            )
+        protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+        protocol.update(
+            {
+                "source_manifest": relative_repo_path(manifest_path, ROOT),
+                "source_files": build_file_manifest([manifest_path], ROOT),
+                "training_config": relative_repo_path(args.config, ROOT),
+            }
+        )
+        protocol_path.write_text(json.dumps(protocol, indent=2), encoding="utf-8")
+        print(f"Refreshed {relative_repo_path(protocol_path, ROOT)}")
+        return 0
     config = load_config(args.config)
     horizon_steps = int(config.sim["forecast_horizon_steps"])
     trace = _load_positions(args.input_dir, args.sample_period_s)
@@ -366,7 +400,9 @@ def main() -> int:
     plt.close(fig)
 
     protocol = {
-        "source_manifest": str((args.input_dir / "manifest.json").relative_to(ROOT)),
+        "source_manifest": relative_repo_path(manifest_path, ROOT),
+        "source_files": build_file_manifest([manifest_path], ROOT),
+        "training_config": relative_repo_path(args.config, ROOT),
         "dataset_doi": manifest["dataset_doi"],
         "experiment": EXPERIMENT,
         "scope": "Measured three-UAV motion and inter-robot UWB first-path-power topology; successful ranging quality, not IP packet-delivery or routing ground truth.",

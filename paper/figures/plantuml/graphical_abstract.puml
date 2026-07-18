@@ -15,23 +15,19 @@ skinparam rectangle {
 
 left to right direction
 
-rectangle "UAV motion\npositions + velocities\nphysical graph" as motion #E8F0FE
-rectangle "Projected\ntopology" as projected #FFF4DE
-rectangle "H0 persistence\nimage features" as persistence #E6F4EA
-rectangle "Motion-conditioned\ntopological AI\nresidual forecast" as ai #EADCF8
-rectangle "Future beta0\nfragmentation state" as beta #FCE8E6
-rectangle "Risk score\nwarning threshold" as risk #DDF2F2
-rectangle "Bounded one-step\nwarning/action\nrelay + routing" as action #EDF6DF
-rectangle "Validation\n20 seeds; event precision/recall/F1;\nhorizon + factorial sweeps; measured UWB;\npacket load + full-path latency" as validation #F5F5F5
+rectangle "Observations\nflight motion\nradio graph" as observations #E8F0FE
+rectangle "Candidate predictors\ncurrent state | topology\nmotion | source gated" as predictors #FFF4DE
+rectangle "Leakage controls\ntrain/validation selection\nlocked seeds" as controls #E6F4EA
+rectangle "Warning output\nevent risk\nvalidated threshold" as warning #EADCF8
+rectangle "Engineering tests\ndomain | packet\ncontroller | runtime" as tests #DDF2F2
+rectangle "Evidence decision\nclaim boundary" as decision #FCE8E6
+rectangle "Reproducible benchmark\nricher sources do not consistently beat the current-state comparator\nlocked paired tests | source factorial | domain transfer | packet/controller cost | measured host-side runtime" as summary #F5F5F5
 
-motion --> projected
-motion --> persistence
-projected --> ai
-persistence --> ai
-ai --> beta
-ai --> risk
-beta --> action
-risk --> action
-ai --> validation
+observations --> predictors
+predictors --> controls
+controls --> warning
+warning --> tests
+tests --> decision
+decision --> summary
 
 @enduml

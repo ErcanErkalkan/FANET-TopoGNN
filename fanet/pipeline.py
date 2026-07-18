@@ -43,6 +43,7 @@ from .reporting import (
     write_markdown_report,
 )
 from .training import TORCH_AVAILABLE, fit_current_state_persistence, fit_heuristic, fit_kinetic_topoguard, select_best_shallow, train_torch_model
+from .source_gated import fit_current_state_extratrees, fit_source_gated_kinetic_topoguard
 
 
 NUMERIC_METRICS = [
@@ -183,14 +184,26 @@ def _backend_metadata(tasks: list[str]) -> dict:
 
         torch_version = str(torch.__version__)
         device = "cuda" if torch.cuda.is_available() else "cpu"
-    neural_tasks = [task for task in tasks if task not in {"heuristic", "current_state_persistence", "shallow", "kinetic_topoguard"}]
+    neural_tasks = [
+        task
+        for task in tasks
+        if task
+        not in {
+            "heuristic",
+            "current_state_persistence",
+            "current_state_extratrees",
+            "shallow",
+            "kinetic_topoguard",
+            "source_gated_kinetic_topoguard",
+        }
+    ]
     backends = {}
     for task in tasks:
         if task == "current_state_persistence":
             backends[task] = "deterministic_persistence_baseline"
         elif task == "heuristic":
             backends[task] = "deterministic_heuristic"
-        elif task in {"shallow", "kinetic_topoguard"}:
+        elif task in {"shallow", "current_state_extratrees", "kinetic_topoguard", "source_gated_kinetic_topoguard"}:
             backends[task] = "scikit_learn"
         else:
             backends[task] = "pytorch" if TORCH_AVAILABLE else "scikit_learn_surrogate"
@@ -275,8 +288,10 @@ def _training_tasks(config: ExperimentConfig) -> list[str]:
     tasks = [
         "heuristic",
         "current_state_persistence",
+        "current_state_extratrees",
         "shallow",
         "kinetic_topoguard",
+        "source_gated_kinetic_topoguard",
         "GCN",
         "GAT",
         "GraphSAGE",
@@ -301,6 +316,14 @@ def _train_task(task_name: str, train_data, val_data, config: ExperimentConfig, 
         return fit_heuristic(train_data)
     if task_name == "current_state_persistence":
         return fit_current_state_persistence()
+    if task_name == "current_state_extratrees":
+        return fit_current_state_extratrees(
+            train_data,
+            val_data,
+            horizon_steps=int(config.sim.get("forecast_horizon_steps", config.evaluation["warning_horizon_steps"])),
+            dt=float(config.sim["dt"]),
+            seed=seed,
+        )
     if task_name == "shallow":
         return select_best_shallow(train_data, val_data)
     if task_name == "kinetic_topoguard":
@@ -310,6 +333,15 @@ def _train_task(task_name: str, train_data, val_data, config: ExperimentConfig, 
             horizon_steps=int(config.sim.get("forecast_horizon_steps", config.evaluation["warning_horizon_steps"])),
             dt=float(config.sim["dt"]),
             seed=seed,
+        )
+    if task_name == "source_gated_kinetic_topoguard":
+        return fit_source_gated_kinetic_topoguard(
+            train_data,
+            val_data,
+            horizon_steps=int(config.sim.get("forecast_horizon_steps", config.evaluation["warning_horizon_steps"])),
+            dt=float(config.sim["dt"]),
+            seed=seed,
+            parameters=config.training.get("source_gated", {}),
         )
     return train_torch_model(task_name, train_data, val_data, config.training, pi_dim, seed=seed)
 
@@ -343,6 +375,7 @@ def _save_model_cache(
     validation_threshold_rows: list[dict],
     operating_point_rows: list[dict],
     config_signature: str,
+    residual_diagnostic: dict | None = None,
 ) -> None:
     meta_path, array_path = _cache_paths(seed_dir, task_name)
     meta_path.parent.mkdir(parents=True, exist_ok=True)
@@ -355,6 +388,7 @@ def _save_model_cache(
         "threshold_rows": threshold_rows,
         "validation_threshold_rows": validation_threshold_rows,
         "operating_point_rows": operating_point_rows,
+        "residual_diagnostic": residual_diagnostic,
         "config_signature": config_signature,
     }
     meta_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
@@ -388,7 +422,41 @@ def _load_model_cache(seed_dir: Path, task_name: str, config_signature: str | No
     payload.setdefault("threshold_rows", [])
     payload.setdefault("validation_threshold_rows", [])
     payload.setdefault("operating_point_rows", [])
+    payload.setdefault("residual_diagnostic", None)
     return payload
+
+
+def _residual_diagnostic_row(seed: int, result, aligned_test: list, predictions: np.ndarray) -> dict | None:
+    diagnostics = getattr(result.model, "residual_diagnostics", None)
+    if result.model_name != "Kinetic-TopoGuard" or not diagnostics:
+        return None
+    y_test = np.asarray([snapshot.beta_target for snapshot in aligned_test], dtype=float)
+    persistence = np.clip(
+        np.asarray([snapshot.beta_current for snapshot in aligned_test], dtype=float),
+        1.0,
+        None,
+    )
+    selected = np.asarray(predictions, dtype=float)
+    test_mae_alpha_0 = float(np.mean(np.abs(y_test - persistence)))
+    test_mae_selected = float(np.mean(np.abs(y_test - selected)))
+    improvement = (
+        100.0 * (test_mae_alpha_0 - test_mae_selected) / test_mae_alpha_0
+        if test_mae_alpha_0 > 0.0
+        else (0.0 if test_mae_selected == 0.0 else float("nan"))
+    )
+    return {
+        "seed": int(seed),
+        "Model": result.model_name,
+        "selected_alpha": float(diagnostics["selected_alpha"]),
+        "validation_mae_alpha_0": float(diagnostics["validation_mae_alpha_0"]),
+        "validation_mae_selected_alpha": float(diagnostics["validation_mae_selected_alpha"]),
+        "test_mae_alpha_0": test_mae_alpha_0,
+        "test_mae_selected_alpha": test_mae_selected,
+        "percentage_improvement": float(improvement),
+        "alpha_zero": bool(diagnostics["alpha_zero"]),
+        "selection_split": str(diagnostics["selection_split"]),
+        "selection_metric": str(diagnostics["selection_metric"]),
+    }
 
 
 def _seed_complete(seed_dir: Path, config: ExperimentConfig) -> bool:
@@ -478,6 +546,7 @@ def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool 
     threshold_rows = []
     validation_threshold_rows = []
     operating_point_rows = []
+    residual_diagnostic_rows = []
 
     for task_name in _training_tasks(config):
         cached = _load_model_cache(seed_dir, task_name, signature) if resume else None
@@ -492,6 +561,8 @@ def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool 
             threshold_rows.extend(cached.get("threshold_rows", []))
             validation_threshold_rows.extend(cached.get("validation_threshold_rows", []))
             operating_point_rows.extend(cached.get("operating_point_rows", []))
+            if cached.get("residual_diagnostic") is not None:
+                residual_diagnostic_rows.append(cached["residual_diagnostic"])
             if cached["network_metrics"] is not None:
                 network_rows.append(cached["network_metrics"])
             continue
@@ -499,8 +570,16 @@ def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool 
         print(f"[seed {seed}] training {task_name}")
         model_start = time.perf_counter()
         result = _train_task(task_name, train_data, val_data, config, pi_dim, seed)
+        training_time_s = time.perf_counter() - model_start
         _, val_risk_scores, _, aligned_val, _ = predict_generic(result, val_data)
         preds, risk_scores, inference_ms, aligned_test, risk_threshold = predict_generic(result, test_data)
+        if hasattr(result.model, "artifact_metadata") and hasattr(result.model, "save"):
+            artifact_dir = seed_dir / "model_artifacts" / _cache_stem(task_name)
+            artifact_dir.mkdir(parents=True, exist_ok=True)
+            result.model.save(artifact_dir / "model.pkl")
+            (artifact_dir / "metadata.json").write_text(
+                json.dumps(result.model.artifact_metadata(), indent=2), encoding="utf-8"
+            )
         summary, leads, normalised_leads = evaluate_predictions(
             result.model_name,
             aligned_test,
@@ -514,6 +593,17 @@ def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool 
         )
         summary["seed"] = seed
         summary["Model_Backend"] = _backend_metadata([task_name])["model_backend"][task_name]
+        summary["Training_Time_s"] = float(training_time_s)
+        parameter_iterator = getattr(result.model, "parameters", None)
+        if callable(parameter_iterator):
+            parameters = list(parameter_iterator())
+            summary["Parameter_Count"] = int(sum(parameter.numel() for parameter in parameters))
+            summary["Trainable_Parameter_Count"] = int(
+                sum(parameter.numel() for parameter in parameters if parameter.requires_grad)
+            )
+        else:
+            summary["Parameter_Count"] = np.nan
+            summary["Trainable_Parameter_Count"] = np.nan
         metrics_rows.append(summary)
         lead_summary = summarise_leads(result.model_name, leads, normalised_leads)
         lead_summary["seed"] = seed
@@ -521,6 +611,9 @@ def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool 
         lead_map[result.model_name] = leads
         y_true = np.asarray([snap.beta_target for snap in aligned_test], dtype=float)
         residual_map[result.model_name] = preds - y_true
+        residual_diagnostic = _residual_diagnostic_row(seed, result, aligned_test, preds)
+        if residual_diagnostic is not None:
+            residual_diagnostic_rows.append(residual_diagnostic)
         risk_row = {
             "seed": seed,
             "Model": result.model_name,
@@ -670,6 +763,7 @@ def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool 
                 if row["seed"] == seed and row["Model"] == result.model_name
             ],
             config_signature=signature,
+            residual_diagnostic=residual_diagnostic,
         )
         print(f"[seed {seed}] finished {result.model_name} in {time.perf_counter() - model_start:.1f}s")
 
@@ -680,6 +774,7 @@ def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool 
     threshold_df = pd.DataFrame(threshold_rows)
     validation_threshold_df = pd.DataFrame(validation_threshold_rows)
     operating_point_df = pd.DataFrame(operating_point_rows)
+    residual_diagnostics_df = pd.DataFrame(residual_diagnostic_rows)
     save_table(metrics_df, seed_dir, "metrics_overall")
     save_table(leads_df, seed_dir, "lead_time_summary")
     save_table(network_df, seed_dir, "network_metrics")
@@ -690,6 +785,8 @@ def _run_seed(seed: int, config: ExperimentConfig, seed_dir: Path, resume: bool 
         save_table(validation_threshold_df, seed_dir, "validation_threshold_sensitivity")
     if not operating_point_df.empty:
         save_table(operating_point_df, seed_dir, "operating_point_metrics")
+    if not residual_diagnostics_df.empty:
+        save_table(residual_diagnostics_df, seed_dir, "residual_diagnostics")
     plot_lead_cdf({name: vals for name, vals in lead_map.items() if name in {"Kinetic-TopoGuard", "GraphSAGE", "FANET-TopoGNN"}}, seed_dir / "lead_cdf.png")
     return (
         metrics_df,

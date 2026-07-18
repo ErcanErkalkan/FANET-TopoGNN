@@ -472,6 +472,69 @@ def _lead_median_from_windows(
     return float(np.median(np.asarray(leads, dtype=float)))
 
 
+RESIDUAL_ALPHA_GRID = tuple(float(value) for value in np.linspace(0.0, 1.0, 11))
+
+
+def select_residual_branch_on_validation(
+    y_validation: np.ndarray,
+    persistence_validation: np.ndarray,
+    residual_candidates: list[np.ndarray],
+    alpha_grid: tuple[float, ...] = RESIDUAL_ALPHA_GRID,
+    minimum_improvement: float = 1e-5,
+) -> dict[str, object]:
+    """Select a residual regressor and alpha using validation targets only.
+
+    The deliberately narrow signature cannot accept test targets or predictions.
+    Alpha zero remains a first-class candidate and wins unless a residual branch
+    improves validation MAE by more than ``minimum_improvement``.
+    """
+    y_validation = np.asarray(y_validation, dtype=float)
+    persistence_validation = np.asarray(persistence_validation, dtype=float)
+    if y_validation.shape != persistence_validation.shape or y_validation.ndim != 1:
+        raise ValueError("validation target and persistence arrays must be matching 1-D arrays")
+    if not residual_candidates:
+        raise ValueError("at least one residual candidate is required")
+    grid = tuple(float(alpha) for alpha in alpha_grid)
+    if 0.0 not in grid:
+        raise ValueError("alpha_grid must include 0.0")
+    if any(not np.isfinite(alpha) or alpha < 0.0 for alpha in grid):
+        raise ValueError("alpha_grid must contain finite non-negative values")
+
+    metric = mean_absolute_error if SKLEARN_AVAILABLE else mae_metric
+    baseline_prediction = np.clip(persistence_validation, 1.0, None)
+    baseline_mae = float(metric(y_validation, baseline_prediction))
+    selected_mae = baseline_mae
+    selected_alpha = 0.0
+    selected_index = 0
+    candidate_mae_by_alpha: list[dict[str, object]] = []
+    for candidate_index, candidate_values in enumerate(residual_candidates):
+        residual = np.asarray(candidate_values, dtype=float)
+        if residual.shape != y_validation.shape or not np.all(np.isfinite(residual)):
+            raise ValueError("each residual candidate must be finite and match validation targets")
+        mae_by_alpha: dict[str, float] = {}
+        for alpha in grid:
+            prediction = np.clip(persistence_validation + alpha * residual, 1.0, None)
+            mae = float(metric(y_validation, prediction))
+            mae_by_alpha[f"{alpha:.1f}"] = mae
+            if mae < selected_mae - float(minimum_improvement):
+                selected_mae = mae
+                selected_alpha = alpha
+                selected_index = candidate_index
+        candidate_mae_by_alpha.append(
+            {"candidate_index": candidate_index, "validation_mae_by_alpha": mae_by_alpha}
+        )
+    return {
+        "candidate_index": int(selected_index),
+        "selected_alpha": float(selected_alpha),
+        "validation_mae_alpha_0": baseline_mae,
+        "validation_mae_selected_alpha": float(selected_mae),
+        "alpha_zero": bool(selected_alpha == 0.0),
+        "alpha_grid": list(grid),
+        "minimum_improvement": float(minimum_improvement),
+        "candidate_validation_diagnostics": candidate_mae_by_alpha,
+    }
+
+
 class KineticTopoGuardPredictor:
     def __init__(self, horizon_steps: int, dt: float, seed: int):
         self.horizon_steps = int(horizon_steps)
@@ -483,6 +546,7 @@ class KineticTopoGuardPredictor:
         self.classifiers: list[object] = []
         self.classifier_weights = np.asarray([], dtype=float)
         self.blend_weights = (0.75, 0.15, 0.10)
+        self.residual_diagnostics: dict[str, object] = {}
 
     def fit(self, train_data: list[Snapshot], val_data: list[Snapshot]) -> "KineticTopoGuardPredictor":
         train_x, train_aligned, train_kinetic = _build_kinetic_topoguard_matrix(train_data, self.horizon_steps, self.dt)
@@ -507,21 +571,24 @@ class KineticTopoGuardPredictor:
                 NumpyPipeline(RandomFeatureRegressor(hidden_dim=160, seed=self.seed + 101, alpha=1e-2)),
             ]
 
-        best_mae = mean_absolute_error(y_val, base_val) if SKLEARN_AVAILABLE else mae_metric(y_val, base_val)
-        self.regressor = candidates[0]
-        self.residual_scale = 0.0
+        residual_candidates = []
         for candidate in candidates:
             candidate.fit(train_x, residual_train)
             if hasattr(candidate, "set_params") and "n_jobs" in candidate.get_params():
                 candidate.set_params(n_jobs=1)
-            residual_val = np.asarray(candidate.predict(val_x), dtype=float)
-            for scale in np.linspace(0.0, 1.0, 11):
-                pred_val = np.clip(base_val + float(scale) * residual_val, 1.0, None)
-                mae = mean_absolute_error(y_val, pred_val) if SKLEARN_AVAILABLE else mae_metric(y_val, pred_val)
-                if mae < best_mae - 1e-5:
-                    best_mae = mae
-                    self.regressor = candidate
-                    self.residual_scale = float(scale)
+            residual_candidates.append(np.asarray(candidate.predict(val_x), dtype=float))
+        selection = select_residual_branch_on_validation(
+            y_val,
+            base_val,
+            residual_candidates,
+        )
+        self.regressor = candidates[int(selection["candidate_index"])]
+        self.residual_scale = float(selection["selected_alpha"])
+        self.residual_diagnostics = {
+            **selection,
+            "selection_split": "validation",
+            "selection_metric": "MAE",
+        }
 
         val_pred = self._predict_from_matrix(val_x, val_aligned)
         reg_risk_val = np.clip((val_pred - 1.0) / 1.5, 0.0, 1.0)

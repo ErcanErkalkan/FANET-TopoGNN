@@ -1,3 +1,0 @@
-Exact phrase occurrences in package (tex/md):
-./COMPACT_BENCHMARK_REPEAT_FIX.md: 6
-./EXPERIMENT_RERUN_PLAN.md: 2

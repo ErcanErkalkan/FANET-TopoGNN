@@ -52,6 +52,34 @@ def _write_generated(name: str, lines: list[str]) -> Path:
     return output
 
 
+def generate_locked_confirmatory_table() -> Path:
+    frame = pd.read_csv(ROOT / "outputs/eaai_locked_confirmatory/aggregate_metrics.csv")
+    order = [
+        "Current-state persistence baseline",
+        "Current-state ExtraTrees",
+        "Kinetic-TopoGuard",
+        "Source-Gated Kinetic-TopoGuard",
+        "Shallow ML",
+    ]
+    frame = frame.set_index("Model").loc[order].reset_index()
+    lines = [
+        r"\begin{tabular}{lrrrr}",
+        r"\toprule",
+        r"Model & Event $F_1$ [95\% CI] & False/min & MAE & Brier \\",
+        r"\midrule",
+    ]
+    for row in frame.itertuples():
+        label = str(row.Model).replace("Current-state persistence baseline", "Current persistence")
+        lines.append(
+            f"{label} & {row.Alert_Event_F1_mean:.3f} "
+            f"[{row.Alert_Event_F1_ci95_low:.3f}, {row.Alert_Event_F1_ci95_high:.3f}] & "
+            f"{row.False_Alert_Events_per_minute_mean:.2f} & {row.MAE_mean:.3f} & "
+            f"{row.Risk_Brier_mean:.3f} \\\\"
+        )
+    lines.extend([r"\bottomrule", r"\end{tabular}"])
+    return _write_generated("locked_confirmatory_table.tex", lines)
+
+
 def generate_horizon_table() -> Path:
     frame = pd.read_csv(ROOT / "outputs/horizon_sweep/horizon_sweep_summary.csv")
     frame = frame[frame["Model"] == "Kinetic-TopoGuard"].sort_values("horizon_steps")
@@ -72,7 +100,7 @@ def generate_horizon_table() -> Path:
 
 def generate_factorial_table() -> Path:
     frame = pd.read_csv(
-        ROOT / "outputs/factorial_feature_ablation/factorial_ablation_summary.csv"
+        ROOT / "outputs/factorial_feature_ablation_20seed/factorial_ablation_summary.csv"
     ).sort_values("feature_sources")
     labels = {
         "current-only": "Current state only",
@@ -173,6 +201,7 @@ def copy_protocol_figures() -> Path:
 def main() -> None:
     generators = [
         generate_confirmatory_table,
+        generate_locked_confirmatory_table,
         generate_horizon_table,
         generate_factorial_table,
         generate_packet_table,

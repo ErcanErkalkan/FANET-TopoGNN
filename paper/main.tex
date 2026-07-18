@@ -10,11 +10,9 @@
 \usepackage{graphicx}
 \usepackage{adjustbox}
 \usepackage{booktabs}
-\usepackage{algorithm}
-\usepackage{algpseudocode}
 \usepackage[numbers]{natbib}
 \usepackage{url}
-\usepackage{siunitx}
+\newcommand{\SI}[2]{#1\,\ensuremath{\mathrm{#2}}}
 \setlength{\emergencystretch}{2em}
 
 \newif\ifanonymous
@@ -29,8 +27,8 @@
 \begin{document}
 \begin{frontmatter}
 
-\title{Motion-Conditioned Topological Artificial Intelligence for\\
-Fragmentation-Risk Forecasting in Unmanned Aerial Vehicle Networks}
+\title{A Reproducible Benchmark and Cross-Domain Stress Test for\\
+Fragmentation-Event Forecasting in Unmanned Aerial Vehicle Networks}
 
 \ifanonymous
 \author{Anonymous author(s)}
@@ -47,41 +45,41 @@ ORCID: \url{https://orcid.org/0000-0001-9259-7112}}
 \fi
 
 \begin{abstract}
-Rapid motion and correlated radio variation can partition a flying ad hoc network before a
-reactive connectivity monitor leaves enough time for intervention. This paper presents
-Kinetic-TopoGuard, a short-horizon predictor of the future number of connected components
-and of connected-to-fragmented transition risk. The method combines the current graph state,
-velocity-projected link margins, zero-dimensional persistence images, graph summaries,
-residual regression, and validation-selected risk thresholds. Evaluation separates
-sample-level fragmentation classification from one-to-one fragmentation-event precision,
-recall, and $F_1$. A run-grouped 20-seed simulation is complemented by a five-seed neural
-baseline extension, a six-horizon sweep, a full $2^3$ feature-source factorial, a
-load-swept SimPy packet experiment, and complete host-loop latency measurement. Three
-real-data layers test different parts of the evidence chain: public field trajectories,
-measured UAV-to-UAV \SI{60}{GHz} links with an explicitly transported sensitivity analysis,
-and MILUV motion-capture plus inter-robot UWB first-path-power topology. AERPAW cellular
-traces increase time-held-out LTE link-state $F_1$ from 0.828/0.679 to 0.961/0.980, while
-the temporally robust throughput tests are negative and are reported as such. The
-\SI{60}{GHz} link model increases held-out link-viability $F_1$ from 0.731 to 0.923.
-At the \SI{0.6}{s} horizon, Kinetic-TopoGuard does not improve count MAE over persistence
-(0.133 versus 0.132), but it yields event $F_1=0.483$ with 3.53 false events/minute,
-compared with 0.414 and 13.24 for shallow ML. MILUV transfer exposes substantial domain
-shift: Kinetic-TopoGuard event $F_1$ is only 0.08 at the primary threshold. The study
-supports reproducible short-horizon warning research, but it does not claim a live digital
-twin, measured outdoor FANET IP packet delivery, or field deployment.
+Rapid motion and correlated radio variation can fragment an unmanned aerial vehicle (UAV)
+network before reactive monitoring leaves time for a safe response. We test whether
+short-horizon warnings remain useful when false alerts, packet traffic, controller cost,
+domain shift, and computation are considered jointly. The artificial-intelligence
+contribution is a leakage-controlled benchmark of current-state, topological, kinematic,
+source-gated, shallow, and neural predictors with a locked 20-seed evaluation. The
+engineering application couples validation-selected warnings to bounded simulated relay
+and packet-event models; it is not field control. Under the prespecified
+multiplicity-controlled rule, Source-Gated Kinetic-TopoGuard does not outperform
+Current-state ExtraTrees: the paired event F1 difference is -0.0215 (seed-bootstrap 95\%
+confidence interval [-0.0417, -0.0020]; Holm-adjusted permutation p = 0.1030), while false
+alerts increase by 2.10 events per minute. In the 20-seed equal-learner factorial, adding
+graph, topology, and kinematic sources reduces event F1 by 0.0426, although calibration
+improves. The residual count branch selects zero scale in 95\% of seeds, and none of 360
+paired closed-loop comparisons satisfies the predeclared engineering-benefit rule. The
+single compatible measured three-vehicle ultra-wideband sequence contains only one or two
+fragmentation events per threshold; all frozen and adapted models yield zero event F1 at
+the primary threshold. We treat this as a sparse stress test, not strong external
+validation. Measured host-loop latency excludes sensing, telemetry, autopilot
+communication, and actuation. The benchmark exposes where richer predictors fail to yield
+engineering benefit.
 \end{abstract}
 
 \begin{highlights}
-\item Fragmentation transitions are scored with one-to-one event matching.
-\item Motion, topology, and graph sources are isolated in a full factorial.
-\item Twenty seeds and six horizons test the primary forecasting claim.
-\item Measured three-UAV UWB topology provides direct multi-UAV transfer evidence.
-\item Packet, latency, and physical relay constraints bound operational claims.
+\item The locked primary test finds no supported source-gated superiority.
+\item A full factorial isolates current, graph, topology, and motion sources.
+\item Packet and controller experiments expose prediction-to-action limits.
+\item Cross-domain tests reveal severe fragmentation-event transfer failure.
+\item Runtime measurements bound claims to the host-side algorithm loop.
 \end{highlights}
 
 \begin{keyword}
-Flying ad hoc networks \sep Persistent homology \sep Fragmentation forecasting \sep
-Unmanned aerial vehicles \sep Event detection \sep Engineering decision support
+Fragmentation-event forecasting \sep Unmanned aerial vehicle networks \sep
+Reproducible benchmarking \sep Cross-domain stress testing \sep Network resilience \sep
+Engineering decision support
 \end{keyword}
 
 \end{frontmatter}
@@ -105,75 +103,92 @@ $\beta_0$ for an observed graph \cite{tarjan1975efficiency,cormen2009introductio
 they do not forecast its future value. Persistent homology complements a single-radius
 graph by recording how components merge as the distance threshold grows. A persistence
 image turns those merge scales into a stable fixed-dimensional feature
-\cite{adams2017persistence}. In a mobile network, however, topology alone is insufficient:
-velocity determines whether a marginal link is closing or opening. This motivates a
-motion-conditioned topological forecaster.
+\cite{adams2017persistence}. In a mobile network, however, velocity determines whether a
+marginal link is closing or opening. The engineering question is not merely whether these
+descriptors can be computed, but whether they add reliable decision value beyond a strong
+current-state comparator.
 
 Graph neural networks (GNNs) have been applied to routing, clustering, and coverage
 \cite{lu2023uav,song2025gnnppor,ye2022multi}, while topology-aware networks combine
 message passing with persistent-homology descriptors
-\cite{hofer2017deep,carriere2020perslay,luo2023persistent}. These studies do not establish
-event-level early warning of connected-to-fragmented FANET transitions. They also commonly
-report randomly mixed samples, which can leak neighbouring states from the same flight
-into training and testing. The present study instead groups complete runs, freezes
-thresholds on validation runs, and distinguishes sample classification from transition
-detection.
+\cite{hofer2017deep,carriere2020perslay}. These studies do not establish
+event-level early warning under matched learners, unused-seed confirmation, packet-level
+control, and cross-domain transfer. Randomly mixed samples can also leak neighbouring states
+from one flight into training and testing. The gap is therefore an evidence problem: model
+families, feature sources, operating thresholds, and engineering outcomes must be compared
+without letting held-out tests select the story.
 
-The accepted predictive-digital-twin literature demonstrates a higher evidence bar than a
-stand-alone dashboard: a physical asset, measured sensors, a model, and a validated
-information flow must be connected \cite{jasinski2026predictive}. This study does not have
-a bidirectional hardware connection and therefore calls its visual interface an
-\emph{offline predictive-twin replay}, not a live digital twin. The terminology prevents a
-software visualization from being mistaken for deployment evidence.
-
-The research question is:
-\emph{Can present motion and multi-scale component structure improve short-horizon
-fragmentation event forecasting under run-grouped evaluation, and what operational claims
-remain valid when packet, latency, radio-correlation, and real-data checks are added?}
-
-The contributions are:
+The study addresses three research questions:
 \begin{enumerate}
-  \item A future-horizon formulation that predicts $\beta_0(t+h)$ and separately scores
-  connected-to-fragmented events with one-to-one alert matching.
-  \item Kinetic-TopoGuard, combining current state, projected link-margin features,
-  $H_0$ persistence images, graph summaries, residual count prediction, and calibrated
-  risk scoring.
-  \item A leakage-controlled evidence suite containing 20 simulation seeds, five-seed
-  neural comparisons, six horizons, a full three-source factorial, temporally correlated
-  radio, physically bounded relay actions, packet-level simulation, and full-path timing.
-  \item External checks that keep their meanings separate: field-motion sensitivity,
-  AERPAW UAV-to-infrastructure measurements, held-out \SI{60}{GHz} peer links, and direct
-  three-UAV UWB topology from MILUV \cite{shalaby2026miluv}.
-  \item A reproducible package whose audit rejects stale caches, missing event metrics,
-  unsupported calibration language, incomplete seed grids, and stale PDFs or archives.
+  \item Under run-grouped and locked-seed evaluation, do graph, topological, kinematic, or
+  source-gated predictors improve fragmentation-event $F_1$ over Current-state ExtraTrees?
+  \item Do improvements in forecast or calibration metrics survive chronological public-data
+  transfer and produce paired packet/controller benefit at acceptable action cost?
+  \item Which computational and evidence boundaries prevent host-side simulation results from
+  being interpreted as onboard, field, or deployment-ready performance?
+\end{enumerate}
+
+The contributions follow the benchmark/stress-test route selected from the completed
+evidence:
+\begin{enumerate}
+  \item \textbf{Evaluation formulation:} future fragmentation risk is separated from
+  component-count regression, and one-to-one event matching prevents prolonged fragmentation
+  or duplicate warnings from inflating performance.
+  \item \textbf{Artificial-intelligence benchmark:} current-state, graph,
+  persistent-homology, kinematic, source-gated, shallow, and neural model families are
+  compared with run-grouped splits, a 20-seed equal-learner factorial, and a locked 20-seed
+  test unused in development.
+  \item \textbf{Engineering application:} validation-selected warnings drive a causal,
+  physically bounded relay policy whose graph outcomes are kept separate from packet-event
+  delivery, delay, drop reasons, and action cost.
+  \item \textbf{Cross-domain stress test:} field motion, UAV-to-infrastructure cellular
+  measurements, held-out peer-link measurements, and three-UAV ultra-wideband topology are
+  assigned explicit and non-overlapping claim boundaries.
+  \item \textbf{Reproducible negative evidence:} source-induced event degradation, an
+  inactive residual branch, weak measured-topology transfer, absent closed-loop support, and
+  model-dependent host latency are retained rather than selected away.
 \end{enumerate}
 
 \section{Related work}
 
-GCN, GAT, and GraphSAGE learn local representations by aggregating neighbouring node
-features \cite{kipf2016semi,velivckovic2018graph,hamilton2017inductive}. FANET and
-non-terrestrial-network research has used such encoders for route selection and
-reinforcement learning \cite{nemati2022ntn,REN2025103801}. Temporal graph models add
-recurrent or continuous-time state, but their performance depends on sequence construction
-and run-level separation. None of these architectures makes a future component transition
-its primary event target.
+\textbf{Future fragmentation and link forecasting.} GCN, GAT, and GraphSAGE aggregate
+neighbouring node state \cite{kipf2017semi,velickovic2018graph,hamilton2017inductive};
+FANET and non-terrestrial-network studies mainly apply such encoders to routing,
+clustering, or policy learning \cite{lu2023uav,song2025gnnppor,ye2022multi,nemati2022ntn,REN2025103801}.
+Recent UAV link prediction combines multiscale attention with recurrent temporal state
+\cite{pu2026must}. Those tasks predict links or actions, whereas this study predicts the
+first future transition from one connected component to multiple components. That target
+requires a system-level comparator: a link predictor can improve edge accuracy without
+improving the timing or false-alert burden of a fragmentation warning.
 
-Persistent-homology layers expose global structure that shallow message passing can miss.
-PH-GNN, PersLay, and related models learn from persistence diagrams or vectorized
-topological summaries \cite{hofer2017deep,carriere2020perslay,luo2023persistent}. For
-$H_0$, the finite merge times are exactly represented by minimum-spanning-tree edge
-lengths. This makes the descriptor computationally attractive for small and medium UAV
-swarms. The open issue is not whether persistent homology can be computed, but whether it
-adds predictive information after current connectivity and motion are controlled.
+\textbf{Temporal and topology-aware learning.} Recurrent graph convolution, STGCN, and
+continuous-time TGN provide distinct temporal inductive biases
+\cite{zhao2020tgcn,yu2018stgcn,rossi2020tgn}. PH-GNN, PersLay, and persistence images expose
+global multiscale structure that shallow message passing can miss
+\cite{hofer2017deep,carriere2020perslay,adams2017persistence}. For $H_0$, finite merge times
+are minimum-spanning-tree edge lengths, making the descriptor tractable for UAV swarms.
+The unresolved task-specific question is whether these sources add held-out event value
+after recent component state and kinematics are controlled with the same learner. The
+equal-learner factorial and the contextual neural extension are designed around that
+comparison rather than an architecture-only leaderboard.
 
-External FANET evidence is fragmented across datasets. Public forestry flights provide
-real trajectories but no synchronized peer-link labels \cite{araujo2025multidrone}.
-AERPAW Datasets 22 and 23 provide aerial cellular KPI and throughput measurements
-\cite{aerpawDataset22,aerpawDataset23}. The WiNES \SI{60}{GHz} dataset provides measured
-UAV-to-UAV channel observations \cite{winesUavToUav60GHz}. MILUV supplies synchronized
-motion capture and UWB measurements for three quadcopters
-\cite{shalaby2026miluv}. These sources answer different questions and cannot be merged into
-a single claim of field-validated FANET packet delivery.
+\textbf{Leakage-safe event evaluation.} Neighbouring snapshots from one flight are strongly
+dependent, so random row splits can expose a model to the same trajectory in training and
+test. The present protocol groups complete runs and freezes validation-selected thresholds.
+It also adapts range-aware time-series detection principles \cite{tatbul2018precision} to a
+one-to-one, pre-transition matching rule. This distinction matters because sample $F_1$
+can reward prolonged fragmented periods, while the engineering endpoint concerns one early
+warning per transition and the number of unmatched warnings per minute.
+
+\textbf{From prediction to engineering evidence.} Public sources observe different links
+in the causal chain: forestry flights provide motion without peer-radio labels
+\cite{araujo2025multidrone}; AERPAW provides aerial cellular KPI and throughput
+\cite{aerpawDataset22,aerpawDataset23}; WiNES provides measured UAV-to-UAV channel samples
+\cite{winesUavToUav60GHz,polese2020experimental}; and MILUV combines indoor motion capture
+with three-robot UWB measurements \cite{shalaby2026miluv,miluvDataset}. None alone validates
+outdoor FANET warning-to-packet-to-actuation performance. Accordingly, this work separates
+forecast metrics, measured-data transfer, packet-event simulation, action cost, and
+host-loop latency instead of treating any one layer as deployment evidence.
 
 \section{Method}
 \label{sec:method}
@@ -189,10 +204,28 @@ then filtered by a bidirectional received-power rule:
 P_{i\rightarrow j}(t)\ge\Gamma,\quad P_{j\rightarrow i}(t)\ge\Gamma .
 \end{equation}
 The link budget uses log-distance path loss, log-normal shadowing, Rayleigh or Nakagami
-fading, and transmitter/receiver hardware offsets. Hardware offsets are fixed within a
+fading, and transmitter/receiver hardware offsets, following standard radio abstractions
+and the established correlated-shadowing and Nakagami models
+\cite{goldsmith2005wireless,gudmundson1991correlation,nakagami1960mdistribution}. Hardware offsets are fixed within a
 run. Shadowing and fading evolve as Gauss--Markov processes, so consecutive radio
 snapshots are temporally correlated rather than independent draws. The same realization is
 used for paired fixed/adaptive-policy comparisons.
+
+Table~\ref{tab:radio-control-parameters} makes the physical and control assumptions
+auditable. Literature-backed model forms are distinguished from study-specific stress
+settings; none of the numerical settings is presented as a calibrated radio, certified
+airframe, or regulatory limit.
+
+\begin{table*}[t]
+\centering
+\caption{Radio, forecast, and controller parameters. ``Stress setting'' denotes a fixed
+simulation choice rather than an empirical hardware claim.}
+\label{tab:radio-control-parameters}
+\small
+\begin{adjustbox}{width=\textwidth}
+\input{tables/generated/radio_control_parameters_table.tex}
+\end{adjustbox}
+\end{table*}
 
 For a horizon of $h$ ticks, the count target and sample-level risk label are
 \begin{equation}
@@ -227,54 +260,88 @@ x_t=[c_t,\;g_t,\;\pi_t,\;k_t],
 where $c_t$ is current/lagged component context, $g_t$ is current graph structure,
 $\pi_t$ is the persistence image, and $k_t$ contains kinematic projections.
 
-\subsection{Residual count and risk models}
+\subsection{Comparators, residual prediction, and risk scoring}
+
+Two current-state references have different roles. \emph{Current-state persistence} is
+deterministic: it sets $\hat y_t=\beta_0(G_t)$ and does not fit a learner. It must not be
+confused with \emph{Current-state ExtraTrees}, which fits an ExtraTrees residual regressor
+and a balanced ExtraTrees risk classifier from current and lagged component state, component
+change, node count, and active radius. The latter uses the same run split, validation
+threshold rule, and test evaluation as the richer equal-learner factorial rows.
+The fitted implementation uses the original Extremely Randomized Trees method through
+scikit-learn \cite{geurts2006extremely,pedregosa2011scikit}.
 
 Kinetic-TopoGuard anchors count prediction at the observed component count:
 \begin{equation}
 \hat y_t=\max\{1,\;\beta_0(G_t)+\alpha f_{\theta}(x_t)\}.
 \end{equation}
-An ExtraTrees regressor estimates the residual. The scale $\alpha$ is selected on
-validation runs to minimize MAE and prevents unstable corrections from dominating the
-physical anchor. A separate balanced ExtraTrees classifier gives
-$s_t=P(z_t=1\mid x_t)$. The alert threshold is selected on validation data only.
+An ExtraTrees regressor estimates the residual. The scale $\alpha$ is selected from a grid
+that includes zero, using validation mean absolute error (MAE) only; the test partition
+cannot influence whether the residual branch is active. A separate balanced ExtraTrees
+classifier gives $s_t=P(z_t=1\mid x_t)$. Classifier choice, score blending, and the alert
+threshold are selected on validation runs only.
 
-For each ground-truth transition, at most one preceding alert in $[t-h,t-1]$ is matched.
-An alert cannot match multiple events and alerts issued while the graph is already
-fragmented are ignored. The study reports event precision, recall, $F_1$, missed events,
-and unmatched false-alert events per minute. Sample-level $F_1$, PR-AUC, ROC-AUC, Brier
-score, and calibration error remain complementary diagnostics.
+\subsection{Source-Gated Kinetic-TopoGuard}
+
+Source-Gated Kinetic-TopoGuard tests whether learned source selection is safer than forced
+feature concatenation. Four base sources are used: current state, graph summaries,
+zero-dimensional persistence features, and kinematic projections. Within the training
+partition, GroupKFold cross-fitting holds out complete split groups. Every training row
+therefore receives count-residual and fragmentation-risk predictions from base learners
+that were not fitted on that row, and no run identifier appears on both sides of one fold.
+The four out-of-fold count predictions train a ridge meta-regressor; the four out-of-fold
+risk scores train a regularized logistic meta-classifier. Base learners are then refitted
+on the full training partition for inference.
+
+Development validation runs select minimum leaf sizes, ridge regularization, logistic
+regularization, probability calibration from none, sigmoid, or isotonic regression, and the
+event threshold. Calibration is evaluated with reliability diagnostics, Brier score, and
+expected calibration error \cite{brier1950verification,guo2017calibration}. Threshold selection maximizes validation event $F_1$, then sample $F_1$,
+then minimizes false events per minute, and finally prefers the higher threshold. The test
+partition is evaluated once after these choices. Stored artefacts contain base parameters,
+meta coefficients, calibration type, threshold, feature-source names, and cross-fitting
+run identifiers. For the locked confirmation, the modal validation-selected development
+package is frozen before any new-seed test result is observed.
+
+For each ground-truth transition at index $t$, eligible alerts are those emitted while the
+graph is connected in $[t-h,t-1]$. Events and alerts are processed chronologically; one
+eligible alert can match at most one event, one event can receive at most one match, and
+alerts emitted after fragmentation begins are ineligible. Unmatched eligible alerts are
+false-alert events. The study reports event precision, recall, $F_1$, missed events, and
+false-alert events per simulated minute. This explicit one-to-one rule is study-specific;
+range-aware time-series precision and recall provide the broader evaluation context
+\cite{tatbul2018precision}. Sample-level $F_1$, precision--recall area,
+receiver-operating-characteristic area, Brier score, and expected calibration error remain
+complementary diagnostics rather than substitutes for the event endpoint.
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/plantuml/kinetic_topoguard_architecture.pdf}
 \caption{Kinetic-TopoGuard information flow. The controller interface consumes the
-forecast and risk score, but the reported intervention remains a physically constrained
-one-step counterfactual rather than a live command path.}
+forecast and risk score. Both the analytical one-step test and the stateful packet-coupled
+policy are physically constrained simulations rather than live command paths.}
 \label{fig:architecture}
 \end{figure*}
 
-\begin{algorithm}[t]
-\caption{Kinetic-TopoGuard inference and alerting}
-\begin{algorithmic}[1]
-\Require $P_t,V_t,G_t$, horizon $h$, fitted $f_\theta,q_\phi$, threshold $\tau$
-\State Project positions to $\hat P_{t+h}$
-\State Compute current graph, kinematic, and $H_0$ persistence features
-\State $\hat y_t\gets\max(1,\beta_0(G_t)+\alpha f_\theta(x_t))$
-\State $s_t\gets q_\phi(x_t)$
-\State Emit an alert iff $\beta_0(G_t)=1$ and $s_t\ge\tau$
-\State \Return $\hat y_t,s_t$
-\end{algorithmic}
-\end{algorithm}
+\paragraph{Inference sequence.} Given $P_t,V_t,G_t$, horizon $h$, fitted
+$f_\theta,q_\phi$, and threshold $\tau$: (1) project positions to $\hat P_{t+h}$;
+(2) compute current-graph, kinematic, and $H_0$ persistence features; (3) calculate
+$\hat y_t=\max(1,\beta_0(G_t)+\alpha f_\theta(x_t))$ and $s_t=q_\phi(x_t)$; and
+(4) emit an alert only if $\beta_0(G_t)=1$ and $s_t\ge\tau$.
 
-\subsection{Controller boundary}
+\subsection{Controller and packet-simulation boundary}
 
-The forecast can trigger one-step relay steering, route recomputation, or buffering.
-Relay motion is constrained by current velocity, $\Delta t$, maximum speed
-\SI{30}{m.s^{-1}}, and maximum acceleration \SI{12}{m.s^{-2}}. A relay action receives at
-most a \SI{3}{dB} incident-link budget improvement; it does not expand every network edge.
-The analytical controller output is called a \emph{reachability-delivery proxy}, not PDR.
-Actual simulated PDR and delay are reported only by the separate SimPy packet experiment.
-The controller is a counterfactual one-step test and not a flight-control implementation.
+The analytical one-step controller tests graph reachability after a bounded relay change;
+its output is a \emph{reachability-delivery proxy}, not packet delivery ratio. The separate
+stateful closed-loop experiment carries relay position, velocity, reaction delay, action
+duration, and cooldown across controller ticks. Relay motion has maximum speed
+\SI{30}{m.s^{-1}} and maximum acceleration \SI{12}{m.s^{-2}}, and only relay-incident links receive at most a
+\SI{3}{dB} budget improvement. This bounded repositioning study is related to aerial-relay
+connectivity maintenance \cite{yanmaz2022positioning}. The coupled SimPy discrete-event
+model \cite{simpy412} separately generates packet
+arrivals, queues, routes, serialization, deadlines, retransmission outcomes, and explicit
+drop causes. Only delivery events from that packet simulator are called packet delivery
+ratio. Neither controller is a flight-control implementation.
 
 \section{Experimental protocol}
 \label{sec:protocol}
@@ -286,18 +353,47 @@ families, fixed/adaptive graph policies, and nominal/degraded radio scenarios ar
 within each seed. Complete base runs, identified by mobility, swarm size, and seed, are
 assigned to train, validation, or test. Policy and radio variants of one trajectory remain
 in the same split. No test sample selects a learner, residual scale, risk threshold, or
-alert budget.
+alert budget. Training, validation, and test run-identifier intersections are checked as
+empty for every seed. All paired models within a seed share the same mobility and radio
+realization.
 
-The primary confirmation uses 20 independent seeds and compares Kinetic-TopoGuard,
-validation-selected shallow ML, and current-state persistence. Persistence predicts
-$\beta_0(t+h)=\beta_0(t)$ and is a deployable no-change baseline. The neural extension
-uses five seeds for GCN, GAT, GraphSAGE, PI+MLP, two FANET-TopoGNN variants, T-GCN,
-STGCN, and TGN. Backend records must identify PyTorch; surrogate neural rows are rejected.
+The original 20-seed benchmark compares Kinetic-TopoGuard, validation-selected shallow
+machine learning, and deterministic current-state persistence. The equal-learner factorial
+adds Current-state ExtraTrees and all eight combinations of graph, topology, and kinematic
+sources. The five-seed model-family extension contains the same five non-neural references
+and nine PyTorch baselines: graph convolutional, graph attention, GraphSAGE,
+persistence-image multilayer perceptron, two FANET-TopoGNN variants, temporal graph
+convolutional, spatio-temporal graph convolutional, and temporal graph network models.
+They use PyTorch \cite{paszke2019pytorch}; the repository also exposes an optional
+PyTorch Geometric adapter \cite{fey2019fast}, although PyTorch Geometric was not installed
+in the measured five-seed runtime. Every neural aggregate requires the same five seeds and a verified PyTorch backend;
+surrogate or incomplete rows are rejected. Because these neural rows have only five seeds,
+they are descriptive model-family context: they are not included in the locked hypothesis,
+do not support superiority claims, and are not pooled with any 20-seed aggregate. The full
+Supplementary Material S1 table reports all 14 models, parameter counts where defined,
+training budgets, event metrics, and seed coverage. A separately documented 20-new-seed
+extension is pending execution on a verified PyTorch backend; this manuscript reports no
+result for that unexecuted protocol.
+
+After the five-seed Source-Gated development study, a separate confirmation is locked by
+SHA-256 hash. Its 20 seeds are generated by a domain-separated SHA-256 counter stream and
+are rejected if they appear in any prior configuration or output. Before those test
+outcomes are read, the feature definitions, horizon, base and meta hyperparameters,
+isotonic calibration, threshold grid and tie-break, primary comparator, primary event-$F_1$
+hypothesis, and evaluation models are frozen. The lock includes the config hash, source
+artefact hashes, excluded prior seeds, and git commit. A hash mismatch aborts execution;
+each test partition is evaluated once.
 
 MAE and $R^2$ confidence intervals use clustered bootstrap resampling of complete runs.
 Risk metrics are computed from held-out samples. Event metrics use the transition matching
 defined in Section~\ref{sec:method}. The two operating policies impose validation budgets
 of two and one false alert events per minute. Feasibility is recorded rather than assumed.
+For the locked primary event-$F_1$ comparison, the seed-bootstrap interval is reported as
+an effect-size uncertainty summary, while the paired permutation test supplies the
+confirmatory $p$-value. The prespecified claim requires a positive paired difference, a
+bootstrap interval excluding zero, and Holm-adjusted permutation $p<0.05$ across the locked
+primary comparisons. When these summaries differ, the multiplicity-controlled rule governs
+the superiority decision; no single unadjusted or interval result is used to override it.
 
 \subsection{Stress, ablation, packet, and latency studies}
 
@@ -307,16 +403,31 @@ horizon. The feature study crosses graph, topology, and kinematic sources in a c
 $2^3$ factorial. Every row uses the same ExtraTrees learner and current-state context,
 preventing a stronger classifier from being attributed to one feature family.
 
-The SimPy experiment evaluates 8, 16, 32, and 64 offered packets per \SI{0.1}{s} tick.
+The event-definition sensitivity keeps the fitted Kinetic-TopoGuard score and its
+validation-selected threshold fixed. On held-out runs it varies the pre-transition warning
+window and refractory period over 0.3, 0.6, and \SI{1.2}{s}, and reports results across
+within-seed low, middle, and high measured event-density tertiles. These analyses test the
+stability of event accounting; they do not retune the model or replace the locked endpoint.
+
+The packet-load sweep evaluates 8, 16, 32, and 64 offered packets per \SI{0.1}{s} tick.
 Models receive identical source--destination demand and random seeds. It implements finite
 queues, route availability, CSMA-style random backoff, a single collision domain, and a
 per-tick deadline. This is a controlled packet abstraction, not ns-3, OMNeT++, or a field
 MAC trace.
 
-Host-loop timing starts before pairwise-distance construction. It includes fixed/adaptive
-physical-radio graphs, graph statistics, persistence images, feature assembly, count
-prediction, and warning score. Five seeds and evenly spread test snapshots are timed.
-Sensor acquisition, operating-system transport, and autopilot actuation are excluded.
+The stateful closed-loop study instead crosses three packet loads and swarm sizes of 10,
+20, and 30 for six policies. Mobility, radio, packet arrivals, and packet random seeds are
+paired. A policy reads only current/past state and its current risk score; thresholds and
+action parameters are fixed from validation or a priori limits. Engineering benefit
+requires a packet-delivery-ratio confidence interval excluding zero, Holm-adjusted paired
+$p<0.05$, relay travel below \SI{300}{m} per simulated minute, and action duty cycle below
+0.25.
+
+Host-loop timing separates pairwise distance, radio graph, graph statistics, persistence
+image, feature assembly, count inference, risk inference, calibration, and controller
+decision. After five warm-ups, 30 iterations are measured at 10, 20, 30, and 40 UAVs under
+single- and default-thread modes. Sensor acquisition, telemetry, scheduling outside the
+process, autopilot communication, actuation, and network transfer are excluded.
 
 \subsection{External evidence layers}
 
@@ -346,51 +457,65 @@ robot-pair edge uses the latest causal first-path-power observation no older tha
 $-90$, $-92$, and \SI{-95}{dBm}. No MILUV sample is used for fitting or threshold
 selection; the three-threshold sensitivity grid is fixed before model evaluation and is
 not optimized against MILUV outcomes. These labels describe measured UWB ranging quality,
-not IP PDR.
+not IP PDR. The evaluated sequence contains two connected-to-fragmented events at
+$-90$ and $-92$ dBm and one at $-95$ dBm. This event support is sufficient only for a
+sparse failure-oriented stress test, not for a precise external-validation estimate.
+
+The frozen zero-shot MILUV result remains the primary transfer evidence. A secondary
+chronological study uses an early calibration prefix, a guard interval, and a later test
+segment. Base weights remain frozen for probability calibration and threshold selection;
+a separately labelled few-shot protocol may update only its predeclared prediction head
+from the prefix. Adjacent samples are never randomly mixed. Leave-one-scenario-out testing
+is reported unavailable because only one compatible provenance-verified three-robot
+sequence is present.
 
 \begin{table*}[t]
 \centering
-\caption{Evidence matrix and allowed interpretation.}
+\caption{External evidence matrix. Direct measurements are separated from derived or
+transported quantities and their permitted interpretation.}
 \label{tab:evidence-matrix}
+\scriptsize
 \begin{adjustbox}{width=\textwidth}
-\begin{tabular}{llll}
-\toprule
-Source & Directly observed & Evaluation target & Claim boundary \\
-\midrule
-Simulator & Motion and correlated radio are generated & $\beta_0$, transition events & Controlled simulation only \\
-Forestry & Three-UAV field motion & Radius-graph transfer & No measured RF \\
-AERPAW & Cellular KPI and iPerf & Link state, throughput & UAV-to-infrastructure \\
-WiNES 60 GHz & UAV-to-UAV RF measurements & Held-out link viability & Forestry use is transported \\
-MILUV & Three-UAV Vicon and UWB power & UWB topology events & No IP packet delivery \\
-\bottomrule
-\end{tabular}
+\input{tables/generated/evidence_matrix.tex}
 \end{adjustbox}
 \end{table*}
 
-\section{Results and discussion}
+\section{Results}
 \label{sec:results}
 
-\subsection{Primary confirmation and neural context}
+\subsection{Locked primary confirmation and benchmark context}
 
-Table~\ref{tab:confirmatory} is generated directly from the 20-seed aggregate. It reports
-count accuracy together with sample and event measures. The current-state persistence row
-is ranked as a forecast, not labelled an oracle. Event $F_1$ is the principal alert
-measure because it penalizes duplicate and unmatched alerts and exposes missed transitions.
-Persistence has the lowest MAE (0.132 versus 0.133 for Kinetic-TopoGuard), while
-Kinetic-TopoGuard has slightly higher $R^2$ (0.457 versus 0.449). Relative to shallow ML,
-Kinetic-TopoGuard raises event $F_1$ from 0.414 to 0.483 and reduces false event alerts
-from 13.24 to 3.53 per minute. It therefore improves the warning trade-off, not the
-component-count point estimate.
+The locked comparison is reported first because it is the only evaluation whose 20 seeds
+were excluded from all prior configurations and outputs. Table~\ref{tab:locked-confirmatory}
+shows the complete locked aggregate. Current-state ExtraTrees obtains event $F_1=0.498$,
+whereas Source-Gated Kinetic-TopoGuard obtains 0.477. The paired Source-Gated-minus-current
+difference is $-0.0215$ (seed-bootstrap 95\% CI [$-0.0417$,$-0.0020$]); the paired
+permutation $p$-value is 0.0515 and its Holm-adjusted value is 0.1030. The predeclared
+superiority rule is therefore not met. The interval summarizes the observed paired
+effect, whereas the Holm-adjusted permutation result controls the confirmatory decision;
+the apparently different thresholds are not treated as interchangeable evidence. Event
+precision decreases by 0.0831 and false alerts
+increase by 2.10 events/minute (95\% CI [1.12, 3.07], Holm-adjusted $p=0.00249$).
+Although the Source-Gated model improves Brier score and expected calibration error, those
+secondary gains do not overturn the negative primary event decision.
 
 \begin{table*}[t]
 \centering
-\caption{Twenty-seed held-out confirmation. Thresholds and operating choices are selected
-on validation runs; all displayed values are independent-test aggregates.}
-\label{tab:confirmatory}
+\caption{Locked 20-seed evaluation on previously unused seeds. Confidence intervals are
+seed-level intervals; thresholds are selected on validation runs only.}
+\label{tab:locked-confirmatory}
 \begin{adjustbox}{width=\textwidth}
-\input{tables/generated/confirmatory_metrics_table.tex}
+\input{tables/generated/locked_confirmatory_table.tex}
 \end{adjustbox}
 \end{table*}
+
+The earlier 20-seed benchmark remains useful as protocol context rather than the primary
+superiority test; its complete table is in Supplementary Material S1. Event $F_1$ penalizes duplicate and
+unmatched alerts and exposes missed transitions. Deterministic persistence has the lowest
+count MAE (0.132 versus 0.133 for Kinetic-TopoGuard), while Kinetic-TopoGuard raises event
+$F_1$ from 0.414 for shallow machine learning to 0.483 and reduces false alerts from 13.24
+to 3.53 per minute. This is a warning-trade-off result against the shallow comparator, not
+evidence that the residual count branch or richer sources outperform current-state models.
 
 The five-seed neural extension is retained as model-family context rather than folded into
 the 20-seed claim. This distinction avoids implying that every expensive neural baseline
@@ -398,43 +523,100 @@ was run for 20 seeds. Kinetic-TopoGuard obtains MAE 0.120 and event $F_1=0.470$.
 STGCN has the lowest neural MAE (0.218), while TGN has the highest neural event
 $F_1$ (0.464) but 6.39 false events/minute versus 3.30 for Kinetic-TopoGuard.
 Backend provenance and per-seed rows are included in the package.
+The compact table is selected by a rule fixed independently of whether a result is
+favourable: the primary non-neural methods are retained, together with the neural model
+having the lowest MAE and the neural model having the highest event $F_1$ (model name
+breaks ties). The supplementary full table reports all 14 executed baselines, their
+five-seed coverage, event precision/recall/$F_1$, false-event rate, confidence intervals,
+backend, and model-budget metadata; failed or missing runs are reported separately rather
+than removed from aggregation.
 
 \begin{table}[t]
 \centering
-\caption{Five-seed neural model-family extension.}
+\caption{Five-seed model-family extension under the predeclared compact-table selection rule.}
 \label{tab:neural}
 \begin{adjustbox}{width=\linewidth}
 \input{tables/generated/neural_seed_extension_table.tex}
 \end{adjustbox}
 \end{table}
 
+\subsection{Auditable feature contribution}
+
+We use \emph{auditable post-hoc decomposition}, rather than claiming intrinsic model
+interpretability. Models and operating thresholds are frozen before the held-out test
+runs are explained. Grouped permutation moves complete equal-length run blocks, preserving
+within-run temporal dependence; TreeSHAP is an optional secondary view of the selected
+tree components \cite{fisher2019all,lundberg2020local}. Neither explanation is used for feature, threshold, calibration, or model
+selection.
+
+The detailed Supplementary Material S1 table reports the change in event $F_1$ after each
+group is permuted. Graph summaries are the highest-ranked group for both Kinetic-TopoGuard
+(mean drop 0.196, 95\% CI [0.158, 0.244]) and Source-Gated Kinetic-TopoGuard
+(0.096 [0.055, 0.151]). Persistence-image bins contribute to Kinetic-TopoGuard
+(0.062 [0.012, 0.111]) but not detectably to the source-gated model
+($-0.0004$ [$-0.0217$, 0.0178]). Projected-fragmentation statistics have smaller
+positive contributions in both models, whereas speed summaries and most pair-distance
+subgroups have intervals spanning zero. For component-count MAE, all Kinetic-TopoGuard
+grouped importances are zero in these five seeds; the frozen count prediction is therefore
+not presented as feature-driven. Source-gated count effects are dominated by current state,
+and pair-distance deltas show a small negative contribution. Negative and unsupported
+effects are retained in the machine-readable outputs and Fig.~\ref{fig:explainability}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/generated/explainability.pdf}
+\caption{Grouped permutation importance with seed-bootstrap 95\% intervals. Permutations
+exchange complete run blocks rather than individual, temporally dependent snapshots.}
+\label{fig:explainability}
+\end{figure}
+
 \subsection{Horizon and feature-source sensitivity}
 
-Table~\ref{tab:horizon} prevents the \SI{600}{ms} result from being interpreted as a
-universal warning horizon. Longer horizons change both class prevalence and the set of
-alerts that can match a transition. Event recall and event $F_1$ are therefore reported
-alongside MAE and sample $F_1$.
+The residual audit directly tests the count branch against its persistence anchor. The
+validation-selected scale is zero in 19 of 20 seeds (95\%). Across held-out tests, selected
+minus persistence MAE is $+0.000650$ with a seed-bootstrap 95\% CI [0, 0.001949] and
+Wilcoxon $p=0.317$. No seed improves, 19 are unchanged, and one worsens. Count forecasting
+is therefore retained as an audited component, not claimed as a primary contribution.
 
-\begin{table}[t]
+The Supplementary Material S1 horizon table prevents the \SI{600}{ms} result from being
+interpreted as universal. Longer horizons change both class prevalence and the set of
+alerts that can match a transition, so event recall and event $F_1$ are reported alongside
+MAE and sample $F_1$.
+
+Table~\ref{tab:event-protocol-sensitivity} shows that the event score is definition-
+dependent even with model and threshold fixed. Expanding the warning window from 0.3 to
+\SI{1.2}{s} raises event $F_1$ from 0.368 to 0.552, whereas expanding the refractory
+period from 0.3 to \SI{1.2}{s} lowers it from 0.555 to 0.363 while reducing false events.
+The middle-density stratum is especially weak ($F_1=0.151$); the low-density stratum has
+no ground-truth events and is reported as zero support, not evidence of successful
+detection. Thus the nominal \SI{0.6}{s} endpoint is retained for comparability rather than
+selected from this descriptive sweep.
+
+\begin{table*}[t]
 \centering
-\caption{Five-seed Kinetic-TopoGuard horizon sensitivity.}
-\label{tab:horizon}
-\begin{adjustbox}{width=\linewidth}
-\input{tables/generated/horizon_sweep_table.tex}
+\caption{Five-seed held-out sensitivity of one-to-one event accounting. The fitted
+Kinetic-TopoGuard model and validation-selected threshold remain fixed. Intervals and
+per-seed values are supplied in Supplementary Material S1.}
+\label{tab:event-protocol-sensitivity}
+\small
+\begin{adjustbox}{width=\textwidth}
+\input{tables/generated/event_protocol_sensitivity_table.tex}
 \end{adjustbox}
-\end{table}
+\end{table*}
 
-The equal-learner factorial in Table~\ref{tab:factorial} is deliberately stricter than a
-leave-one-feature-out ablation. It shows whether a source helps alone and in interaction
-with the other sources. The result is not uniformly favourable to topological features:
-the best source set depends on whether the objective is count MAE, sample risk, or event
-$F_1$. This limits the claim to complementary representation rather than universal
-dominance.
+The 20-seed equal-learner factorial in Table~\ref{tab:factorial} is deliberately stricter
+than a leave-one-feature-out ablation. Current-state ExtraTrees reaches event $F_1=0.514$;
+the full graph+topology+kinematic row reaches 0.471. The paired full-minus-current difference
+is $-0.0426$ (95\% CI [$-0.0617$,$-0.0232$], Holm-adjusted permutation $p=0.0148$), and
+false alerts increase by 1.98 events/minute (95\% CI [1.17, 2.79], adjusted $p=0.00874$).
+The richer row nevertheless improves Brier score by 0.0227 and expected calibration error
+by 0.0585, both with adjusted $p<0.004$. The benchmark therefore exposes a calibration--event
+decision disagreement rather than topological or kinematic superiority.
 
 \begin{table}[t]
 \centering
-\caption{Full $2^3$ graph/topology/kinematic factorial; current-state context and learner
-are fixed in every row.}
+\caption{Twenty-seed full $2^3$ graph/topology/kinematic factorial; current-state context
+and the ExtraTrees learner are fixed in every row.}
 \label{tab:factorial}
 \begin{adjustbox}{width=\linewidth}
 \input{tables/generated/factorial_ablation_table.tex}
@@ -449,17 +631,8 @@ predictions are both archived so that clipping cannot silently create the report
 The counterfactual graphs contain five, two, and four connected-to-fragmented transitions
 at the three radii, respectively. All three models obtain zero event recall and event
 $F_1$ under their frozen thresholds. Low count MAE and high fragmented-sample $F_1$ must
-therefore not be read as successful early warning on this trace.
-
-\begin{table*}[t]
-\centering
-\caption{Frozen simulation-to-forestry-motion transfer. Link labels are counterfactual
-radius graphs, not measured radio.}
-\label{tab:forestry}
-\begin{adjustbox}{width=\textwidth}
-\input{tables/generated/external_metrics_table.tex}
-\end{adjustbox}
-\end{table*}
+therefore not be read as successful early warning on this trace. Detailed per-radius
+results are retained in Supplementary Material S1.
 
 The AERPAW LTE result is strong under chronological holdout: $F_1$ rises from 0.828 to
 0.961 on Dataset 22 and from 0.679 to 0.980 on Dataset 23. Throughput is different. The
@@ -467,51 +640,34 @@ random forest reduces MAE on the final-30\% split but produces a strongly negati
 on the first-half-to-second-half split it is worse than the training-mean baseline.
 Together with lag-1 autocorrelation above 0.98, this is negative evidence against the
 earlier optimistic throughput claim. AERPAW therefore supports cellular link-state
-transfer, not robust throughput prediction or inter-UAV FANET validation.
-
-\begin{table}[t]
-\centering
-\caption{Chronological AERPAW cellular results.}
-\label{tab:aerpaw}
-\begin{adjustbox}{width=\linewidth}
-\input{tables/generated/aerpaw_cellular_table.tex}
-\end{adjustbox}
-\end{table}
+transfer, not robust throughput prediction or inter-UAV FANET validation. Split-specific
+metrics are supplied in Supplementary Material S1.
 
 The measured \SI{60}{GHz} logistic model improves held-out long-distance link $F_1$ from
-0.731 to 0.923 and PR-AUC to 0.985. The forestry topology values in
-Table~\ref{tab:mmwave} are reported only as transported sensitivities. Primary rows remain
-within measured distance support and use the same SNR-plus-received-power definition as
-the held-out link test.
+0.731 to 0.923 and PR-AUC to 0.985. The forestry topology values in Supplementary Material
+S1 are reported only as transported sensitivities. Primary rows remain within measured
+distance support and use the same SNR-plus-received-power definition as the held-out link
+test.
 
-\begin{table}[t]
-\centering
-\caption{Measured peer-link test and in-support transported forestry sensitivity.
-For link rows, estimates A/B are baseline/model; for sensitivity rows they are expected
-$\beta_0$/fragmentation probability.}
-\label{tab:mmwave}
-\begin{adjustbox}{width=\linewidth}
-\input{tables/generated/uav_to_uav_mmwave_table.tex}
-\end{adjustbox}
-\end{table}
+MILUV provides simultaneous measured motion and inter-robot UWB topology for three flying
+vehicles, but only one compatible sequence and one or two connected-to-fragmented events
+per threshold. It is therefore used as a sparse cross-domain stress test rather than
+strong external validation. The original whole-sequence frozen sensitivity in
+Supplementary Material S1 is retained as the primary zero-shot artefact and is not mixed with
+adaptation. At the primary \SI{-90}{dBm} threshold, Kinetic-TopoGuard has count MAE 0.045
+but event $F_1=0.08$; shallow machine learning reaches event $F_1=0.40$ while its count
+MAE exceeds 1.28. These are measured UWB topology-event outcomes, not outdoor range,
+packet delivery, or routing evidence.
 
-MILUV closes a different gap by providing simultaneous measured motion and inter-robot
-UWB topology for three flying vehicles. Table~\ref{tab:miluv} reports frozen-model transfer
-at three first-path-power thresholds. The small indoor arena and sparse ranging schedule
-make this a difficult domain shift. Results are interpreted as UWB topology-event evidence,
-not as outdoor range or packet-routing performance. At the primary \SI{-90}{dBm}
-threshold, Kinetic-TopoGuard preserves a low count MAE of 0.045 but reaches only 0.08
-event $F_1$; shallow ML reaches 0.40 event $F_1$ while its count MAE exceeds 1.28. The
-metric disagreement is evidence against treating either transfer as deployment-ready.
-
-\begin{table*}[t]
-\centering
-\caption{Frozen transfer to measured MILUV three-UAV UWB topology.}
-\label{tab:miluv}
-\begin{adjustbox}{width=\textwidth}
-\input{tables/generated/miluv_validation_table.tex}
-\end{adjustbox}
-\end{table*}
+The secondary chronological study, detailed in Supplementary Material S1, uses an early prefix,
+a guard interval, and an independent later test segment from the one compatible sequence.
+Zero-shot frozen, chronological calibration, and few-shot prediction-head rows remain
+separately labelled. At the same primary threshold, every model and all three protocols
+obtain event $F_1=0$. Calibration improves some Brier scores but provides no event-$F_1$
+benefit; this is a negative transfer result, not an equivalence conclusion. A
+leave-one-scenario-out result is unavailable rather than synthesized from a single sequence.
+The repeated five-seed fits quantify algorithmic variability on this fixed trace; they do
+not increase the number of independent measured scenarios or fragmentation events.
 
 \begin{figure}[t]
 \centering
@@ -529,32 +685,14 @@ threshold, the exported constraint flag records that fact; the analysis does not
 the policy with a test-selected threshold. Both budgets are feasible in all 20 validation
 seeds. On test runs, the two-event policy attains event $F_1=0.421$ at 1.85 false
 events/minute; the one-event policy trades recall for precision, yielding event
-$F_1=0.351$ at 0.90 false events/minute.
+$F_1=0.351$ at 0.90 false events/minute. The complete operating-point table is in
+Supplementary Material S1.
 
-\begin{table}[t]
-\centering
-\caption{Validation-selected Kinetic-TopoGuard operating policies on held-out test runs.}
-\label{tab:operating}
-\begin{adjustbox}{width=\linewidth}
-\input{tables/generated/operating_point_table.tex}
-\end{adjustbox}
-\end{table}
-
-The packet-load sweep in Table~\ref{tab:packet} separates graph reachability from packet
-performance. At high offered load, contention-deadline drops dominate and all models
+The one-step packet-load sweep, detailed in Supplementary Material S1, separates graph
+reachability from packet performance. At high offered load, contention-deadline drops dominate and all models
 degrade. Kinetic-TopoGuard does not consistently outperform the shallow or persistence
 controller. The correct conclusion is that better warning scores do not automatically
 translate into better PDR under a constrained MAC and one-step control policy.
-
-\begin{table*}[t]
-\centering
-\caption{Five-seed SimPy packet results. Delay is computed from delivered-packet samples,
-not from an average of per-snapshot averages.}
-\label{tab:packet}
-\begin{adjustbox}{width=\textwidth}
-\input{tables/generated/packet_level_table.tex}
-\end{adjustbox}
-\end{table*}
 
 \begin{figure}[t]
 \centering
@@ -563,48 +701,128 @@ not from an average of per-snapshot averages.}
 \label{fig:packet}
 \end{figure}
 
-Table~\ref{tab:latency} times the complete host-side topology-to-warning path. Tail latency,
-not only model inference, is the relevant engineering quantity. The result cannot be
-extended to onboard execution because sensor transport, scheduling, and autopilot
-communication are outside the timed boundary. Mean host-loop time rises from
-\SI{15.81}{ms} at 10 UAVs to \SI{21.68}{ms} at 30 UAVs; P95 is
-\SI{25.68}{ms}--\SI{30.87}{ms}. The complete path therefore does not satisfy a
-\SI{20}{ms} tail-latency claim on this CPU, even though isolated model inference is faster.
+The complementary stateful closed-loop experiment carries relay position, reaction delay,
+action duration, and action cost across controller ticks. Six policies share identical
+mobility, radio, source--destination packet arrivals, and packet random seeds. Unlike the
+reachability-delivery proxy, Table~\ref{tab:closed-loop-packet} reports packet events from
+the SimPy queue, routing, contention, and deadline model. The drop accounting is exhaustive:
+delivery, no-route, queue-overflow, deadline, link-failure, and intervention-transition
+outcomes sum to generated packets. Link and transition losses are retained as separate
+columns but are zero in the primary protocol because no measured within-tick or handover
+failure probability is available. Across the paired five-seed comparisons, neither original
+Kinetic-TopoGuard nor Source-Gated Kinetic-TopoGuard satisfies the joint confidence-interval,
+multiplicity-adjusted paired-test, and action-cost rule for consistent PDR superiority.
+
+\begin{table*}[t]
+\centering
+\caption{Stateful closed-loop packet-event results across topology densities. Deadline
+success is conditional on a route existing at packet generation; latency quantiles use all
+delivered packets. Drop-rate columns use all generated packets.}
+\label{tab:closed-loop-packet}
+\begin{adjustbox}{width=\textwidth}
+\input{tables/generated/closed_loop_packet_table.tex}
+\end{adjustbox}
+\end{table*}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/generated/closed_loop_packet_tradeoff.pdf}
+\caption{Closed-loop packet delivery versus offered batch load and relay travel. Values are
+packet-event outcomes, not graph-reachability proxies.}
+\label{fig:closed-loop-packet}
+\end{figure}
+
+Table~\ref{tab:latency} times mutually exclusive stages of the host-side
+topology-to-warning path and reports their additive total. Tail latency, not only model
+inference, is the relevant engineering quantity. At 30 UAVs with default library threading,
+P95 is \SI{7.82}{ms} for FANET-TopoGNN and \SI{13.23}{ms} for Kinetic-TopoGuard,
+but \SI{44.52}{ms} for Current-state ExtraTrees and \SI{90.81}{ms} for the
+Source-Gated variant. Thus, this measurement supports neither a model-independent
+\SI{20}{ms} bound nor an onboard or sensor-to-actuator real-time claim. Sensor transport,
+operating-system scheduling outside the process, autopilot communication, and actuation
+remain outside the measured boundary. No Jetson hardware result is reported.
 
 \begin{table}[t]
 \centering
-\caption{Complete host-loop timing across five seeds.}
+\caption{Measured additive host-loop timing at 30 UAVs (30 timed iterations after five warm-ups).}
 \label{tab:latency}
 \begin{adjustbox}{width=\linewidth}
-\input{tables/generated/latency_table.tex}
+\input{tables/generated/runtime_table.tex}
 \end{adjustbox}
 \end{table}
 
-\subsection{Comparison with a predictive digital-twin acceptance bar}
+\section{Engineering implications and deployment boundaries}
 
-The bridge-monitoring case study of Jasinski et al.\ integrates a physical asset, measured
-sensors, a model-based representation, machine learning, and a validated information flow
-\cite{jasinski2026predictive}. The present work now matches several methodological
-strengths: explicit system architecture, measured-data checks, reproducible model
-evaluation, and an engineering decision layer. It does not match the physical integration
-bar. Its replay is generated from completed experiments and sends no command to a UAV.
-Calling it an offline replay preserves the distinction between predictive analytics and a
-bidirectional operational twin.
+The supported engineering decision is narrow: given an observed graph history, a frozen
+model can rank short-horizon fragmentation risk and issue a warning at an operating point
+selected on validation runs. The benchmark can then compare whether a simulated, bounded
+relay response is preferable to no intervention or to a reactive rule. It does not support
+autonomous flight control, route certification, field packet-delivery guarantees, transmit-
+power authorization, or safe separation decisions. In particular, none of the 360 paired
+closed-loop comparisons meets the predeclared joint packet-delivery and action-cost rule.
+
+Computation is similarly model-specific. On the measured host at 30 UAVs, default-thread
+P95 topology-to-decision latency ranges from \SI{7.82}{ms} for FANET-TopoGNN to
+\SI{90.81}{ms} for Source-Gated Kinetic-TopoGuard. The serialized Source-Gated artefact is
+27,021,053 bytes, compared with 191,061 bytes for Current-state ExtraTrees and 121,272 bytes
+for Kinetic-TopoGuard. These local, trusted-artifact measurements establish neither a
+Jetson benchmark nor a sensor-to-actuator deadline. Edge deployment would additionally
+require profiling the chosen airframe computer, radio and telemetry ingestion, scheduling,
+power draw, failsafe communication, and actuator response.
+
+Field validation requires synchronized multi-UAV motion, inter-UAV radio, medium-access,
+routing, packet, onboard timing, energy, and actuation observations under a preregistered
+intervention protocol. The included interactive interface is only a replay of generated
+and transported evidence; it is not part of the engineering-validation claim.
+
+\section{Discussion}
+
+The central result is not that more sources are always harmful, but that representation
+richness and engineering utility are different objectives. Current-state ExtraTrees is
+strong because the short forecast horizon, component history, component change, node count,
+and active radius already encode much of the immediately relevant state. Adding correlated
+or noisy summaries increases the ways in which validation-selected probability quality can
+diverge from one-to-one event precision and false-alert burden. The locked and factorial
+results show that better calibration alone is insufficient evidence of a better warning.
+
+Feature contributions are conditional rather than universal. Run-block permutation assigns
+a positive event contribution to graph summaries in both audited models, while persistence-
+image and speed intervals for the Source-Gated model include zero. Topological and motion
+descriptors may be useful when multi-scale structure or projected link closure is not
+recoverable from recent state, but the present seeds do not support that generalization.
+The residual audit gives the same warning for count regression: validation usually selects
+the physical persistence anchor, so the branch is an audited fallback rather than a central
+forecasting advance.
+
+The measured-data layers also explain why simulation ranking cannot be transferred by
+assertion. Cellular connection state, peer-link viability, field motion, and indoor UWB
+topology observe different parts of the causal chain. Chronological MILUV calibration
+improves probability errors without recovering event detection, which motivates explicit
+domain calibration while showing that calibration cannot manufacture missing event signal.
+Likewise, closed-loop packet outcomes depend on traffic, queues, deadlines, action delay,
+and movement cost, not only warning $F_1$. Retaining these disagreements and negative results
+turns the package into a falsifiable benchmark for future methods rather than a selected
+demonstration of one model.
 
 \section{Limitations}
 
-Four boundaries remain. First, the primary training domain is simulated even though radio
-errors are temporally correlated and hardware offsets persist within runs. Second, MILUV
-is indoor UWB ranging quality and contains only three UAVs; it is not outdoor FANET IP
-traffic. Third, the SimPy model has a single collision domain and simplified routing,
-queues, and deadlines. Fourth, the relay response is a one-step counterfactual with speed,
-acceleration, and \SI{3}{dB} link-budget limits, not a closed-loop flight experiment.
+No available dataset jointly provides synchronized outdoor multi-UAV motion, inter-UAV
+radio frequency measurements, medium-access and routing state, packet delivery, onboard
+timing, and physical actuation. The primary training domain is therefore simulated, and a
+simulation-to-field gap remains despite temporally correlated radio errors and per-run
+hardware offsets. The real-data sources contain small UAV counts and partial modalities:
+MILUV has three indoor robots with UWB ranging quality, forestry supplies motion without
+radio labels, AERPAW is UAV-to-infrastructure cellular, and WiNES supplies peer-link radio
+without a matching network controller.
 
-Consequently, no result establishes field PDR, energy use, regulatory feasibility,
-multi-channel interference, or safe autonomous actuation. The next confirmatory study
-requires synchronized outdoor peer-to-peer packet traces, onboard timing and power
-measurement, and a preregistered closed-loop intervention protocol. These are limitations,
-not claims closed by prose.
+The reported latency is a host-process loop, not sensor-to-autopilot or end-to-end vehicle
+latency, and no field deployment or embedded-hardware benchmark was performed. The radio
+model abstracts shadowing, fading, and correlation; the traffic model uses a simplified
+single collision domain, routing, queues, retransmission outcomes, and deadlines. The
+stateful relay remains a simulated intervention with fixed speed, acceleration, reaction,
+duration, and link-budget constraints. Consequently, no result establishes outdoor IP
+packet delivery, energy consumption, regulatory feasibility, multi-channel interference,
+safe autonomous actuation, or deployment readiness.
 
 \section{Reproducibility}
 
@@ -616,22 +834,22 @@ backend provenance, event columns, validation/test separation, horizon and facto
 grids, packet loads, latency stages, support-aware \SI{60}{GHz} scope, MILUV transfer,
 PDF page counts, anonymization, ZIP CRC, and package freshness.
 
-The included dashboard is titled ``Offline FANET Predictive-Twin Replay.'' It binds only
-to generated CSV/JSON evidence, is interactive for operating-policy comparison, and
-contains an explicit notice that it is not live, bidirectional, or hardware connected.
-This interface is a reproducibility aid rather than an independent experiment.
+The included interactive evidence replay binds only to generated CSV/JSON outputs and
+supports operating-policy comparison. It is a reproducibility aid rather than an
+independent experiment or hardware-connected system.
 
 \section{Conclusion}
 
-Kinetic-TopoGuard formulates FANET monitoring as future component-count and
-fragmentation-event forecasting. The revised evaluation replaces ambiguous topology-change
-alerts with connected-to-fragmented events, uses one-to-one matching, selects thresholds
-only on validation runs, and adds temporal radio, physical relay limits, factorial,
-horizon, packet, latency, and real multi-UAV UWB checks. The evidence supports a
-reproducible short-horizon warning method, but it also shows where claims fail: topological
-features do not dominate every objective, AERPAW throughput transfer is not robust, and
-better warning scores do not guarantee higher packet delivery. These negative results
-define the appropriate boundary for follow-on hardware validation.
+This study establishes a reproducible benchmark and cross-domain stress test for
+fragmentation-event forecasting in unmanned aerial vehicle networks. Under the locked
+primary test, Source-Gated Kinetic-TopoGuard does not show supported event-$F_1$ superiority
+over Current-state ExtraTrees and produces more false alerts. The equal-learner factorial,
+residual audit, measured-topology transfer, and closed-loop packet study independently show
+that richer features, better calibration, or higher warning scores do not by themselves
+establish engineering benefit. The supported contribution is therefore the leakage-
+controlled evaluation framework, complete baseline accounting, explicit claim boundaries,
+and reproducible negative evidence. Outdoor synchronized radio, packet, onboard-timing,
+and actuation validation remains future work rather than a deployment result.
 
 \ifanonymous
 \section*{Data and code availability}
@@ -641,23 +859,29 @@ archive metadata is withheld from the anonymous manuscript.
 \else
 \section*{Data and code availability}
 Code and derived artefacts are available at
-\url{https://github.com/ercanerkalkan/FANET-TopoGNN}. Third-party datasets retain their
+\url{https://github.com/ErcanErkalkan/FANET-TopoGNN}; the cited Zenodo record identifies
+the archived \texttt{v0.1.0-q1-compact} release, not the current working-tree version
+\cite{fanetTopoGNNSoftware}. Third-party datasets retain their
 original licences and DOI records.
 \fi
 
+\ifanonymous
+\else
 \section*{CRediT authorship contribution statement}
 Ercan Erkalkan: Conceptualization, Methodology, Software, Validation, Formal analysis,
 Investigation, Data curation, Visualization, Writing -- original draft, Writing -- review
 and editing.
 
 \section*{Declaration of competing interest}
-The author declares no known competing financial interests or personal relationships that
-could have appeared to influence the work.
+The author declares that there are no known competing financial interests or personal
+relationships that could have influenced the work reported in this article.
 
 \section*{Declaration of generative AI and AI-assisted technologies}
-Generative AI tools were used for language editing and software-development assistance.
-The author verified the code, executed experiments, inspected generated artefacts, and
-retains responsibility for the manuscript.
+During manuscript preparation, the author used OpenAI GPT-based tooling for language
+refinement, software-development assistance, and local reproducibility cross-checks. The
+author reviewed and verified all resulting manuscript and code changes, executed the
+reported analyses, and takes responsibility for the submitted work.
+\fi
 
 \bibliographystyle{elsarticle-num}
 \bibliography{cas-refs}

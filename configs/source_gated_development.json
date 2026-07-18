@@ -1,0 +1,25 @@
+{
+  "extends": "paper_like_submission.json",
+  "experiment_name": "source_gated_development",
+  "output_dir": "outputs/source_gated_development",
+  "training": {
+    "seed_list": [7, 17, 27, 37, 47],
+    "selected_models": [
+      "current_state_persistence",
+      "kinetic_topoguard",
+      "source_gated_kinetic_topoguard"
+    ],
+    "source_gated": {
+      "n_splits": 5,
+      "n_estimators": 64,
+      "min_samples_leaf_grid": [2, 5],
+      "ridge_alpha_grid": [0.1, 1.0],
+      "logistic_c_grid": [0.1, 1.0],
+      "calibration_options": ["none", "sigmoid", "isotonic"],
+      "threshold_grid": [
+        0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50,
+        0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95
+      ]
+    }
+  }
+}

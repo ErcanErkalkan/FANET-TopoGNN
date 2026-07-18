@@ -1,17 +1,24 @@
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 from pathlib import Path
 import re
 import shutil
 import subprocess
+import sys
 import zipfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
-STAGING = ROOT / ".anonymous_supplementary_staging"
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from fanet.provenance import sha256_file
+from scripts.scan_anonymity import format_failures, scan_paths
+
+
+STAGING = ROOT / f".anonymous_supplementary_staging_{os.getpid()}"
 FINAL = ROOT / "anonymous_supplementary"
 BACKUP = ROOT / ".anonymous_supplementary_backup"
 ZIP_PATH = ROOT / "anonymous_supplementary.zip"
@@ -68,30 +75,6 @@ SCRIPT_FILES = (
     "generate_evidence_tables.py",
     "audit_submission_readiness.py",
     "build_anonymous_supplementary.py",
-)
-
-TEXT_SUFFIXES = {
-    ".cfg",
-    ".csv",
-    ".json",
-    ".md",
-    ".ps1",
-    ".py",
-    ".tex",
-    ".toml",
-    ".txt",
-    ".yml",
-    ".yaml",
-}
-
-IDENTITY_PATTERNS = (
-    re.compile(r"ercan", re.IGNORECASE),
-    re.compile(r"erkalkan", re.IGNORECASE),
-    re.compile(r"marmara", re.IGNORECASE),
-    re.compile(r"20226053", re.IGNORECASE),
-    re.compile(r"0000-0001-9259-7112", re.IGNORECASE),
-    re.compile(r"mehmet\s+gen(?:c|ç)", re.IGNORECASE),
-    re.compile(r"kartal", re.IGNORECASE),
 )
 
 ANONYMOUS_LICENSE = """Academic License Agreement
@@ -258,8 +241,9 @@ def _validate_evidence() -> None:
             "outputs/packet_level_controller/packet_metrics_summary.csv",
         ],
         "latency benchmark": [
-            "outputs/end_to_end_latency/latency_protocol.json",
-            "outputs/end_to_end_latency/latency_summary.csv",
+            "outputs/edge_runtime_benchmark/protocol.json",
+            "outputs/edge_runtime_benchmark/latency_summary.csv",
+            "outputs/edge_runtime_benchmark/model_sizes.csv",
         ],
     }
     for label, relative_paths in experiment_outputs.items():
@@ -311,38 +295,21 @@ def _validate_evidence() -> None:
         raise RuntimeError("Neural seed-extension evidence is missing: " + ", ".join(str(path) for path in missing_neural))
 
 
-def _scan_text(path: Path, text: str) -> list[str]:
-    findings: list[str] = []
-    for pattern in IDENTITY_PATTERNS:
-        if pattern.search(text):
-            findings.append(f"{path.relative_to(STAGING).as_posix()}: {pattern.pattern}")
-    return findings
-
-
 def _validate_anonymity() -> None:
-    findings: list[str] = []
     forbidden_suffixes = {".bag", ".part", ".pyc", ".pyo", ".aux", ".log"}
+    forbidden_files: list[str] = []
     for path in sorted(STAGING.rglob("*")):
         if not path.is_file():
             continue
         if path.suffix.lower() in forbidden_suffixes:
-            findings.append(f"forbidden file: {path.relative_to(STAGING).as_posix()}")
-        if path.suffix.lower() in TEXT_SUFFIXES:
-            findings.extend(_scan_text(path, path.read_text(encoding="utf-8", errors="replace")))
+            forbidden_files.append(f"forbidden file: {path.relative_to(STAGING).as_posix()}")
 
     pdf = STAGING / "paper" / "main_anonymized.pdf"
-    pdftotext = shutil.which("pdftotext")
-    if pdftotext is None:
-        raise RuntimeError("pdftotext is required for the anonymous PDF identity scan")
-    result = subprocess.run(
-        [pdftotext, str(pdf), "-"],
-        check=True,
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
+    report = scan_paths(
+        [STAGING],
+        root=STAGING,
+        config_path=ROOT / "scripts" / "anonymity_patterns.json",
     )
-    findings.extend(_scan_text(pdf, result.stdout))
 
     pdfinfo = shutil.which("pdfinfo")
     if pdfinfo is None:
@@ -354,8 +321,9 @@ def _validate_anonymity() -> None:
     if match is None or int(match.group(1)) > 55:
         raise RuntimeError(f"Anonymous single-column manuscript must remain at or below 55 pages; pdfinfo was:\n{info}")
 
-    if findings:
-        raise RuntimeError("Anonymous package validation failed:\n" + "\n".join(findings))
+    failures = forbidden_files + ([format_failures(report)] if report["status"] == "fail" else [])
+    if failures:
+        raise RuntimeError("Anonymous package validation failed:\n" + "\n".join(failures))
 
 
 def _write_manifest() -> None:
@@ -363,7 +331,7 @@ def _write_manifest() -> None:
     for path in sorted(STAGING.rglob("*")):
         if not path.is_file() or path.name == "PACKAGE_MANIFEST.txt":
             continue
-        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        digest = sha256_file(path)
         rows.append(f"{digest}  {path.relative_to(STAGING).as_posix()}")
     (STAGING / "PACKAGE_MANIFEST.txt").write_text("\n".join(rows) + "\n", encoding="utf-8")
 
@@ -421,6 +389,11 @@ def main() -> None:
     _copy_tree("outputs/factorial_feature_ablation")
     _copy_tree("outputs/packet_level_controller")
     _copy_tree("outputs/end_to_end_latency")
+    for runtime_name in [
+        "latency_samples.csv", "latency_summary.csv", "memory_summary.csv",
+        "model_sizes.csv", "environment.json", "protocol.json", "runtime_scaling.pdf",
+    ]:
+        _copy_file(f"outputs/edge_runtime_benchmark/{runtime_name}")
     _copy_tree("outputs/operating_point")
     _copy_tree("outputs/digital_twin_dashboard")
     _copy_tree("outputs/publication_neural_extension")

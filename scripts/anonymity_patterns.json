@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "patterns": [
+    {
+      "id": "author_given_name",
+      "description": "Author given name",
+      "regex": "\\bErcan\\b"
+    },
+    {
+      "id": "author_family_name",
+      "description": "Author family name",
+      "regex": "\\bErkalkan\\b"
+    },
+    {
+      "id": "author_email_local_part",
+      "description": "Author email identifier",
+      "regex": "ercan[.]erkalkan"
+    },
+    {
+      "id": "institution_english",
+      "description": "Author institution in English",
+      "regex": "Marmara\\s+University"
+    },
+    {
+      "id": "institution_turkish",
+      "description": "Author institution in Turkish",
+      "regex": "Marmara\\s+[ÜU]niversitesi"
+    },
+    {
+      "id": "author_orcid",
+      "description": "Author ORCID",
+      "regex": "0000-0001-9259-7112"
+    },
+    {
+      "id": "personal_github_username",
+      "description": "Personal GitHub username",
+      "regex": "\\bErcanErkalkan\\b"
+    },
+    {
+      "id": "institution_address",
+      "description": "Author institution street or campus address",
+      "regex": "Mehmet\\s+Gen(?:c|ç|\\\\c\\{c\\})\\s+Campus|34865\\s+Kartal(?:,|\\s)+Istanbul"
+    },
+    {
+      "id": "public_repository",
+      "description": "Author-identifying public source repository",
+      "regex": "github[.]com/ErcanErkalkan/FANET-TopoGNN"
+    },
+    {
+      "id": "software_doi",
+      "description": "Author-identifying public software archive DOI",
+      "regex": "10[.]5281/zenodo[.]20226053"
+    },
+    {
+      "id": "credit_section",
+      "description": "CRediT section must be absent from anonymous artifacts",
+      "regex": "CRediT\\s+authorship\\s+contribution\\s+statement"
+    }
+  ],
+  "allowlist": []
+}
