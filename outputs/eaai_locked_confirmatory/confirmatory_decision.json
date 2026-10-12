@@ -1,0 +1,16 @@
+{
+  "dry_run": false,
+  "full_confirmatory_complete": true,
+  "primary_hypothesis": "Source-Gated Kinetic-TopoGuard versus Current-state ExtraTrees on event F1.",
+  "primary_metric": "Alert_Event_F1",
+  "seed_pairs": 20,
+  "paired_mean_difference": -0.0214999937064178,
+  "bootstrap_ci95": [
+    -0.041747719821714706,
+    -0.0019813046298815472
+  ],
+  "paired_permutation_pvalue": 0.05149948500514995,
+  "statistically_supported_superiority": false,
+  "decision": "no_supported_superiority",
+  "model_or_hyperparameter_changes_after_lock": false
+}

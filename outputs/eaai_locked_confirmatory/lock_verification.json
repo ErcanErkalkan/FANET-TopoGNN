@@ -1,0 +1,8 @@
+{
+  "valid": true,
+  "verified_at_utc": "2026-07-14T18:38:26.421742+00:00",
+  "config_sha256": "b6f0a819545634af3ab7d1b31f65c20ba6bc3949763e5966c1eec95b7de21e42",
+  "resolved_config_sha256": "bd80337024a679a5992f781acfe8a3b5d1f84b0bbc9ead333a9bbcf180804474",
+  "lock_sha256": "1dd85aef96e1e8478fef20b5e176270749f9e5e100f9175e9a4fe0ae4af56736",
+  "errors": []
+}

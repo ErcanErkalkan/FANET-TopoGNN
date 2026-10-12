@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "created_at_utc": "2026-07-14T19:29:15.291801+00:00",
+  "runtime_seconds": 3048.81295209995,
+  "dry_run": false,
+  "config": "configs/eaai_locked_confirmatory.json",
+  "config_sha256": "b6f0a819545634af3ab7d1b31f65c20ba6bc3949763e5966c1eec95b7de21e42",
+  "lock": "configs/eaai_locked_confirmatory.lock.json",
+  "lock_sha256": "1dd85aef96e1e8478fef20b5e176270749f9e5e100f9175e9a4fe0ae4af56736",
+  "hypothesis_registered_before_test": "Source-Gated Kinetic-TopoGuard versus Current-state ExtraTrees on event F1.",
+  "primary_metric": "Alert_Event_F1",
+  "primary_model": "Source-Gated Kinetic-TopoGuard",
+  "primary_comparator": "Current-state ExtraTrees",
+  "evaluation_models": [
+    "Current-state persistence baseline",
+    "Current-state ExtraTrees",
+    "Kinetic-TopoGuard",
+    "Source-Gated Kinetic-TopoGuard",
+    "Shallow ML"
+  ],
+  "seed_list": [
+    792544334,
+    987416920,
+    1921516227,
+    553942641,
+    1095639595,
+    1556154620,
+    1925325213,
+    1799036037,
+    320532424,
+    1202194162,
+    1496187211,
+    571040038,
+    288752871,
+    129980784,
+    782306477,
+    966785030,
+    378748553,
+    1849599976,
+    1888828831,
+    1470515591
+  ],
+  "shared_simulation_realization_within_seed": true,
+  "test_role": "locked evaluation exactly once per seed/model",
+  "selection_partitions": {
+    "base/meta": "training OOF",
+    "hyperparameters": "frozen",
+    "calibration": "frozen isotonic",
+    "threshold": "validation only"
+  },
+  "parallel_workers": 5,
+  "package_versions": {
+    "python": "3.14.3",
+    "numpy": "2.4.3",
+    "pandas": "3.0.1",
+    "scipy": "1.17.1",
+    "scikit-learn": "1.8.0",
+    "matplotlib": "3.10.8",
+    "simpy": "4.1.2",
+    "torch": "2.11.0",
+    "torch-geometric": null
+  },
+  "hardware": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 165 Stepping 3, GenuineIntel",
+    "logical_cpu_count": 12
+  },
+  "git": {
+    "commit": "6f56581b0606c913c6a74d74bf2cc23b180ac1cd",
+    "dirty": true
+  },
+  "output_dir": "outputs/eaai_locked_confirmatory",
+  "artifacts": [
+    {
+      "relative_path": "outputs/eaai_locked_confirmatory/per_seed_metrics.csv",
+      "bytes": 24386,
+      "sha256": "cacb7bede2a3881f792efbdcea488ac0441339011ec7a83868719d03f697c398"
+    },
+    {
+      "relative_path": "outputs/eaai_locked_confirmatory/aggregate_metrics.csv",
+      "bytes": 4156,
+      "sha256": "51e8737f9e4b19b1a108777f2dd5767cbb47369dc426c45732f81877a91d858a"
+    },
+    {
+      "relative_path": "outputs/eaai_locked_confirmatory/paired_tests.csv",
+      "bytes": 2866,
+      "sha256": "c2a422d93db402b4539555690952ce476122be96eb0c3b919544ff4d9a3f1ca8"
+    },
+    {
+      "relative_path": "outputs/eaai_locked_confirmatory/lock_verification.json",
+      "bytes": 367,
+      "sha256": "a24769082f5e1fdfae713a34f7bfe0738d41952cc30972a4dc570e794dc319a1"
+    },
+    {
+      "relative_path": "outputs/eaai_locked_confirmatory/confirmatory_decision.json",
+      "bytes": 563,
+      "sha256": "e244e706fe6b03570cb7992adbafca4b5380a29b8abe70b4c022f1baaa3805b3"
+    }
+  ]
+}
