@@ -1,0 +1,33 @@
+{
+  "status": "complete",
+  "experiment_name": "revision_neural_20seed_full",
+  "n_seeds": 20,
+  "n_models_per_seed": 14,
+  "n_neural_models_per_seed": 9,
+  "neural_backend_required": "pytorch",
+  "partial_results_allowed_for_claims": false,
+  "seed_generation_domain": "FANET-TopoGNN:REVISION:neural-full-20seed:v1",
+  "seed_list": [
+    1349588215,
+    1604581592,
+    566450034,
+    131582465,
+    431637441,
+    574105192,
+    1164323037,
+    1665392866,
+    496946731,
+    1367245176,
+    1525494531,
+    1476743891,
+    856605794,
+    327636108,
+    1526341346,
+    162169430,
+    1424616558,
+    488929920,
+    2004818560,
+    1630690480
+  ],
+  "claim_boundary": "This is a post-review fairness extension, not a replacement for or rerun of the original locked EAAI confirmatory test. The original locked evidence remains immutable."
+}

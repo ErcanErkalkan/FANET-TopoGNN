@@ -1,0 +1,51 @@
+{
+  "experiment_name": "revision_event_protocol_20seed_pending",
+  "base_config": "configs/publication_neural_full_5seed.json",
+  "output_dir": "outputs/revision_event_protocol_20seed",
+  "protocol_status": "complete",
+  "seed_source": "configs/revision_neural_20seed_full.json",
+  "models": [
+    "current_state_extratrees",
+    "kinetic_topoguard",
+    "source_gated_kinetic_topoguard"
+  ],
+  "warning_window_steps": [
+    3,
+    6,
+    12
+  ],
+  "cooldown_steps": [
+    3,
+    6,
+    12
+  ],
+  "threshold_policy": "For each model and seed, the validation-selected threshold is frozen before every test sensitivity calculation and is never reselected for a sensitivity level.",
+  "event_density_strata": "Within-seed tertiles of measured connected-to-fragmented event rate on the fixed test runs.",
+  "interpretation": "Descriptive post-review event-scoring robustness analysis, not part of the original locked confirmatory family.",
+  "completion_rule": "All three models must cover all sensitivity levels for all 20 revision seeds; partial results must not be cited.",
+  "seed_list": [
+    1349588215,
+    1604581592,
+    566450034,
+    131582465,
+    431637441,
+    574105192,
+    1164323037,
+    1665392866,
+    496946731,
+    1367245176,
+    1525494531,
+    1476743891,
+    856605794,
+    327636108,
+    1526341346,
+    162169430,
+    1424616558,
+    488929920,
+    2004818560,
+    1630690480
+  ],
+  "n_seeds": 20,
+  "base_forecast_horizon_steps": 6,
+  "test_role": "descriptive post-review scoring robustness; thresholds frozen within each model/seed"
+}
