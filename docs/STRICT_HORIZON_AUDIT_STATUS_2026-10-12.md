@@ -4,7 +4,7 @@ Historical R0-R5 output completeness does not imply scientific clearance after f
 
 R1 strict-v3: 20 seeds, six horizons, three motion projections (360 rows), 2880/2880 historical numeric replay checks PASS.
 
-R2 strict: only 10/600 model–seed–horizon records independently verified at this snapshot (one seed with five models at h=2 and h=6); full study NOT complete. Reduced pilot scores are not publication results.
+R2 strict: 15/600 model–seed–horizon records independently verified at this snapshot (one seed with five models at h=2, h=4 and h=6; v2 archived h=6, new v3 h=2/h=4); full study NOT complete. Reduced pilot scores are not publication results.
 
 R3 and R4 require event-label/full-horizon re-evaluation or retraining. R5 closed-loop policies use trained forecasts; dependency review is OPEN. Simulated PDR is not field/embedded PDR. The original locked EAAI comparison did not support event-F1 superiority.
 
