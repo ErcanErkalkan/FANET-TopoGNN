@@ -1,0 +1,50 @@
+{
+  "experiment_name": "revision_horizon_20seed_pending",
+  "base_config": "configs/publication_neural_full_5seed.json",
+  "output_dir": "outputs/revision_horizon_20seed",
+  "protocol_status": "complete",
+  "seed_source": "configs/revision_neural_20seed_full.json",
+  "horizon_steps": [
+    2,
+    4,
+    6,
+    10,
+    15,
+    20
+  ],
+  "models": [
+    "current_state_persistence",
+    "current_state_extratrees",
+    "kinetic_topoguard",
+    "source_gated_kinetic_topoguard",
+    "shallow"
+  ],
+  "selection_boundary": "Each horizon uses training/validation only for model and threshold selection; the disjoint test split is used only for reporting.",
+  "interpretation": "Post-review descriptive robustness analysis. It does not replace or reopen the original locked EAAI confirmatory test.",
+  "completion_rule": "All five models must be present on all six horizons for all 20 revision seeds. Partial results must not be cited.",
+  "seed_list": [
+    1349588215,
+    1604581592,
+    566450034,
+    131582465,
+    431637441,
+    574105192,
+    1164323037,
+    1665392866,
+    496946731,
+    1367245176,
+    1525494531,
+    1476743891,
+    856605794,
+    327636108,
+    1526341346,
+    162169430,
+    1424616558,
+    488929920,
+    2004818560,
+    1630690480
+  ],
+  "n_seeds": 20,
+  "dt_seconds": 0.1,
+  "test_role": "descriptive post-review robustness; no replacement of original locked test"
+}

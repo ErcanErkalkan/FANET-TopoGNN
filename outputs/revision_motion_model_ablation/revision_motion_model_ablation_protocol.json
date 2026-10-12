@@ -1,0 +1,48 @@
+{
+  "experiment_name": "revision_motion_model_ablation_pending",
+  "base_config": "configs/publication_compact.json",
+  "output_dir": "outputs/revision_motion_model_ablation",
+  "protocol_status": "complete",
+  "seed_source": "configs/revision_neural_20seed_full.json",
+  "horizon_steps": [
+    2,
+    4,
+    6,
+    10,
+    15,
+    20
+  ],
+  "projection_modes": [
+    "no_motion",
+    "constant_velocity",
+    "constant_acceleration"
+  ],
+  "constant_acceleration_definition": "a_t=(v_t-v_{t-1})/dt; p_hat(t+h)=p_t+v_t*tau+0.5*a_t*tau^2. No acceleration clipping or outcome-based tuning is used.",
+  "common_support_rule": "A row is evaluated only when both the immediately previous current snapshot and the target future snapshot are available in the same held-out run, so all three projection modes use identical rows.",
+  "geometry_rule": "Projected and actual future geometric graphs both use the current snapshot radius, matching the kinematic feature construction. Physical-radio frag_at_horizon is reported only as a proxy endpoint and is not treated as geometric ground truth.",
+  "interpretation": "Post-review motion-assumption sensitivity. It tests whether constant acceleration materially improves geometric/topological projection over constant velocity; it does not claim a new forecasting model.",
+  "completion_rule": "All three modes must cover all six horizons for all 20 revision seeds on common support.",
+  "seed_list": [
+    1349588215,
+    1604581592,
+    566450034,
+    131582465,
+    431637441,
+    574105192,
+    1164323037,
+    1665392866,
+    496946731,
+    1367245176,
+    1525494531,
+    1476743891,
+    856605794,
+    327636108,
+    1526341346,
+    162169430,
+    1424616558,
+    488929920,
+    2004818560,
+    1630690480
+  ],
+  "n_seeds": 20
+}
