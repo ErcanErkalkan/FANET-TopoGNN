@@ -2,7 +2,7 @@
 
 **Canonical Git branch:** `main`. All new public experiment code and published result snapshots are consolidated here. Do not use or develop on the historical `agent/eaai-submission-refresh` branch.
 
-**Historical R1–R5 outputs:** Complete under their original protocols, but NOT all cleared under the newly identified terminal-label full-horizon correction. **R1 strict-v3 PASS (360/360 rows, 2,880/2,880 numerical replay checks); R2 corrected full configuration currently 15/600 model–seed–horizon records (one seed, three horizons); R3/R4/R5 strict-label dependencies OPEN.** These simulations are descriptive, not independent confirmatory or field PDR validation. See [`strict-horizon audit status`](docs/STRICT_HORIZON_AUDIT_STATUS_2026-10-12.md).
+**Historical R1–R5 outputs:** Complete under their original protocols, but NOT all cleared under the newly identified terminal-label full-horizon correction. **R1 strict-v3 PASS (360/360 rows, 2,880/2,880 numerical replay checks); R2 strict full configuration: 15/600 unique v2+v3 keys, but homogeneous strict-v3 ONLY 11/600 (589 missing; h=6 Persistence-only); R3 scoring helper 6 synthetic tests PASS but 540 R3 rows NOT recomputed; R4/R5 strict-label dependencies OPEN.** These simulations are descriptive, not independent confirmatory or field PDR validation. See [`strict-horizon audit status`](docs/STRICT_HORIZON_AUDIT_STATUS_2026-10-12.md).
 
 **Locked primary EAAI decision:** no supported event-F1 superiority over ExtraTrees. The original locked evidence must not be overwritten by R1–R5 results.
 
