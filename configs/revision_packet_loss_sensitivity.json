@@ -1,0 +1,31 @@
+{
+  "experiment_name": "revision_packet_loss_sensitivity_pending",
+  "base_config": "configs/closed_loop_controller.json",
+  "output_dir": "outputs/revision_packet_loss_sensitivity",
+  "protocol_status": "prepared_not_executed",
+  "seed_source": "configs/revision_neural_20seed_full.json",
+  "seed_count": 10,
+  "seed_selection_rule": "Use the first 10 seeds of the frozen domain-separated revision seed stream; selection is fixed before results are observed.",
+  "scenario_interpretation": "The probabilities are dimensionless engineering stress settings, not field-calibrated UAV packet-loss or handover-loss rates.",
+  "scenarios": [
+    {"name": "baseline", "link_failure_probability_per_attempt": 0.00, "intervention_transition_failure_probability_per_attempt": 0.00, "max_retransmissions": 0},
+    {"name": "link_0p01", "link_failure_probability_per_attempt": 0.01, "intervention_transition_failure_probability_per_attempt": 0.00, "max_retransmissions": 0},
+    {"name": "link_0p05", "link_failure_probability_per_attempt": 0.05, "intervention_transition_failure_probability_per_attempt": 0.00, "max_retransmissions": 0},
+    {"name": "transition_0p05", "link_failure_probability_per_attempt": 0.00, "intervention_transition_failure_probability_per_attempt": 0.05, "max_retransmissions": 0},
+    {"name": "transition_0p10", "link_failure_probability_per_attempt": 0.00, "intervention_transition_failure_probability_per_attempt": 0.10, "max_retransmissions": 0},
+    {"name": "combined_low_r1", "link_failure_probability_per_attempt": 0.01, "intervention_transition_failure_probability_per_attempt": 0.05, "max_retransmissions": 1},
+    {"name": "combined_high_r1", "link_failure_probability_per_attempt": 0.05, "intervention_transition_failure_probability_per_attempt": 0.10, "max_retransmissions": 1},
+    {"name": "combined_high_r2", "link_failure_probability_per_attempt": 0.05, "intervention_transition_failure_probability_per_attempt": 0.10, "max_retransmissions": 2}
+  ],
+  "primary_outputs": [
+    "Packet_Delivery_Ratio",
+    "Packet_Deadline_Success",
+    "Link_Failure_Drop_Rate",
+    "Intervention_Transition_Drop_Rate",
+    "No_Route_Drop_Rate",
+    "Relay_Travel_m_per_Simulated_Minute",
+    "Action_Duty_Cycle"
+  ],
+  "completion_rule": "Every scenario must cover the same 10 seeds, six policies, all configured traffic loads and topology-density strata; drop-accounting error must be zero within numerical tolerance.",
+  "claim_rule": "Sensitivity results test robustness of simulated prediction-to-action conclusions only. They do not establish field PDR, real handover loss, onboard timing, or deployment readiness."
+}
