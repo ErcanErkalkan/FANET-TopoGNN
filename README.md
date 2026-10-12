@@ -1,3 +1,18 @@
+# FANET-TopoGNN — current project index (12 October 2026)
+
+**Canonical Git branch:** `main`. All new public experiment code and published result snapshots are consolidated here. Do not use or develop on the historical `agent/eaai-submission-refresh` branch.
+
+**R1–R5 post-review experiment families:** Complete. Read `scripts/run_revision_*.py`, matching `configs/revision_*.json`, and auditable `outputs/revision_*/` CSV/JSON results. These are post-review *descriptive* simulations; they do not constitute independent confirmatory evidence, physical FANET deployment, or field packet-delivery validation.
+
+**Locked primary EAAI decision:** no supported event-F1 superiority over ExtraTrees. The original locked evidence must not be overwritten by R1–R5 results.
+
+**Manuscript version:** `paper/main.tex` is a *historical rejected EAAI version*, NOT the current revision. The P6 Ad Hoc Networks editorial candidate and P7 *internal, not-for-reviewer-distribution* audit remain in the separate controlled publication workspace while GitHub is public; they are not approved for public release or journal submission.
+
+**Reproducibility:** These tracked CSVs validate recorded outputs; a clean, pinned end-to-end rerun and final journal/reviewer anonymity checks remain outstanding.
+
+---
+## Historical project documentation
+
 # Kinetic-TopoGuard / FANET-TopoGNN Reproducibility Suite
 
 ## Locked EAAI source-gated confirmation
