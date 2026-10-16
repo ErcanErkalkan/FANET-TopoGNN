@@ -1,8 +1,8 @@
-# FANET-TopoGNN — current project index (12 October 2026)
+# FANET-TopoGNN — current project index (16 October 2026)
 
 **Canonical Git branch:** `main`. All new public experiment code and published result snapshots are consolidated here. Do not use or develop on the historical `agent/eaai-submission-refresh` branch.
 
-**Historical R1–R5 outputs:** Complete under their original protocols, but NOT all cleared under the newly identified terminal-label full-horizon correction. **R1 strict-v3 PASS (360/360 rows, 2,880/2,880 numerical replay checks); R2 strict full configuration: 15/600 unique v2+v3 keys, but homogeneous strict-v3 ONLY 11/600 (589 missing; h=6 Persistence-only); R3 scoring helper 6 synthetic tests PASS but 540 R3 rows NOT recomputed; R4/R5 strict-label dependencies OPEN.** These simulations are descriptive, not independent confirmatory or field PDR validation. See [`strict-horizon audit status`](docs/STRICT_HORIZON_AUDIT_STATUS_2026-10-12.md).
+**Historical R1–R5 outputs:** Complete under their original protocols, but NOT all cleared under the newly identified terminal-label full-horizon correction. **R1 strict-v3 PASS (360/360 rows, 2,880/2,880 numerical replay checks); R2 homogeneous strict-v3 experimental coverage **600/600 PASS** (20 seeds × 6 horizons × 5 model families, 120 full cells); 22/22 unit tests PASS. Full numerical/statistical result and reproducibility checks remain OPEN. R3 event-scoring helper 6 synthetic tests PASS but its 540 historical rows are NOT recomputed; R4/R5 strict-label dependencies OPEN.** These simulations are descriptive, not independent confirmatory or field PDR validation. See the [16 October R2 completion audit](docs/R2_STRICT_V3_600_COMPLETION_2026-10-16.md) and [historical 12 October checkpoint](docs/STRICT_HORIZON_AUDIT_STATUS_2026-10-12.md).
 
 **Locked primary EAAI decision:** no supported event-F1 superiority over ExtraTrees. The original locked evidence must not be overwritten by R1–R5 results.
 
