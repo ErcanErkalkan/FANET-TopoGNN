@@ -1,0 +1,8 @@
+{
+  "extends": "smoke_30s.json",
+  "experiment_name": "strict_v4_smoke",
+  "output_dir": "outputs/strict_v4_smoke",
+  "sim": {
+    "horizon_label_policy": "strict_full_horizon"
+  }
+}
