@@ -29,6 +29,7 @@ python -m pip install pytest
 pytest -q tests/test_strict_horizon.py
 python scripts/audit_strict_horizon.py --config configs/strict_v4_smoke.json --seed 7
 python main.py --config configs/strict_v4_smoke.json
+python scripts/audit_strict_grid.py --config configs/publication_compact.json --seed-config configs/revision_neural_20seed_full.materialized.json --horizons 2,4,6,10,15,20
 ```
 Expected smoke dataset: 3 runs x (12-2) = 30 fully labeled rows; the auditor
 must compare target beta0 with the original complete t+h simulation state,
