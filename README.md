@@ -98,6 +98,26 @@ The current manuscript-facing method is `Kinetic-TopoGuard`: a kinematic-topolog
 
 Risk labels use exact-horizon semantics: `frag_at_horizon = 1` means that the projected target snapshot at `t + forecast_horizon_steps` is fragmented (`beta0(t+h) > 1`). It does not mean that any intermediate tick inside `(t, t+h)` fragmented.
 
+## Strict full-horizon label audit (candidate branch, 21 October 2026)
+
+The historical main-branch experiments use terminal `legacy_clamp` label semantics.
+For **new** studies, use `horizon_label_policy: strict_full_horizon` and a
+separate output directory. This excludes right-censored run-tail samples whose
+full `t+h` ground truth does not exist; it does not change old archived results.
+
+```bash
+pytest -q tests/test_strict_horizon.py
+python scripts/audit_strict_horizon.py --config configs/strict_v4_smoke.json --seed 7
+python main.py --config configs/strict_v4_smoke.json
+# Label-integrity grid only; use declared revision seeds, NOT the locked EAAI seeds:
+python scripts/audit_strict_grid.py --config configs/publication_compact.json --seed-config configs/revision_neural_20seed_full.materialized.json --horizons 2,4,6,10,15,20
+```
+
+The grid audit is **not** a model comparison, an R2 numerical replay, or a
+manuscript release gate. Read [Strict v4 Step 1 protocol](docs/STRICT_V4_STEP1_PROTOCOL.md)
+before running any revision studies. No superiority result is established by
+passing an integrity check.
+
 ## Quick Start
 
 Run the bounded smoke profile first. It is designed to finish in roughly 30 seconds on the reference CPU environment and verifies imports, dataset generation, evaluation, and output export:
