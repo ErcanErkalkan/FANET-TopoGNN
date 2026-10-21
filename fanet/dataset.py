@@ -270,9 +270,20 @@ def simulate_run(
 ) -> list[Snapshot]:
     raw_items = _raw_run(sim_cfg, mobility_name, n_nodes, run_seed, kinematic_items)
     horizon = int(sim_cfg.get("forecast_horizon_steps", sim_cfg.get("warning_horizon_steps", 1)))
+    label_policy = str(sim_cfg.get("horizon_label_policy", "legacy_clamp")).lower()
+    if label_policy not in {"legacy_clamp", "strict_full_horizon"}:
+        raise ValueError(f"Unknown horizon_label_policy: {label_policy}")
+    if label_policy == "strict_full_horizon" and horizon <= 0:
+        raise ValueError("Strict full-horizon forecasting requires horizon_steps > 0")
     snapshots: list[Snapshot] = []
     for idx, item in enumerate(raw_items):
+        if label_policy == "strict_full_horizon" and idx + horizon >= len(raw_items):
+            # Right-censored tail: there is no observed ground truth at t + h.
+            continue
         future_idx = min(idx + horizon, len(raw_items) - 1)
+        if (label_policy == "strict_full_horizon" and
+                int(raw_items[future_idx]["time_index"]) - int(item["time_index"]) != horizon):
+            raise RuntimeError("Non-contiguous simulation timestamps in strict horizon mode")
         future_beta = float(raw_items[future_idx]["beta_current"])
         frag_at_horizon = int(future_beta > 1)
         stats = graph_stats(item["positions"], item["velocities"], item["adjacency"], item["beta_current"])
@@ -347,14 +358,31 @@ def build_dataset(sim_cfg: dict, seed: int) -> list[Snapshot]:
     return snapshots
 
 
-def relabel_forecast_horizon(snapshots: list[Snapshot], horizon_steps: int) -> list[Snapshot]:
-    """Reuse fixed trajectories while changing only deterministic future labels."""
+def relabel_forecast_horizon(
+    snapshots: list[Snapshot], horizon_steps: int, *, strict_full_horizon: bool = False
+) -> list[Snapshot]:
+    """Relabel fixed trajectories; optionally exclude right-censored tail rows.
+
+    For multi-horizon studies, pass complete legacy-labelled trajectories as input
+    and set strict_full_horizon=True for EACH tested horizon. Never relabel an
+    already tail-truncated strict dataset to a different horizon.
+    """
     horizon = max(int(horizon_steps), 0)
+    if strict_full_horizon and horizon <= 0:
+        raise ValueError("Strict full-horizon relabeling requires horizon_steps > 0")
     relabeled: list[Snapshot] = []
     for sequence in split_by_run(snapshots).values():
         ordered = sorted(sequence, key=lambda item: item.time_index)
+        by_time = {int(item.time_index): item for item in ordered}
+        if strict_full_horizon and len(by_time) != len(ordered):
+            raise ValueError("Duplicate run/time identifiers in strict relabeling")
         for idx, snapshot in enumerate(ordered):
-            future = ordered[min(idx + horizon, len(ordered) - 1)]
+            if strict_full_horizon:
+                future = by_time.get(int(snapshot.time_index) + horizon)
+                if future is None:
+                    continue
+            else:
+                future = ordered[min(idx + horizon, len(ordered) - 1)]
             relabeled.append(
                 replace(
                     snapshot,
@@ -364,6 +392,28 @@ def relabel_forecast_horizon(snapshots: list[Snapshot], horizon_steps: int) -> l
                 )
             )
     return relabeled
+
+
+def validate_full_horizon_labels(snapshots: list[Snapshot], horizon_steps: int) -> dict[str, int]:
+    """Fail closed on clamped targets, invalid risk labels and duplicate timestamps.
+
+    Checking target beta0 against the actual t+h graph also requires access to
+    the untruncated raw trajectory; see scripts/audit_strict_horizon.py.
+    """
+    horizon = int(horizon_steps)
+    if horizon <= 0 or not snapshots:
+        raise ValueError("Strict horizon audit requires positive horizon and nonempty snapshots")
+    seen: set[tuple[str, int]] = set()
+    for snap in snapshots:
+        key = (str(snap.run_id), int(snap.time_index))
+        if key in seen:
+            raise ValueError(f"Duplicate strict horizon record: {key}")
+        seen.add(key)
+        if int(snap.future_time_index) - int(snap.time_index) != horizon:
+            raise ValueError(f"Clamped or misaligned target at {key}")
+        if int(snap.frag_at_horizon) != int(float(snap.beta_target) > 1.0):
+            raise ValueError(f"Fragmentation label mismatch at {key}")
+    return {"rows_checked": len(snapshots), "runs_checked": len({x.run_id for x in snapshots}), "horizon_steps": horizon}
 
 
 def to_frame(snapshots: Iterable[Snapshot]) -> pd.DataFrame:
