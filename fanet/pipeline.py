@@ -1142,6 +1142,7 @@ def run_experiment(config: ExperimentConfig, resume: bool = False, seed_workers:
         "graph_policies": sorted(dataset_seed_df["graph_policy"].dropna().unique().tolist()) if "graph_policy" in dataset_seed_df.columns else [],
         "radio_scenarios": sorted(dataset_seed_df["radio_scenario"].dropna().unique().tolist()) if "radio_scenario" in dataset_seed_df.columns else [],
         "forecast_horizon_steps": int(config.sim.get("forecast_horizon_steps", config.evaluation["warning_horizon_steps"])),
+        "horizon_label_policy": str(config.sim.get("horizon_label_policy", "legacy_clamp")),
         "best_model_by_mae": metrics_df.iloc[0]["Model"] if not metrics_df.empty else None,
         "best_model_by_lead": ", ".join(lead_models) if lead_models else None,
         "best_models_by_lead": lead_models,
