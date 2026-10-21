@@ -50,6 +50,26 @@ def test_strict_relabel_uses_complete_base_and_exact_time() -> None:
     assert len(relabel_forecast_horizon(legacy, 5)) == len(legacy)
 
 
+def test_independent_raw_audit_and_grid_coverage() -> None:
+    from scripts.audit_strict_horizon import audit
+    from scripts.audit_strict_grid import audit_grid
+
+    smoke = ROOT / "configs/strict_v4_smoke.json"
+    check = audit(smoke, seed=7)
+    assert check["status"] == "pass"
+    assert check["raw_rows"] == 36
+    assert check["full_horizon_rows"] == 30
+    assert check["right_censored_rows_excluded"] == 6
+    assert check["manuscript_superiority_claim"] is False
+
+    grid = audit_grid(ROOT / "configs/smoke_30s.json", seeds=[7], horizons=[1, 2, 5])
+    assert grid["status"] == "pass"
+    assert grid["completed_seed_horizon_cells"] == 3
+    assert [item["valid_rows"] for item in grid["rows"]] == [33, 30, 21]
+    assert all(item["status"] == "pass" for item in grid["rows"])
+
+
+
 def test_invalid_strict_labels_and_policy_fail_closed() -> None:
     strict = build_dataset({**_sim(), "horizon_label_policy": "strict_full_horizon"}, seed=7)
     with pytest.raises(ValueError, match="Clamped or misaligned"):
