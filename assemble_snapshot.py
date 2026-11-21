@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
-"""Reassemble the only current FANET-TopoGNN snapshot from the checked-in binary chunks."""
+"""Reconstitute the one integrity-checked active research ZIP from transport chunks."""
 from pathlib import Path
 from hashlib import sha256
 from zipfile import ZipFile
 ROOT = Path(__file__).resolve().parent
-EXPECTED = "8b06e9235a46ae9fc85887f901f0619e37b86f6216ca879afc8f743a24d7267d"
+EXPECTED = "f8813641915eabe912d4c093b6b08e825652a0587f3a1223da432651410be27b"
 PARTS = sorted((ROOT / "snapshot").glob("current.zip.part[0-9][0-9]"))
-if len(PARTS) != 7:
-    raise SystemExit(f"Expected seven snapshot chunks; found {len(PARTS)}")
-dst = ROOT / "FANET-TopoGNN_Current.zip"
-with dst.open("wb") as out:
+if len(PARTS) != 8:
+    raise SystemExit(f"Expected 8 parts; got {len(PARTS)}")
+out = ROOT / "FANET-TopoGNN_Current.zip"
+with out.open("wb") as dest:
     for part in PARTS:
-        out.write(part.read_bytes())
-actual = sha256(dst.read_bytes()).hexdigest()
+        dest.write(part.read_bytes())
+actual = sha256(out.read_bytes()).hexdigest()
 if actual != EXPECTED:
-    dst.unlink(missing_ok=True)
-    raise SystemExit(f"SHA-256 mismatch: {actual}")
-with ZipFile(dst) as archive:
-    bad = archive.testzip()
-    if bad: raise SystemExit(f"Corrupt ZIP entry: {bad}")
-print("Verified complete current snapshot:", dst, actual)
-print("Extract this archive, then run python run.py verify inside the extracted directory.")
+    out.unlink(missing_ok=True)
+    raise SystemExit(f"Integrity check failed: {actual}")
+with ZipFile(out) as archive:
+    damaged = archive.testzip()
+    if damaged:
+        raise SystemExit(f"Damaged ZIP member: {damaged}")
+print("Current ZIP verified:", out, actual)

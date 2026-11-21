@@ -1,43 +1,32 @@
 # FANET-TopoGNN — current research snapshot
 
-The default branch **main** contains the single active project snapshot and is **publisher- and journal-neutral**.
+The **default branch `main`** contains one current research snapshot. Project code, experiments and scientific claims remain independent of any journal. The manuscript's presentation settings are maintained solely in `paper/manuscript/FORMAT_REQUIREMENTS.md`.
 
-Research question: can one selected fragmentation-warning threshold maintain a specified false-alarm budget across different flying ad hoc network mobility regimes, node counts and development blocks?
+## Main finding
 
-## Complete reproducible snapshot
+45 trajectory groups (180 paired radio/graph runs, 60 simulated minutes). Frozen TopoGNN threshold 0.15 produced 183 matches among 1,114 fragmentation onsets and 88 unmatched alarms (1.47/min overall); six of 15 block-by-mobility cells exceeded two/min. Silent 30-node runs missed all 82 onsets. History-4 remains a retrospective exploratory comparison, not model superiority evidence. These are development-only simulated connectivity outcomes, not real packet delivery or prospective independent validation.
 
-Source files are browsable on this branch. Large recorded CSV datasets and PDF evidence are included in **one complete project ZIP**, tracked as seven transport chunks under `snapshot/` (these are *not* seven versions).
+## One complete artifact
+
+The full experiment snapshot (including recorded CSV data and one current draft) is split into small binary **transport chunks** under `snapshot/` to keep GitHub writes manageable. The parts are **one ZIP**, not alternative release versions. Reconstruct and verify it:
 
 ```bash
 python assemble_snapshot.py
 ```
 
-Expected SHA-256: `8b06e9235a46ae9fc85887f901f0619e37b86f6216ca879afc8f743a24d7267d`.
-
-Extract the reconstructed `FANET-TopoGNN_Current.zip` in a separate directory, then run:
+Expected SHA-256: `f8813641915eabe912d4c093b6b08e825652a0587f3a1223da432651410be27b`. Extract `FANET-TopoGNN_Current.zip` and then run:
 
 ```bash
 python run.py check
 python run.py verify
 python run.py test
+python run.py build-paper
 ```
 
-The extracted ZIP is the **authoritative complete research package**. A source-only checkout deliberately omits large duplicate experiment CSVs, so the `run.py` verification commands require the complete extracted archive.
+The repo's browsable `core/`, `frozen/`, `audit/`, `data_derived/` and `paper/` directories are corresponding text-source excerpts; full binary evidence is in the reconstructed ZIP. Use the extracted ZIP for exact manifest checks. `run.py build-paper` uses pdflatex and BibTeX. An XeLaTeX compilation path allows exact Times New Roman when that font is installed; a substitute font is not exact compliance.
 
-## Findings (descriptive development simulation)
+## Scientific boundaries
 
-- 45 trajectory groups, 180 paired radio/graph runs, 60 simulated minutes.
-- Fixed TopoGNN threshold 0.15: 183 of 1,114 fragmentation onsets matched; event F1 = 0.264.
-- 88 false alarms (1.47 per simulated minute overall), but six of 15 block-by-mobility strata exceed the stipulated two/minute reference.
-- At 30 nodes, all 82 fragmentation events were missed with no emitted alarm.
-- History-4 is a post-hoc exploratory comparator and exceeded the reference budget.
+The main evidence is a 2-D received-power threshold graph and does not establish real PHY/MAC behavior, routing performance, PDR, effective intervention, or field readiness. No independent blind test was opened. Model selection and post-hoc baseline limitations are described in the manuscript.
 
-These are **simulated graph-connectivity results**, not packet-delivery outcomes, independent blind evidence, prospective clinical/safety deployment, or demonstrated model superiority.
-
-## Contents
-
-`core/`: simulator and model. `frozen/`: locked scientific inputs. `audit/`: scoring and verification. `data_derived/`: derived summary tables. `paper/manuscript/`: one provisional journal-neutral draft. `snapshot/`: the integrity-checked current full research artifact.
-
-Freeze-stage identifiers are **scientific provenance**, not alternate active software releases. No claim is made that a publisher has accepted or reviewed this work.
-
-Research status: **AUTHOR REVIEW / HOLD**; authorship, external data release permissions and submission require author confirmation.
+Project status: **RESEARCH / AUTHOR REVIEW — HOLD**. Human author approval and verified data-sharing permissions are required before external submission.

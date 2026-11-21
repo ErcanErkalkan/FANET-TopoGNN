@@ -38,11 +38,12 @@
     "manuscript": "paper/manuscript/main.tex",
     "pdf": "paper/manuscript/FANET_TopoGNN_Manuscript_Preprint.pdf",
     "supplement": "paper/manuscript/ESM_1.pdf",
-    "format": "generic LaTeX"
+    "format": "Journal-specific manuscript presentation; details in paper/manuscript/FORMAT_REQUIREMENTS.md",
+    "layout_check": "10pt_double_spaced_20_page_body_limit_PASS_FONT_APPROVAL_PENDING"
   },
   "sha256": {
     ".gitignore": "4a0bce4583b77c89404cf945960db0fd985b90c3100efc60b29af9a4e57ac95f",
-    "README.md": "076e5e7b9169c29302d115e045702645e315a9db4eaa13266aa0ca79da3baa1f",
+    "README.md": "7cd18cdf9cae1caf7d7c175cdb2681e9b7ef8cd1cb3574a717ee1fc1bc743ba0",
     "audit/CANONICAL_REFERENCE_VERIFICATION.json": "1ca744e53a5127a953296b087c36a1383f3c095aa177bae1b027e6a7400b818d",
     "audit/R9_10_PROTOCOL.json": "31452a9772903b6686d3a88d11778d07157204f8619715c201241544f0b80fa4",
     "audit/generate_wn_tables.py": "dcf14935a81c9f33206eac77b9a3c387b8a15c81171fa10a972797c341e10845",
@@ -202,14 +203,15 @@
     "frozen/r9_8_shared_pilot.py": "b8dcd73a54fd1a158620440a1e8adce378abfc16ba9ceab0d84160fca5514f05",
     "frozen/r9_9_calibration_alert.py": "a9cae766b82dd8e8c493205efdd167641ad9d49beef6454818938f15513cf250",
     "paper/build_manuscript.py": "d39ea246df7ea6c6ff1a22cd8f0698465cba0277adec79ce76888009781bc583",
-    "paper/manuscript/ESM_1.pdf": "eb26011b8efc05e2b89cec9a2a0d472eff739a130690753c4f5983491bf08ddd",
-    "paper/manuscript/ESM_1.tex": "c05414c488dd42f5e8547b55722bd5fae0456a0b8db3afbd42ee6a26177bd49d",
-    "paper/manuscript/FANET_TopoGNN_Manuscript_Preprint.pdf": "00fbb961c33fe993de3937a53cb88d7ab738e97f8c358cb37ea0417e099ab830",
-    "paper/manuscript/main.tex": "8abf7867c90535c92b1451443437dfb932130ef3eac82c9efc7a52184144e841",
+    "paper/manuscript/ESM_1.pdf": "da7e83c4bab8dc85f693fb397b4f8207e84c651d904622d7804e9c1dcf3d403b",
+    "paper/manuscript/ESM_1.tex": "19c69245d3d1a839a5f585a626ead2766d32656ddbf7ca21a3968c42cd53688c",
+    "paper/manuscript/FANET_TopoGNN_Manuscript_Preprint.pdf": "43a887ee6b124d38fdd68d0c7c5029956c014918d34943819f60b06552af974a",
+    "paper/manuscript/main.tex": "b7263f28523a2eed3544f45b9bff699bac74f921d05bb2ba5e3a2880906b3b8e",
     "paper/manuscript/references.bib": "b76bb473894a5b6fc53e598af6bd0395191d4942c979830af7b0faf8ede79c23",
-    "run.py": "ebfab9464f36df5cc0b841315511f609cb1bb1a367b568fc9767c356fb2e5e3e"
+    "run.py": "ebfab9464f36df5cc0b841315511f609cb1bb1a367b568fc9767c356fb2e5e3e",
+    "paper/manuscript/FORMAT_REQUIREMENTS.md": "159e107f5d6f34a3d8866c58071fc01c8d12a12ea79ca23c57bf4c2a4a0f6065"
   },
   "integrity_note": "Reproducible source/data hash manifest excludes generated Python __pycache__ and .pyc interpreter artifacts; these are not scientific evidence.",
-  "notes": "Only one active research snapshot. Frozen stage versions are essential experiment provenance, not alternative release packages.",
+  "notes": "Only one active research snapshot. Frozen experiment stage records are provenance, not versions. The scientific research and repository remain venue-neutral; publication layout rules live exclusively under paper/manuscript/.",
   "snapshot": "CURRENT_SINGLE_ACTIVE_NEUTRAL"
 }

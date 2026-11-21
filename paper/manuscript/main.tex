@@ -1,22 +1,38 @@
+% Wireless Networks manuscript formatting (research content remains venue-neutral).
+% Journal-specific typography: 10pt, double spacing, standard margins.
+% pdfLaTeX: Times-compatible NewTX (submission-system compatible).
+% XeLaTeX: exact Times New Roman when installed, otherwise Tinos preview.
+% Neither substitute should be called exact Times New Roman.
 \documentclass[10pt,a4paper]{article}
-\usepackage[margin=24mm]{geometry}
+\usepackage[top=25.4mm,bottom=25.4mm,left=31.75mm,right=31.75mm]{geometry}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage{newtxtext}
+\else
+  \usepackage{fontspec}
+  \IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}{\setmainfont{Tinos}}
+\fi
 \usepackage{setspace}
-\onehalfspacing
-\usepackage[T1]{fontenc}
-\usepackage{lmodern}
-\usepackage{mathptmx}
+\doublespacing
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{url}
-\usepackage{hyperref}
 \usepackage{amsmath,amssymb}
+\usepackage{newtxmath}
+\usepackage{hyperref}
 \urlstyle{same}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\setlength{\emergencystretch}{2em}
+\hypersetup{hidelinks}
 
 \begin{document}
 \title{Evaluating False-Alarm Budgets for Fragmentation Warnings in Simulated Flying Ad Hoc Networks}
 
 % Author identities and declarations are pending author confirmation.
 \author{Author details pending confirmation}
+\date{}
 
 \maketitle
 \begin{abstract}
@@ -256,11 +272,14 @@ At the threshold selected using full-exposure event $F_1$ and a two-per-minute b
 
 \section*{Data and code availability}
 
-The author-review archive includes the frozen plan, simulator and trajectory-generation code, per-frame component-count ground truth (\texttt{evaluation\_full\_truth.csv}), decision scores (\texttt{evaluation\_scores.csv}), run summaries and verification scripts for the frozen Linux and Windows records and the matching Linux rerun. The exported evaluation CSVs do \emph{not} contain per-node coordinate trajectories; these must be regenerated using the frozen simulator if required. Online Resource~1 reports subgroup and sensitivity analyses, including the post-hoc four-frame reference comparison and hypothetical effective-action-latency sensitivity. The auxiliary rule and its development-only selection script are included with the author-review archive. No blind test data were used. A stable, permission-verified repository or reviewer-access link has \emph{not yet been assigned}; a persistent access location must be verified before any external distribution that requires reproducibility access.
+The author-review archive includes the frozen plan, simulator and trajectory-generation code, per-frame component-count ground truth (\path{evaluation_full_truth.csv}), decision scores (\path{evaluation_scores.csv}), run summaries and verification scripts for the frozen Linux and Windows records and the matching Linux rerun. The exported evaluation CSVs do \emph{not} contain per-node coordinate trajectories; these must be regenerated using the frozen simulator if required. Online Resource~1 reports subgroup and sensitivity analyses, including the post-hoc four-frame reference comparison and hypothetical effective-action-latency sensitivity. The auxiliary rule and its development-only selection script are included with the author-review archive. No blind test data were used. A stable, permission-verified repository or reviewer-access link has \emph{not yet been assigned}; a persistent access location must be verified before any external distribution that requires reproducibility access.
 
-% Funding, competing interests, author contributions and any applicable
-% AI-use disclosure must be confirmed by the authors. They are intentionally
-% not asserted in this provisional research draft. Please see the project README for research status and release caveats.
+\section*{Statements and Declarations}
+\noindent\textbf{Pending author approval.} Authorship, author contributions, funding,
+competing interests, ethical applicability and any applicable AI-tool disclosure
+must be verified by the author(s) before submission. This statement is a
+placeholder in the author-review draft, not a declaration of absence.
+
 \bibliographystyle{unsrt}
 \bibliography{references}
 \end{document}
