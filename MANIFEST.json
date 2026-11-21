@@ -43,7 +43,7 @@
   },
   "sha256": {
     ".gitignore": "4a0bce4583b77c89404cf945960db0fd985b90c3100efc60b29af9a4e57ac95f",
-    "README.md": "7cd18cdf9cae1caf7d7c175cdb2681e9b7ef8cd1cb3574a717ee1fc1bc743ba0",
+    "README.md": "e04a10987e706cb1256e88b93dc5b24b2805d867e64e6fad8ddf4c66f8e5ccdc",
     "audit/CANONICAL_REFERENCE_VERIFICATION.json": "1ca744e53a5127a953296b087c36a1383f3c095aa177bae1b027e6a7400b818d",
     "audit/R9_10_PROTOCOL.json": "31452a9772903b6686d3a88d11778d07157204f8619715c201241544f0b80fa4",
     "audit/generate_wn_tables.py": "dcf14935a81c9f33206eac77b9a3c387b8a15c81171fa10a972797c341e10845",

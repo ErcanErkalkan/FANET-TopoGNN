@@ -4,7 +4,7 @@ from pathlib import Path
 from hashlib import sha256
 from zipfile import ZipFile
 ROOT = Path(__file__).resolve().parent
-EXPECTED = "f8813641915eabe912d4c093b6b08e825652a0587f3a1223da432651410be27b"
+EXPECTED = "4b224751ebda13025dcac322af4ab009c6da67eb4e1e5196c739bad1ec3ff3ea"
 PARTS = sorted((ROOT / "snapshot").glob("current.zip.part[0-9][0-9]"))
 if len(PARTS) != 8:
     raise SystemExit(f"Expected 8 parts; got {len(PARTS)}")

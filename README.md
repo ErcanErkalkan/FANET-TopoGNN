@@ -14,7 +14,7 @@ The full experiment snapshot (including recorded CSV data and one current draft)
 python assemble_snapshot.py
 ```
 
-Expected SHA-256: `f8813641915eabe912d4c093b6b08e825652a0587f3a1223da432651410be27b`. Extract `FANET-TopoGNN_Current.zip` and then run:
+Expected SHA-256: `4b224751ebda13025dcac322af4ab009c6da67eb4e1e5196c739bad1ec3ff3ea`. Extract `FANET-TopoGNN_Current.zip` and then run:
 
 ```bash
 python run.py check
