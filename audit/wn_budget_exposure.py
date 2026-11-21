@@ -162,7 +162,7 @@ def replace_block(file, label, replacement):
     file.write_text(after,encoding="utf-8",newline="\n")
 
 
-def run(sync_tex=False):
+def run():
     selection=selection_receipt()
     paths=[next((ROOT/f"audit/reference_{host}").iterdir()) for host in ("linux","windows")]
     paths.append(ROOT/"evidence/pilot_linux")
@@ -193,16 +193,10 @@ def run(sync_tex=False):
         "no_new_training_or_threshold_tuning":True}
     output=ROOT/"evidence/STEP4_EXPOSURE_THRESHOLD_RECEIPT.json"
     output.write_text(json.dumps(metadata,indent=2)+"\n",encoding="utf-8")
-    if sync_tex:
-        pooled_tex, detail_tex=produce_tex(keyed)
-        supplementary=ROOT/"paper/manuscript/ESM_1.tex"
-        replace_block(supplementary,"VERIFIED EXPOSURE SENSITIVITY POOLED",pooled_tex)
-        replace_block(supplementary,"VERIFIED EXPOSURE SENSITIVITY BLOCK MOBILITY",detail_tex)
     return metadata
 
 
 if __name__=="__main__":
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--sync-tex",action="store_true")
     a=parser.parse_args()
-    print(json.dumps(run(sync_tex=a.sync_tex),indent=2))
+    print(json.dumps(run(),indent=2))

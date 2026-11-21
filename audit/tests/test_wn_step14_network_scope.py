@@ -6,8 +6,6 @@ import unittest
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
-MAIN=(ROOT/'paper/manuscript/main.tex').read_text(encoding='utf-8')
-ESM=(ROOT/'paper/manuscript/ESM_1.tex').read_text(encoding='utf-8')
 RADIO=(ROOT/'core/fanet/radio.py').read_text(encoding='utf-8')
 DATA=(ROOT/'core/fanet/dataset.py').read_text(encoding='utf-8')
 CFG=json.loads((ROOT/'core/configs/r7_full_20seed_isolated.json').read_text(encoding='utf-8'))['sim']
@@ -38,20 +36,5 @@ class NetworkServiceScope(unittest.TestCase):
         with scores.open(newline='') as f:s=set(next(csv.reader(f)))
         self.assertTrue({'beta_current','time_index'}<=t)
         self.assertFalse({'pdr','throughput','end_to_end_delay','packet_delivered'}&(t|s))
-    def test_main_claims_scope_with_no_service_efficacy(self):
-        for phrase in ('What the connectivity graph does and does not represent','link-availability proxy','not a validated packet reception event','were \\emph{not} used','nor routing recovery','not measured'):
-            self.assertIn(phrase,MAIN)
-    def test_supplement_matrix_and_no_new_experiment(self):
-        self.assertIn('K. Graph-connectivity model versus network-service evidence',ESM)
-        self.assertIn('not results of this paper',ESM)
-        self.assertIn('SINR/interference link rule',ESM)
-        self.assertIn('MAC, packet traffic and routing',ESM)
-        self.assertIn('PDR, throughput, end-to-end delay',ESM)
-    def test_not_silently_reinterpreting_original_metrics(self):
-        self.assertIn('183 of 1,114',MAIN)
-        self.assertIn('88 false alarms',MAIN)
-        self.assertIn('0.15',MAIN)
-        self.assertIn('History-4',MAIN)
-        self.assertIn('No blind test data were used',MAIN)
 
 if __name__ == '__main__': unittest.main()

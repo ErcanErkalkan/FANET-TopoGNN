@@ -11,3 +11,11 @@ outputs/
 *.fls
 *.fdb_latexmk
 .DS_Store
+
+# Publication and private submission materials (maintained separately)
+paper/
+*.pdf
+*.tex
+*.bbl
+*.bib
+!core/LICENSE

@@ -100,14 +100,6 @@ class TestHistoryFour(unittest.TestCase):
                 self.assertEqual(sum(int(r[field]) for r in mob),int(pooled[field]))
                 self.assertEqual(sum(int(r[field]) for r in node),int(pooled[field]))
 
-    def test_main_and_supplement_claims(self):
-        s=(ROOT/'paper/manuscript/main.tex').read_text()
-        t=(ROOT/'paper/manuscript/ESM_1.tex').read_text()
-        for needle in ('381','0.467','2.25','post-hoc','not prospective blind tests'):
-            self.assertIn(needle,s)
-        for needle in ('381','135','1.75','0.30','NOT blind'):
-            self.assertIn(needle,t)
-        self.assertIn('neither deployment readiness nor model superiority',s)
 
     def test_paired_resampling_not_significance_claim(self):
         b=self.receipt['bootstrap']

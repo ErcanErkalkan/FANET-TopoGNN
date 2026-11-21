@@ -153,7 +153,6 @@ def latex_rows_dropped(overall, gm):
 
 def main():
     a=argparse.ArgumentParser(description=__doc__)
-    a.add_argument('--sync-tex',action='store_true')
     a.add_argument('--resamples',type=int,default=RESAMPLES)
     args=a.parse_args()
     refs=[next((ROOT/'audit'/f'reference_{platform}').iterdir()) for platform in ('linux','windows')]
@@ -174,10 +173,6 @@ def main():
     export(dropped,d/'wn_r9_10_leave_one_block_out.csv')
     export(dropped_gm,d/'wn_r9_10_leave_one_block_out_gm.csv')
     export(boot,d/'wn_r9_10_cluster_bootstrap.csv')
-    if args.sync_tex:
-        refresh(ROOT/'paper/manuscript/main.tex','BLOCK VARIABILITY',latex_rows_blocks(blocks))
-        refresh(ROOT/'paper/manuscript/ESM_1.tex','CLUSTER BOOTSTRAP',latex_rows_boot(boot))
-        refresh(ROOT/'paper/manuscript/ESM_1.tex','BLOCK LEAVE ONE OUT',latex_rows_dropped(dropped,dropped_gm))
     print(json.dumps(dict(verified_sources=len(refs),independent_trajectory_group_units=45,
         paired_variants_per_group=4,blocks=blocks,bootstrap=boot,
         group_resamples=args.resamples,seed=SEED,exploratory_only=True),indent=2))

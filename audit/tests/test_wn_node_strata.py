@@ -1,4 +1,4 @@
-"""Check node-count results, data boundaries, and generated manuscript rows."""
+"""Check node-count results and data boundaries."""
 import csv
 from pathlib import Path
 import sys
@@ -6,7 +6,7 @@ import unittest
 
 AUDIT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(AUDIT))
-from generate_wn_tables import MOBILITY_NODE_TABLE, NODE_TABLE, size_row, size_strata
+from strata_summary import size_strata
 
 ROOT = AUDIT.parent
 PILOT = ROOT / "evidence/pilot_linux/run_counts.csv"
@@ -47,16 +47,10 @@ class NodeStrataTests(unittest.TestCase):
         self.assertEqual(x["rwp", 20]["event_precision"], 0.0)
         self.assertEqual(x["gm", 10]["false_alerts"], 39)
 
-    def test_released_tables_match_code(self):
-        targets = [
-            ("main.tex", NODE_TABLE, self.result[:3], False, "by_node_count"),
-            ("ESM_1.tex", MOBILITY_NODE_TABLE, self.result[3:], True, "by_mobility_node_count"),
-        ]
-        for name, marker, rows, detailed, key in targets:
-            s = (ROOT / "paper/manuscript" / name).read_text().split(f"% BEGIN {marker}\n")[1]
-            self.assertEqual(s.split(f"% END {marker}")[0],
-                             "".join(size_row(x, detailed) for x in rows))
-            with (ROOT / "data_derived" / f"wn_r9_10_{key}.csv").open(newline="") as f:
-                actual = list(csv.DictReader(f))
-            self.assertEqual(actual,
-                             [{k: "" if v is None else str(v) for k, v in row.items()} for row in rows])
+    def test_derived_csv_matches_verified_data(self):
+        for filename,expected in (("wn_r9_10_by_node_count.csv",self.result[:3]),
+                                  ("wn_r9_10_by_mobility_node_count.csv",self.result[3:])):
+            with (ROOT/"data_derived"/filename).open(newline="") as f:
+                actual=list(csv.DictReader(f))
+            self.assertEqual(actual,[{k:"" if v is None else str(v) for k,v in row.items()}
+                                     for row in expected])

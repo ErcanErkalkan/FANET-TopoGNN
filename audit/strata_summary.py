@@ -1,4 +1,4 @@
-"""Generate the manuscript and supplement tables from verified export rows."""
+"""Compute and export research summary tables from verified records."""
 import argparse
 import csv
 from collections import defaultdict
@@ -103,7 +103,6 @@ def size_row(x, detailed=False):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument("--pilot",type=Path)
-    p.add_argument("--sync-tex",action="store_true")
     args=p.parse_args()
     paths=[next((ROOT/"audit"/f"reference_{host}").iterdir()) for host in ("linux","windows")]
     if args.pilot:
@@ -121,15 +120,8 @@ def main():
             if not abs(sum(x[key] for x in part) - strata[0][key]) < 1e-9:
                 raise ValueError(f"Node-count strata do not reconcile to pooled {key}")
     export(strata, by_size[0])
-    if args.sync_tex:
-        refresh(ROOT/"paper/manuscript/main.tex","".join(short_row(x) for x in strata if x["replicate"] is None))
-        refresh(ROOT/"paper/manuscript/ESM_1.tex","".join(detailed_row(x) for x in strata
-                                                      if x["scope"]=="replicate_mobility"))
-        refresh(ROOT/"paper/manuscript/main.tex","".join(size_row(x) for x in by_size[0][:3]), NODE_TABLE)
-        refresh(ROOT/"paper/manuscript/ESM_1.tex","".join(size_row(x, detailed=True) for x in by_size[0][3:]),
-                MOBILITY_NODE_TABLE)
-    print(json.dumps({"verified_sources":len(refs),"original_main_rows":4,"node_count_rows":3,
-                      "original_supplement_rows":15,"mobility_node_rows":9,"original_strata":len(strata)}))
+    print(json.dumps({"verified_sources":len(refs),"pooled_rows":4,"node_count_rows":3,
+                      "block_mobility_rows":15,"mobility_node_rows":9,"original_strata":len(strata)}))
 
 if __name__=="__main__":
     main()

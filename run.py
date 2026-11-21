@@ -1,4 +1,4 @@
-"""The single entry point for the FANET-TopoGNN reproducible research package."""
+"""Research verification entry point for FANET-TopoGNN."""
 
 import argparse
 import hashlib
@@ -59,7 +59,7 @@ def verify(report):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=('check', 'verify', 'pilot', 'test', 'build-paper'))
+    parser.add_argument('action', choices=('check', 'verify', 'pilot', 'test'))
     parser.add_argument('--report', type=Path, help='Verify a specific report directory.')
     args = parser.parse_args()
     if args.report and args.action != 'verify':
@@ -72,9 +72,6 @@ def main():
     elif args.action == 'test':
         subprocess.run([sys.executable, '-B', '-m', 'unittest', 'discover', '-s',
                         str(AUDIT / 'tests'), '-v'], cwd=ROOT, check=True)
-    elif args.action == 'build-paper':
-        subprocess.run([sys.executable, '-B', str(ROOT / 'paper' / 'build_manuscript.py')],
-                       cwd=ROOT, check=True)
     else:
         checked_runner(args.action)
 

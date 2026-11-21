@@ -1,4 +1,4 @@
-"""Ensure manuscript method claims reflect frozen source, not assumed hardware."""
+"""Verify frozen model and radio assumptions against recorded configurations."""
 import json
 import re
 import unittest
@@ -11,8 +11,6 @@ MODEL = (ROOT/'core/fanet/models.py').read_text()
 DATASET = (ROOT/'core/fanet/dataset.py').read_text()
 RADIO = (ROOT/'core/fanet/radio.py').read_text()
 TRAINING = (ROOT/'core/fanet/training.py').read_text()
-MAIN = (ROOT/'paper/manuscript/main.tex').read_text()
-BIB = (ROOT/'paper/manuscript/references.bib').read_text()
 
 class MethodConsistency(unittest.TestCase):
     def test_frozen_scenario_parameters(self):
@@ -44,23 +42,6 @@ class MethodConsistency(unittest.TestCase):
             self.assertIn(t,x)
         self.assertIn("elif model_name == \"FANET-TopoGNN\"", TRAINING)
         self.assertIn('SnapshotDataset(train_data)',TRAINING)
-        for t in ('single snapshot', '16$\\times$16', 'two-epoch CPU', 'warm-up'):
-            self.assertIn(t,MAIN)
-    def test_manuscript_qualifiers(self):
-        for claim in ('two-dimensional', 'not', 'routing algorithm', 'false-alarm budget',
-                      'nominal', 'degraded', '420', '567', 'not a model-superiority'):
-            self.assertIn(claim,MAIN)
-        self.assertIn('not a five-snapshot temporal GNN',MAIN)
-        self.assertIn('No packet-level routing',MAIN)
-    def test_new_literature_cited(self):
-        for key,doi in (('ismail2024fint','10.1016/j.comnet.2024.110599'),
-                        ('elbasioni2025digital','10.1186/s43067-024-00185-7'),
-                        ('kaur2026fanet','10.1007/s44227-026-00104-4'),
-                        ('karegar2025uav','10.1007/s11276-024-03744-y')):
-            self.assertIn('\\cite{'+key+'}',MAIN)
-            self.assertIn('@article{'+key+',',BIB)
-            self.assertIn('doi={'+doi+'}',BIB)
-        self.assertEqual(len(re.findall(r'\\section\{Related work and evaluation gap\}',MAIN)),1)
 
 if __name__ == '__main__':
     unittest.main()

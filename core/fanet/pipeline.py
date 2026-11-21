@@ -22,7 +22,7 @@ from .evaluation import (
     summarise_leads,
     threshold_sensitivity_rows,
 )
-from .manuscript import export_manuscript_summary, export_manuscript_tables
+from .analysis_export import export_analysis_summary, export_analysis_tables
 from .reporting import (
     plot_ablation_summary,
     plot_dataset_overview,
@@ -1256,8 +1256,8 @@ def run_experiment(config: ExperimentConfig, resume: bool = False, seed_workers:
     save_summary_json(out_dir / "summary.json", summary)
     write_markdown_report(out_dir / "report.md", summary, metrics_df, leads_df, network_df, risk_df)
     write_claims_summary(out_dir / "claims_summary.md", summary, metrics_df, leads_df, network_df, risk_df, stats_df, dataset_summary_df)
-    export_manuscript_tables(out_dir / "manuscript_tables.tex", metrics_df, leads_df, network_df, risk_df, summary)
-    export_manuscript_summary(out_dir / "manuscript_summary.json", summary, metrics_df, leads_df)
+    export_analysis_tables(out_dir / "analysis_tables.tex", metrics_df, leads_df, network_df, risk_df, summary)
+    export_analysis_summary(out_dir / "analysis_summary.json", summary, metrics_df, leads_df)
     _write_runtime_profile(out_dir / "runtime_profile.json", summary, runtime_seconds)
     write_artifact_manifest(out_dir / "artifact_manifest.txt", out_dir)
     print(f"[run] completed in {runtime_seconds:.1f}s")

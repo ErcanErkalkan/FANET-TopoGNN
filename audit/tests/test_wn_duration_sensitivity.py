@@ -7,8 +7,8 @@ import unittest
 AUDIT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(AUDIT))
 from wn_duration_sensitivity import (
-    DURATION_CSV, DURATION_MARKER, HISTOGRAM_CSV, HISTOGRAM_MARKER, RELEASE_SUPPLEMENT,
-    assess, consistent_records, episode_lengths, format_duration, format_histogram, grouped_lengths,
+    DURATION_CSV, HISTOGRAM_CSV,
+    assess, consistent_records, episode_lengths,
 )
 
 
@@ -41,7 +41,7 @@ class DurationSensitivityTests(unittest.TestCase):
         self.assertEqual(c["matched_events"], 1)
         self.assertEqual(c["unmatched_resolved_alarms"], 1)
 
-    def test_verified_records_and_released_csv_and_tex(self):
+    def test_verified_records_and_released_csv(self):
         summary, histogram = consistent_records()
         self.assertEqual(
             [(r["confirmed_events"], r["right_censored_unconfirmed_events"], r["matched_events"],
@@ -57,10 +57,3 @@ class DurationSensitivityTests(unittest.TestCase):
             with path.open(newline="", encoding="utf-8") as f:
                 self.assertEqual(list(csv.DictReader(f)),
                                  [{k: str(v) if v is not None else "" for k, v in r.items()} for r in values])
-        es = RELEASE_SUPPLEMENT.read_text()
-        for marker, expected in [
-            (DURATION_MARKER, "".join(map(format_duration, summary))),
-            (HISTOGRAM_MARKER, "".join(map(format_histogram, grouped_lengths(histogram)))),
-        ]:
-            block = es.split(f"% BEGIN {marker}\n")[1].split(f"% END {marker}")[0]
-            self.assertEqual(block, expected)

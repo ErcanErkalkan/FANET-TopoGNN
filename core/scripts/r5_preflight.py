@@ -95,7 +95,7 @@ def run_preflight(*, root: Path, spec_path: Path, available=module_available) ->
     missing = [name for name, ok in deps.items() if not ok]
     if missing:
         blockers.append("missing full-pipeline dependencies: " + ", ".join(missing))
-    for path in ("main.py", "fanet/dataset.py", "fanet/evaluation.py", "fanet/pipeline.py", "fanet/r4_evidence.py", "fanet/reporting.py", "fanet/manuscript.py"):
+    for path in ("main.py", "fanet/dataset.py", "fanet/evaluation.py", "fanet/pipeline.py", "fanet/r4_evidence.py", "fanet/reporting.py", "fanet/analysis_export.py"):
         if not (root / path).is_file():
             blockers.append(f"missing project source: {path}")
     if (root / "outputs/revision_neural_20seed_full_r4_isolated").exists():

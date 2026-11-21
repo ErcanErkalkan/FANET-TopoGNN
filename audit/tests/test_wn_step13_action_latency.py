@@ -12,8 +12,6 @@ class ActionLatencyAudit(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.data,cls.hist,cls.mob=study.consistent()
-        cls.main=(ROOT/'paper/manuscript/main.tex').read_text()
-        cls.esm=(ROOT/'paper/manuscript/ESM_1.tex').read_text()
 
     def sample(self,method,L):
         return next(r for r in self.data if r['method']==method and
@@ -50,13 +48,6 @@ class ActionLatencyAudit(unittest.TestCase):
                 subset=[m for m in self.mob if m['method']==method and m['latency_seconds']==L]
                 self.assertEqual(len(subset),3)
                 self.assertEqual(sum(m['potentially_timely'] for m in subset),row['potentially_timely_matched_alerts'])
-    def test_authored_claims_and_caveats(self):
-        for phrase in ('action-latency sensitivity','only 58','No sensing-to-alarm latency','no 0.3-second action'):
-            if phrase!='no 0.3-second action':self.assertIn(phrase.lower(),self.main.lower())
-            else:self.assertIn('No 0.3-second action',self.esm)
-        for phrase in ('hypothetical','not achieved mitigations','not reassigned as false alarms','BEGIN VERIFIED ACTION LATENCY'):
-            self.assertIn(phrase.lower(),(self.main+self.esm).lower())
-        self.assertLessEqual(len(self.main.split('\\begin{abstract}',1)[1].split('\\end{abstract}',1)[0].split()),250)
     def test_csv_matches_recomputation(self):
         files=[('wn_r9_10_action_latency_sensitivity.csv',self.data),('wn_r9_10_lead_distribution.csv',self.hist),('wn_r9_10_action_latency_by_mobility.csv',self.mob)]
         for name,computed in files:

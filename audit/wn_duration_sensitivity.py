@@ -14,7 +14,7 @@ MIN_FRAMES = (1, 2, 3)
 DATA = ROOT / "data_derived"
 DURATION_CSV = DATA / "wn_r9_10_duration_sensitivity.csv"
 HISTOGRAM_CSV = DATA / "wn_r9_10_episode_lengths.csv"
-RELEASE_SUPPLEMENT = ROOT / "paper/manuscript/ESM_1.tex"
+# Publication output is kept outside the research repository.
 DURATION_MARKER = "VERIFIED R9.10 BY MINIMUM EPISODE LENGTH"
 HISTOGRAM_MARKER = "VERIFIED R9.10 EPISODE LENGTH DISTRIBUTION"
 
@@ -167,16 +167,11 @@ def export_csv(path, data):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--write-csv", action="store_true")
-    p.add_argument("--sync-tex", action="store_true")
     args = p.parse_args()
     summary, histogram = consistent_records()
     if args.write_csv:
         export_csv(DURATION_CSV, summary)
         export_csv(HISTOGRAM_CSV, histogram)
-    if args.sync_tex:
-        from generate_wn_tables import refresh
-        refresh(RELEASE_SUPPLEMENT, "".join(map(format_duration, summary)), DURATION_MARKER)
-        refresh(RELEASE_SUPPLEMENT, "".join(map(format_histogram, grouped_lengths(histogram))), HISTOGRAM_MARKER)
     print(json.dumps({"verified_records": 3, "summary": summary,
                       "episode_length_bins": list(grouped_lengths(histogram))}, indent=2))
 

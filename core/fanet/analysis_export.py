@@ -42,7 +42,7 @@ def _simple_latex_table(df: pd.DataFrame, caption: str, label: str, note: str | 
     return "\n".join(lines)
 
 
-def export_manuscript_tables(
+def export_analysis_tables(
     out_path: Path,
     metrics_df: pd.DataFrame,
     leads_df: pd.DataFrame,
@@ -99,7 +99,7 @@ def export_manuscript_tables(
         }
     )
     blocks = [
-        "% Auto-generated manuscript tables",
+        "% Auto-generated analysis tables",
         f"% Experiment: {summary['experiment_name']}",
         "",
         _simple_latex_table(
@@ -134,7 +134,7 @@ def export_manuscript_tables(
     out_path.write_text("\n".join(blocks), encoding="utf-8")
 
 
-def export_manuscript_summary(out_path: Path, summary: dict, metrics_df: pd.DataFrame, leads_df: pd.DataFrame) -> None:
+def export_analysis_summary(out_path: Path, summary: dict, metrics_df: pd.DataFrame, leads_df: pd.DataFrame) -> None:
     best_r2_row = metrics_df.sort_values("R2_mean", ascending=False).iloc[0] if not metrics_df.empty else None
     best_risk_row = metrics_df.sort_values("Risk_F1_mean", ascending=False).iloc[0] if not metrics_df.empty else None
     payload = {

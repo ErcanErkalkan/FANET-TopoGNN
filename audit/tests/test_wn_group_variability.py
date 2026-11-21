@@ -54,26 +54,6 @@ class ClusterStructureTests(unittest.TestCase):
             self.assertTrue(0 <= r['recall_percentile_97_5'] <= 1)
         self.assertGreater(a[0]['rate_percentile_97_5'],2.0)
 
-    def test_generated_csv_and_latex_are_consistent(self):
-        import csv
-        from wn_group_variability import latex_rows_boot, latex_rows_blocks
-        root=ROOT
-        with (root/'data_derived/wn_r9_10_cluster_bootstrap.csv').open(newline='') as f:
-            saved=list(csv.DictReader(f))
-        recomputed=bootstrap(self.groups,seed=20261121,resamples=12000)
-        self.assertEqual(len(saved),4)
-        for a,b in zip(saved,recomputed):
-            self.assertEqual(a['mobility'],b['mobility'])
-            for metric in ('false_alarm_rate','rate_percentile_2_5','rate_percentile_97_5',
-                           'event_recall','recall_percentile_2_5','recall_percentile_97_5'):
-                self.assertAlmostEqual(float(a[metric]),b[metric],places=12)
-        supplement=(root/'paper/manuscript/ESM_1.tex').read_text()
-        for row in latex_rows_boot(recomputed):
-            self.assertIn(row.strip(),supplement)
-        main=(root/'paper/manuscript/main.tex').read_text()
-        blocks,_,_=analyze(self.groups)
-        for row in latex_rows_blocks(blocks):
-            self.assertIn(row.strip(),main)
 
     def test_rejects_corrupt_missing_fourth_variant(self):
         from tempfile import TemporaryDirectory

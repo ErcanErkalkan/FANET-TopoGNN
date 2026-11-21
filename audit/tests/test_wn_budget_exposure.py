@@ -66,13 +66,6 @@ class BudgetExposureTests(unittest.TestCase):
         self.assertEqual(receipt['block_mobility_connected_numerical_reference_exceedances'],8)
         self.assertTrue(receipt['no_new_training_or_threshold_tuning'])
 
-    def test_supplement_generated_blocks_are_current(self):
-        text=(ROOT/'paper/manuscript/ESM_1.tex').read_text()
-        pooled, detailed=w.produce_tex(self.rows)
-        for marker,payload in [('VERIFIED EXPOSURE SENSITIVITY POOLED',pooled),
-                               ('VERIFIED EXPOSURE SENSITIVITY BLOCK MOBILITY',detailed)]:
-            body=text.split(f'% BEGIN {marker}\n')[1].split(f'% END {marker}')[0]
-            self.assertEqual(body,payload)
 
 if __name__=='__main__':
     unittest.main()

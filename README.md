@@ -1,58 +1,61 @@
 # FANET-TopoGNN
 
-**Reproducible benchmark of fragmentation-warning reliability in simulated flying ad hoc networks.**
+Reproducible research code and frozen development evidence for fragmentation-warning reliability in **simulated flying ad hoc networks**.
 
-This repository hosts one current research package. The project investigates whether an alarm threshold selected on development data maintains a fixed false-alarm budget across mobility regimes, node counts, graph/radio conditions, and development blocks. Its code, dataset, experimental evidence and scientific conclusions are not tied to a publisher or venue. The manuscript presentation requirements are specified separately in `paper/manuscript/FORMAT_REQUIREMENTS.md`.
+## Research question
 
-## Scope and principal findings
+Can a fixed warning threshold maintain an analytical false-alarm budget across network sizes, mobility conditions and independent development blocks? The evaluation concerns simulated graph fragmentation, not packet delivery or real-world deployment.
 
-The frozen experiment contains **45 trajectory groups**, each evaluated under four paired radio/graph conditions (**180 runs**, **60 simulated minutes**). At a frozen threshold of **0.15**, 183 of 1,114 network-fragmentation onsets were matched (event recall **16.4%**, event F1 **0.264**) and there were 88 unmatched alarms (**1.47 false alarms/min** over full simulated exposure). The pooled rate is below the chosen analytical budget of two/min, while six of 15 block-by-mobility strata exceed it. At 30 nodes, the system emitted no alarms and missed all 82 events. The retrospective history-only reference captured more events but exceeded the pooled false-alarm budget. These results are descriptive development evidence, not independent blind test performance, packet-delivery validation, or proof of model superiority.
+## Frozen evaluation
 
-## Project layout
+| Quantity | Result |
+|---|---:|
+| Paired runs | 180 |
+| Trajectory groups | 45 |
+| Simulated exposure | 60 minutes |
+| Fragmentation onsets | 1,114 |
+| Matched onsets | 183 (16.4% recall) |
+| False alarms | 88 (1.47/min) |
+| Event F1 | 0.264 |
+| Cells exceeding 2 false alarms/min | 6 of 15 block-by-mobility cells |
+| 30-node scenarios | 82 onsets, 0 detected |
 
-- `core/`: simulation, radio-graph construction, model and test code.
-- `frozen/`: fixed experiment plan, training/selection inputs and calibration anchors (scientific provenance, **not competing releases**).
-- `audit/`: verification tools, independent event scoring and reproducibility checks.
-- `data_derived/`: reproducible summary tables and retrospective sensitivity analysis.
-- `paper/manuscript/`: one current research draft and technical supplement; the scientific content remains neutral while the layout follows the specified publication format.
-- `evidence/`: evidence and test receipts. Stage identifiers are audit provenance only, not active project versions.
-- `run.py`: project entry point.
+The fixed operating point is 0.15. The analytical 2/min budget is not a validated operational requirement. The retrospective History-4 comparison is post-hoc. None of the development experiments provides a prospective blind test, packet-level network assessment or evidence of prediction superiority.
 
-## Reproduce and verify
+## Repository layout
 
-Python 3.11+ is sufficient for checksum validation and stored-result verification:
+- `core/`: simulation, radio-link abstraction, models, metrics and reproducible code.
+- `frozen/`: fixed experiment plans, calibration anchors and scripts.
+- `audit/`: independent scoring, provenance verification and scientific regression tests.
+- `data_derived/`: verified derived tables and sensitivity analyses.
+- `snapshot/research.part00`–`research.part13`: transport chunks of the complete research-only ZIP, including large CSVs and verification receipts absent from the lightweight Git tree.
+- `run.py`: reproducibility entry point.
+
+**Research code and evidence only.** Article text, figures prepared for publication, supplementary manuscripts and submission documents are maintained separately from the public research repository.
+
+## Reconstruct and verify
+
+Use Python 3.11 or newer. From the repository root:
 
 ```bash
-python run.py check
-python run.py verify
-python run.py test
+python assemble_snapshot.py
+python -B run.py check
+python -B run.py verify
+python -B run.py test
 ```
 
-Full CPU simulation reruns require the pinned Python / PyTorch / NumPy / SciPy / scikit-learn environment recorded in `frozen/anchor/`. Do not treat re-verification as new training or an independent holdout.
+The first command reconstructs and verifies the compressed research-only snapshot and restores the recorded CSVs and receipts without overwriting a different local version. The remaining commands verify integrity, audit records and tests. `run.py pilot` requires the documented CPU simulation dependencies and is a deterministic re-verification, not a new independent evaluation.
 
-```bash
-python run.py pilot
-python run.py build-paper
-```
+## Experimental boundaries
 
-The manuscript builder uses `pdflatex` and requires `bibtex` (or `bibtex8`). A separate XeLaTeX rendering is possible for exact system-font selection. New outputs are written under `outputs/` rather than overwriting frozen records.
+- Two-dimensional, thresholded received-power connectivity; no measured packet-delivery ratio, MAC-layer behavior or real UAV field trials.
+- Frozen thresholds and event-matching logic; no model tuning on the reported development evaluation blocks.
+- Four radio/graph variants share each trajectory realization and are not independent observations.
+- Model input is a single graph snapshot; the target is a six-step endpoint, distinct from onset-anywhere matching.
+- No prospective blind-holdout results or supported deployment threshold.
 
-## Scientific limitations
+## Integrity and status
 
-- The simulator models a **2-D received-power radio connectivity graph**, not PHY/MAC packet contention, routing convergence, throughput, packet delivery, or real UAV operations.
-- The selected warning budget (2 false alarms per simulated minute) is an **analytical reference**, not an empirically validated service-level requirement.
-- The model predicts a fixed-horizon endpoint state, whereas an alarm matches an onset anywhere in the lead window.
-- The History-4 comparison was designed after inspecting original results; it is **post-hoc**, not confirmatory.
-- Authors, disclosures, external data release and publication decisions remain subject to explicit human approval.
+`MANIFEST.json` contains SHA-256 checksums for all included research files. The snapshot archive is authenticated by `assemble_snapshot.py`. Original experimental outputs, selection decisions and model weights were not regenerated or changed in preparing the code-only distribution. Research status: **development evidence / not deployment approved**.
 
-## Data access and citation
-
-The full project snapshot includes recorded per-frame component-count truth and decision scores; it does not ship raw per-UAV coordinate trajectories, which are reproducible from the frozen generator. See `audit/reference_linux/`, `audit/reference_windows/` and `evidence/pilot_linux/`. Avoid citing historical GitHub or Zenodo records as if they archive the current snapshot. Use a snapshot-specific hash and versioned permalink after approving a public release.
-
-## Licence and status
-
-Project evidence remains **RESEARCH / AUTHOR REVIEW — NOT DEPLOYMENT APPROVED**. The original experimental records and selected thresholds have not been altered. `core/LICENSE` contains the preserved software licence. The latest package is the only active research snapshot; previous editorial/revision packages are superseded.
-
-## Figure-enriched manuscript
-
-The current manuscript contains five labeled vector figures. Methods/targets are explicitly schematic; experimental charts are tied to frozen CSVs (`paper/FIGURE_PROVENANCE.md`). The manuscript layout follows the chosen venue while the research findings and repository remain independent of the venue.
+The licensed software terms are retained in `core/LICENSE`. Citation of the research snapshot must identify a specific repository commit and snapshot hash; no DOI-registered archival release is claimed.
