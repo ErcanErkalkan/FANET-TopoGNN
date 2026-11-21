@@ -1,0 +1,105 @@
+{
+  "status": "POST_HOC_DEVELOPMENT_ONLY_COMPARISON_PUBLICATION_HOLD",
+  "comparison": "TopoGNN 0.15 versus History-4 rule, 19 grid points on block 1 only",
+  "baseline_formula": "score(t) = (sum_{k=1..4} 1[beta_current(t-k)>1])/4; current connectivity is used by shared alert gate",
+  "prospectively_preregistered": false,
+  "blind_holdout_read": false,
+  "superiority_test": false,
+  "baseline_selected_threshold": 0.3,
+  "baseline_selection": {
+    "threshold": 0.3,
+    "runs": 36,
+    "events": 159,
+    "true_alerts": 43,
+    "false_alerts": 21,
+    "alerts": 64,
+    "minutes": 12.0,
+    "recall": 0.27044025157232704,
+    "precision": 0.671875,
+    "event_f1": 0.38565022421524664,
+    "false_alerts_per_minute": 1.75,
+    "within_budget": true
+  },
+  "frozen_topognn_selection": {
+    "runs": 36,
+    "events": 159,
+    "true_alerts": 22,
+    "false_alerts": 24,
+    "alerts": 46,
+    "minutes": 12.0,
+    "recall": 0.13836477987421383,
+    "precision": 0.4782608695652174,
+    "event_f1": 0.2146341463414634,
+    "false_alerts_per_minute": 2.0,
+    "within_budget": true
+  },
+  "evaluation": {
+    "TopoGNN": {
+      "runs": 180,
+      "events": 1114,
+      "true_alerts": 183,
+      "false_alerts": 88,
+      "alerts": 271,
+      "minutes": 60.0,
+      "recall": 0.16427289048473967,
+      "precision": 0.6752767527675276,
+      "event_f1": 0.2642599277978339,
+      "false_alerts_per_minute": 1.4666666666666666,
+      "within_budget": true
+    },
+    "History-4": {
+      "runs": 180,
+      "events": 1114,
+      "true_alerts": 381,
+      "false_alerts": 135,
+      "alerts": 516,
+      "minutes": 60.0,
+      "recall": 0.34201077199281865,
+      "precision": 0.7383720930232558,
+      "event_f1": 0.46748466257668714,
+      "false_alerts_per_minute": 2.25,
+      "within_budget": false
+    }
+  },
+  "selection_provenance": {
+    "frozen_plan_sha256": "f65af11c033ff62d40d219e825e5e6cd6a357331af9e90d073d1bfe0385a9894",
+    "selection_anchor_sha256": "ee515b38135bb73adb2051377564564e6e340bfe517b046553f19e237113a240",
+    "topognn_calibrator_sha256": "6bc5b36c1221f493a532510137a0492abc2894408e0c63c5474dadb70e6d68ef",
+    "evaluation_reference_sha256": "73b7828b7945bd95da710eedb20e28b8e27a5dbf17abe2833557f0b8bf0e8d8c",
+    "simulator_source_sha256": {
+      "development_csv_sha256": "f65af11c033ff62d40d219e825e5e6cd6a357331af9e90d073d1bfe0385a9894",
+      "manifest_sha256": "a16b709b39ee2c43e03522c98d57f321c7ab652feb6bf915c216898674483ef1",
+      "simulator_sha256": {
+        "configs/r7_full_20seed_isolated.json": "739e0de7da426400e0ddac75dc86317afdf8bbbe412de38104b374ad9e857264",
+        "fanet/dataset.py": "8ebf481ad20f056afb3bc0fb991168de61c9c347075fb8fe83e4d1f963edaffb",
+        "fanet/geometry.py": "ac1e3aadc47a52c56020511c602f9f38cfa903822fd668889eed5271fd8ee147",
+        "fanet/graph_utils.py": "277a671650a137c5c858cfc4b51689704884450ff2be5a872c69634850d18613",
+        "fanet/mobility.py": "a4a5cd333176bf3b761cc57420bdefcbf1f541db86d7caa3c44a54c91ea949a3",
+        "fanet/radio.py": "464370b5bca839877b52077f15d4cbc42edeb21b39d92aee4762456a93fdc453",
+        "fanet/topology.py": "e0bf829aac8163e71ed1ed747334eb9452aa2a79160cb20df0c1d6c0170487e0"
+      }
+    }
+  },
+  "bootstrap": {
+    "resamples": 10000,
+    "resampling_unit": "45 paired trajectory groups, 5 per mobility x node count cell",
+    "seed": 20261121,
+    "event_f1_topognn_minus_baseline_95pct": [
+      -0.29444803746271103,
+      -0.11843182540220958
+    ],
+    "fp_per_min_topognn_minus_baseline_95pct": [
+      -1.4000000000000001,
+      -0.1333333333333333
+    ],
+    "status": "DESCRIPTIVE_POST_HOC_NOT_CONFIRMATORY"
+  },
+  "constraints": [
+    "One fixed heuristic, chosen for simplicity after viewing original R9.10 outcomes.",
+    "Threshold chosen only on development selection block 1; never tuned on blocks 2-6.",
+    "Full truth is simulated for threshold selection and matches frozen target labels.",
+    "No retraining or change to TopoGNN; same 190 decision instants, event matching, horizon and cooldown.",
+    "Historical R9.10 evaluation blocks are NOT blind for this newly constructed heuristic.",
+    "Simple history-only reference cannot establish general model superiority or practical usefulness."
+  ]
+}

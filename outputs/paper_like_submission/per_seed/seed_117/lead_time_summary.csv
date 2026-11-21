@@ -1,4 +1,0 @@
-Model,Lead_5th_ms,Lead_median_ms,Lead_IQR_ms,Lead_95th_ms,Lead_mean_ms,Lead_norm_mean,seed
-Shallow ML (RF),0.0,500.0,400.0000000000001,600.0000000000001,380.7291666666667,0.46251639075701095,117
-Kinetic-TopoGuard,0.0,400.0,600.0000000000001,600.0000000000001,343.75,0.4389621936603465,117
-Current-state persistence baseline,0.0,0.0,0.0,0.0,0.0,0.0,117

@@ -1,0 +1,47 @@
+{
+  "project": "FANET-TopoGNN",
+  "canonical_version": "R9.10",
+  "reference_output_verifier": {
+    "Linux": {
+      "runs": 180,
+      "strata": 24,
+      "csv_hashes": 4
+    },
+    "Windows": {
+      "runs": 180,
+      "strata": 24,
+      "csv_hashes": 4
+    }
+  },
+  "cross_platform": {
+    "matched_decision_rows": 34200,
+    "byte_identical_csvs": [
+      "evaluation_full_truth.csv",
+      "run_counts.csv",
+      "budget_summary.csv"
+    ],
+    "max_absolute_beta_delta": 3.5762786865234375e-07,
+    "max_absolute_probability_delta": 6.095232437663967e-07,
+    "all_metrics_and_stratum_counts_match": true
+  },
+  "pooled": {
+    "scope": "pooled",
+    "replicate": null,
+    "mobility": null,
+    "runs": 180,
+    "trajectory_groups": 45,
+    "minutes": 60.0,
+    "events": 1114,
+    "warnable_events": 1088,
+    "true_alerts": 183,
+    "false_alerts": 88,
+    "false_alerts_per_minute": 1.4666666666666666,
+    "within_budget": true,
+    "event_recall": 0.16427289048473967,
+    "event_precision": 0.6752767527675276,
+    "event_f1": 0.2642599277978339
+  },
+  "block_mobility_strata_exceeding_budget": 6,
+  "publication": "HOLD",
+  "blind_test_read": false
+}

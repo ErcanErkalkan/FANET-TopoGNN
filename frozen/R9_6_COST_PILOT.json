@@ -1,0 +1,77 @@
+{
+  "schema": "fanet_r9_6_development_simulator_cost_pilot_v1",
+  "status": "R9_6_COST_PILOT_COMPLETE_PUBLICATION_HOLD",
+  "scientific_submission": "HOLD",
+  "simulation_runs": 72,
+  "trajectory_groups": 18,
+  "training_performed": false,
+  "holdout_file_read": false,
+  "external_freeze_complete": false,
+  "platform": "Windows-11-10.0.26300-SP0",
+  "machine_architecture": "AMD64",
+  "logical_cpu_count": 12,
+  "runner_sha256": "71134ab16b82cd0e62fc760d242df736687fe81b88f1e7282a7acef279dc1e4d",
+  "development_csv_sha256": "f65af11c033ff62d40d219e825e5e6cd6a357331af9e90d073d1bfe0385a9894",
+  "manifest_sha256": "a16b709b39ee2c43e03522c98d57f321c7ab652feb6bf915c216898674483ef1",
+  "simulator_sha256": {
+    "configs/r7_full_20seed_isolated.json": "739e0de7da426400e0ddac75dc86317afdf8bbbe412de38104b374ad9e857264",
+    "fanet/dataset.py": "8ebf481ad20f056afb3bc0fb991168de61c9c347075fb8fe83e4d1f963edaffb",
+    "fanet/geometry.py": "ac1e3aadc47a52c56020511c602f9f38cfa903822fd668889eed5271fd8ee147",
+    "fanet/graph_utils.py": "277a671650a137c5c858cfc4b51689704884450ff2be5a872c69634850d18613",
+    "fanet/mobility.py": "a4a5cd333176bf3b761cc57420bdefcbf1f541db86d7caa3c44a54c91ea949a3",
+    "fanet/radio.py": "464370b5bca839877b52077f15d4cbc42edeb21b39d92aee4762456a93fdc453",
+    "fanet/topology.py": "e0bf829aac8163e71ed1ed747334eb9452aa2a79160cb20df0c1d6c0170487e0"
+  },
+  "blocks": [
+    {
+      "replicate": 1,
+      "role": "training",
+      "setup_seconds": 2.3756542000046466,
+      "kinematic_seconds": 3.7071247000130825,
+      "simulation_seconds": 34.18165240000235,
+      "frame_check_seconds": 0.008557199966162443,
+      "trajectory_groups": 9,
+      "scenario_runs": 36,
+      "observed_frames": 7200,
+      "h6_target_frames": 6984,
+      "shared_w5_h6_decision_frames": 6840,
+      "peak_process_memory_bytes": 137998336,
+      "memory_measurement": "Windows process peak working set",
+      "python": "3.14.3",
+      "numpy": "2.5.4",
+      "pandas": "3.1.1",
+      "worker_wall_seconds": 41.35351489999448
+    },
+    {
+      "replicate": 2,
+      "role": "training",
+      "setup_seconds": 2.2259906999825034,
+      "kinematic_seconds": 3.5011757999891415,
+      "simulation_seconds": 32.31597299990244,
+      "frame_check_seconds": 0.007752199919195846,
+      "trajectory_groups": 9,
+      "scenario_runs": 36,
+      "observed_frames": 7200,
+      "h6_target_frames": 6984,
+      "shared_w5_h6_decision_frames": 6840,
+      "peak_process_memory_bytes": 137711616,
+      "memory_measurement": "Windows process peak working set",
+      "python": "3.14.3",
+      "numpy": "2.5.4",
+      "pandas": "3.1.1",
+      "worker_wall_seconds": 39.27067470000475
+    }
+  ],
+  "serial_development_only_projection_seconds": {
+    "n_blocks": 80,
+    "low_from_observed_min": 3141.6539760003798,
+    "mid_from_observed_median": 3224.967583999969,
+    "high_from_observed_max": 3308.2811919995584
+  },
+  "limits": [
+    "Two training blocks; projection is not an uncertainty interval.",
+    "No model training, export, parallel execution, or blind-test cost measured.",
+    "Memory is a per-worker peak with one block retained, not an all-data estimate.",
+    "No simulated labels or performance scores are exported."
+  ]
+}

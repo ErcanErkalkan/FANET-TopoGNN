@@ -1,0 +1,227 @@
+{
+  "schema": "fanet_r9_9_development_calibration_alert_pilot_v1",
+  "status": "R9_9_DEVELOPMENT_CALIBRATION_ALERT_PILOT_COMPLETE_PUBLICATION_HOLD",
+  "scientific_submission": "HOLD",
+  "blind_holdout_read": false,
+  "external_freeze_complete": false,
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "versions": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "scikit_learn": "1.8.0",
+    "scipy": "1.17.0",
+    "torch": "2.9.1+cpu"
+  },
+  "runner_sha256": "a9cae766b82dd8e8c493205efdd167641ad9d49beef6454818938f15513cf250",
+  "development_csv_sha256": "f65af11c033ff62d40d219e825e5e6cd6a357331af9e90d073d1bfe0385a9894",
+  "manifest_sha256": "a16b709b39ee2c43e03522c98d57f321c7ab652feb6bf915c216898674483ef1",
+  "simulator_sha256": {
+    "configs/r7_full_20seed_isolated.json": "739e0de7da426400e0ddac75dc86317afdf8bbbe412de38104b374ad9e857264",
+    "fanet/dataset.py": "8ebf481ad20f056afb3bc0fb991168de61c9c347075fb8fe83e4d1f963edaffb",
+    "fanet/geometry.py": "ac1e3aadc47a52c56020511c602f9f38cfa903822fd668889eed5271fd8ee147",
+    "fanet/graph_utils.py": "277a671650a137c5c858cfc4b51689704884450ff2be5a872c69634850d18613",
+    "fanet/mobility.py": "a4a5cd333176bf3b761cc57420bdefcbf1f541db86d7caa3c44a54c91ea949a3",
+    "fanet/radio.py": "464370b5bca839877b52077f15d4cbc42edeb21b39d92aee4762456a93fdc453",
+    "fanet/topology.py": "e0bf829aac8163e71ed1ed747334eb9452aa2a79160cb20df0c1d6c0170487e0"
+  },
+  "model_source_sha256": {
+    "fanet/training.py": "ec15e1b4efddd8d3c3f4fe72f98d4c1690e1ae3ec033c8c8d79f82bd32ae9d2d",
+    "fanet/models.py": "981c1e8c5d6babe2b1e7e467a43ddf661f77880848103bb0e235eb7bc3739c78",
+    "fanet/source_gated.py": "325bc015a45ae3a2a18da395f289b0948d9d55e69ff72e52482d75a7a7ada008",
+    "fanet/evaluation.py": "41bbc56d9db1e8efaa3b9181b596aca980633da0758f251a685936c95c0110c6"
+  },
+  "r96_code_sha256": "71134ab16b82cd0e62fc760d242df736687fe81b88f1e7282a7acef279dc1e4d",
+  "r96_windows_report_sha256": "6e4faa3986d7eb0d5f486dd21e512058dc324c8dfcf713c14220925e33004b51",
+  "r96_windows_simulator_only_projection_seconds": {
+    "n_blocks": 80,
+    "low_from_observed_min": 3141.6539760003798,
+    "mid_from_observed_median": 3224.967583999969,
+    "high_from_observed_max": 3308.2811919995584
+  },
+  "r98_code_sha256": "b8dcd73a54fd1a158620440a1e8adce378abfc16ba9ceab0d84160fca5514f05",
+  "r98_reference_report_sha256": "ff67410a2bda086caa42f9230bd4b6d5ed1e84e4d601b7597fe0414f7f434076",
+  "replicate": 1,
+  "model_seed": 97114,
+  "topognn_epochs": 2,
+  "roles": {
+    "training": {
+      "runs": 36,
+      "trajectory_groups": 9,
+      "decision_rows": 6840
+    },
+    "model_selection_or_early_stopping": {
+      "runs": 36,
+      "trajectory_groups": 9,
+      "decision_rows": 6840
+    },
+    "threshold_selection": {
+      "runs": 36,
+      "trajectory_groups": 9,
+      "decision_rows": 6840
+    },
+    "calibration_fit": {
+      "runs": 36,
+      "trajectory_groups": 9,
+      "decision_rows": 6840
+    }
+  },
+  "replayed_runs": 144,
+  "calibration_and_selection_label_counts": {
+    "calibration_fit": {
+      "0": 6237,
+      "1": 603
+    },
+    "threshold_selection": {
+      "0": 5798,
+      "1": 1042
+    }
+  },
+  "selection_prevalence_baseline_brier_all_rows": 0.13325119267466917,
+  "threshold_role_full_truth_frames": 7200,
+  "threshold_role_exposure_minutes": 12.0,
+  "threshold_role_total_events": 159,
+  "threshold_role_warnable_events_before_cooldown_and_matching": 154,
+  "horizon_steps": 6,
+  "dt_seconds": 0.1,
+  "common_warmup_steps": 4,
+  "cooldown_steps": 6,
+  "calibrator_input": "regression_beta_only",
+  "calibrator_C": 1.0,
+  "false_alert_budget_per_full_trajectory_minute": 2.0,
+  "threshold_grid": [
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.25,
+    0.3,
+    0.35,
+    0.4,
+    0.45,
+    0.5,
+    0.55,
+    0.6,
+    0.65,
+    0.7,
+    0.75,
+    0.8,
+    0.85,
+    0.9,
+    0.95
+  ],
+  "event_policy": "frozen R8 alert_event_metrics_full_trajectory",
+  "input_fingerprints": {
+    "training": "8200103e15dbead55cb67267d089db8465aafb906e9234a811c255ae342c3419",
+    "model_selection_or_early_stopping": "ffd21472106b3426094dc6bd8d43dccbab6564750c0765f65a17d40219c9405a",
+    "threshold_selection": "a4acec31fdaca2b05448a2b4689c0464701d8aa8a8325d2159c82989d2ee0ce8",
+    "calibration_fit": "32787ac6096d39be60f8691de4abddcd61eff06d48f3835de579260ec6306bbb"
+  },
+  "output_sha256": {
+    "extra_trees_development_beta.csv": "5a521f24040ab22b67d2a3cb86f9e8b631bd31340ee3c6f40831c9a10b9a0ec7",
+    "extra_trees_threshold_grid.csv": "0efa6d8169536573e44e9c4ee9e891f4b64d2ab627d95dc1da22100919946135",
+    "extra_trees_calibration_fit_inputs.csv": "130eb0a37d0545356c18efcd9419a697bd70fa4dee496383dd668049d32778c4",
+    "extra_trees_threshold_selection_inputs.csv": "3bdeda4a92971fd6a350ac3b0652d179f4f78b0c394005c9a0a05c5d9fcfe068",
+    "fanet_topognn_development_beta.csv": "ee515b38135bb73adb2051377564564e6e340bfe517b046553f19e237113a240",
+    "fanet_topognn_threshold_grid.csv": "e31fbf5c1c68c4adb442848e3412af8059bc5e4ca00f99a570bc755e05487a97",
+    "fanet_topognn_calibration_fit_inputs.csv": "adf990fe12c42acc9622ae22a65594a1450f21d026a422c9e27fbc3906ee53fd",
+    "fanet_topognn_threshold_selection_inputs.csv": "251e303c999cede21c20d564471ce4df7d72e0f1f0759455d454c2b3615f127b",
+    "threshold_role_full_truth.csv": "963d0a56476867177c9cf3095eba8a10adf6aa2b8532ee2f24a501bc32361391"
+  },
+  "models": {
+    "extra_trees": {
+      "runtime_seconds": 39.88755844199994,
+      "r98_regression_parity": {
+        "n": 6840,
+        "exactly_equal_predictions": 6840,
+        "mean_absolute_difference": 0.0,
+        "p95_absolute_difference_nearest_rank": 0.0,
+        "max_absolute_difference": 0.0,
+        "soft_cut_beta_gt_one_disagreements": 0,
+        "byte_identical": true,
+        "fixed_absolute_tolerance": 1e-10,
+        "within_fixed_absolute_tolerance": true
+      },
+      "calibrator": {
+        "slope": 2.2778461456995793,
+        "intercept": -5.2605235221237105,
+        "unique_calibration_beta_count": 6
+      },
+      "selection_probability_range": [
+        0.0482146152829019,
+        0.9978253427902708
+      ],
+      "selection_role_brier_all_rows": 0.07914360087018103,
+      "selection_role_brier_connected_rows": 0.031947350848138094,
+      "feasible_grid_points": 19,
+      "feasible_grid_points_with_true_alert": 0,
+      "selection_diagnostic_only": {
+        "threshold": 0.05,
+        "within_budget": true,
+        "Alert_Events": 0.0,
+        "True_Alert_Events": 0.0,
+        "False_Alert_Events": 0.0,
+        "Ground_Truth_Fragmentation_Events": 159.0,
+        "Missed_Fragmentation_Events": 159.0,
+        "Alert_Event_Precision": 0.0,
+        "Alert_Event_Recall": 0.0,
+        "Alert_Event_F1": 0.0,
+        "False_Alert_Events_per_minute": 0.0
+      },
+      "operating_point_status": "NO_TRUE_ALERT_UNDER_BUDGET",
+      "deployment_threshold": null
+    },
+    "fanet_topognn": {
+      "runtime_seconds": 9.746633552000048,
+      "r98_regression_parity": {
+        "n": 6840,
+        "exactly_equal_predictions": 3492,
+        "mean_absolute_difference": 5.9578502387331246e-08,
+        "p95_absolute_difference_nearest_rank": 1.1920928955078125e-07,
+        "max_absolute_difference": 3.5762786865234375e-07,
+        "soft_cut_beta_gt_one_disagreements": 0,
+        "byte_identical": false,
+        "fixed_absolute_tolerance": 1e-06,
+        "within_fixed_absolute_tolerance": true
+      },
+      "calibrator": {
+        "slope": 6.846468308565614,
+        "intercept": -10.676062601536863,
+        "unique_calibration_beta_count": 6820
+      },
+      "selection_probability_range": [
+        0.006565396349026506,
+        0.7838643437414397
+      ],
+      "selection_role_brier_all_rows": 0.09072933739485964,
+      "selection_role_brier_connected_rows": 0.03025747112419539,
+      "feasible_grid_points": 17,
+      "feasible_grid_points_with_true_alert": 10,
+      "selection_diagnostic_only": {
+        "threshold": 0.15,
+        "within_budget": true,
+        "Alert_Events": 46.0,
+        "True_Alert_Events": 22.0,
+        "False_Alert_Events": 24.0,
+        "Ground_Truth_Fragmentation_Events": 159.0,
+        "Missed_Fragmentation_Events": 137.0,
+        "Alert_Event_Precision": 0.4782608695652174,
+        "Alert_Event_Recall": 0.13836477987421383,
+        "Alert_Event_F1": 0.21463414634146344,
+        "False_Alert_Events_per_minute": 2.0
+      },
+      "operating_point_status": "DESCRIPTIVE_ONLY_IN_SAMPLE_OPERATING_POINT",
+      "deployment_threshold": null
+    }
+  },
+  "simulation_seconds": 51.64143527600004,
+  "elapsed_seconds_before_final_report": 106.80657130100002,
+  "peak_process_memory_bytes": 607117312,
+  "memory_measurement": "process peak RSS",
+  "limits": [
+    "One block per role and two neural CPU epochs.",
+    "Threshold-role event metrics use the data used to choose the threshold.",
+    "No multi-block stability, deployment threshold, superiority, power or publication claim.",
+    "Reported Brier is descriptive for the threshold-selection role, not confirmatory evidence."
+  ]
+}

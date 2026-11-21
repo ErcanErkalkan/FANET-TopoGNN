@@ -1,4 +1,0 @@
-# Optional PyTorch Geometric export stack for fanet.pyg_utils.
-# This is needed only when converting snapshots to PyG Data objects.
--r requirements-deep.txt
-torch-geometric>=2.5

@@ -1,0 +1,4 @@
+scope,mobility,n_nodes,runs,trajectory_groups,minutes,events,warnable_events,true_alerts,false_alerts,alerts,missed_events,event_recall,event_precision,false_alerts_per_minute,within_budget
+node_count,,10,60,15,20.0,599,583,158,77,235,441,0.2637729549248748,0.6723404255319149,3.85,False
+node_count,,20,60,15,20.0,433,424,25,11,36,408,0.057736720554272515,0.6944444444444444,0.55,True
+node_count,,30,60,15,20.0,82,81,0,0,0,82,0.0,,0.0,True

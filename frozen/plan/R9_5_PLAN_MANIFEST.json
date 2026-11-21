@@ -1,0 +1,25 @@
+{
+  "schema": "fanet_r9_5_prospective_blind_matrix_v1",
+  "status": "R9_5_MATRIX_GENERATED_AWAITING_EXTERNAL_FREEZE_PUBLICATION_HOLD",
+  "scientific_submission": "HOLD",
+  "files_sha256": {
+    "R9_5_TRAIN_VALIDATION_MATRIX.csv": "f65af11c033ff62d40d219e825e5e6cd6a357331af9e90d073d1bfe0385a9894",
+    "R9_5_SEPARATE_BLIND_HOLDOUT_MATRIX.csv": "35f334b2e557407a4279ea34805d1cf3d9d481acb3ba2c67b5a0b7bc62141ba6",
+    "R9_5_PREREGISTRATION_DRAFT.json": "aa5d995e10c71141cf68be1418687a44796d2fdead9767bf2aaddf4776424c8d",
+    "R9_5_SEED_COLLISION_AUDIT.json": "2f5e09951a7ac72db60b05c3070f820973bf196ae63838a04cc3481cfab6d535"
+  },
+  "checks": {
+    "simulation_runs": 3600,
+    "trajectory_groups": 900,
+    "replicate_role_blocks": 100,
+    "scenario_cells_per_role": 36,
+    "paired_radio_graph_variants_per_trajectory": 4,
+    "r8_trajectory_seed_collisions": 0,
+    "groups_shared_across_roles": 0,
+    "minimum_cell_replicates_per_role": 20
+  },
+  "r8_config_sha256": "739e0de7da426400e0ddac75dc86317afdf8bbbe412de38104b374ad9e857264",
+  "r94_windows_result_sha256": "5a6921f22b5cef3f2abdd841261931ca8c40d7fc803094d09a2375139c340a6d",
+  "never_trained_or_simulated": true,
+  "external_preregistration_completed": false
+}

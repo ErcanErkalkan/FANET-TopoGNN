@@ -1,9 +1,0 @@
-\begin{tabular}{lrrrrrrrrrrrrrrrrrrrrrr}
-\toprule
-seed & Model & Risk\_Precision & Risk\_Recall & Risk\_F1 & Risk\_Specificity & Risk\_Accuracy & Risk\_PR\_AUC & Risk\_ROC\_AUC & Risk\_Brier & Risk\_ECE & False\_Alarms & False\_Alarms\_per\_minute & Alert\_Events & True\_Alert\_Events & False\_Alert\_Events & Ground\_Truth\_Fragmentation\_Events & Missed\_Fragmentation\_Events & Alert\_Event\_Precision & Alert\_Event\_Recall & Alert\_Event\_F1 & False\_Alert\_Events\_per\_minute & Model\_Backend \\
-\midrule
-57 & Current-state persistence baseline & 0.810 & 0.820 & 0.815 & 0.946 & 0.919 & 0.783 & 0.883 & 0.081 & 0.081 & 302.000 & 25.167 & 0.000 & 0.000 & 0.000 & 206.000 & 206.000 & 0.000 & 0.000 & 0.000 & 0.000 & deterministic\_persistence\_baseline \\
-57 & Shallow ML (RF) & 0.329 & 0.976 & 0.492 & 0.443 & 0.560 & 0.366 & 0.710 & 0.440 & 0.440 & 3132.000 & 261.000 & 337.000 & 104.000 & 233.000 & 206.000 & 102.000 & 0.309 & 0.505 & 0.383 & 19.417 & scikit\_learn \\
-57 & Kinetic-TopoGuard & 0.672 & 0.924 & 0.778 & 0.874 & 0.885 & 0.860 & 0.956 & 0.083 & 0.128 & 711.000 & 59.250 & 125.000 & 71.000 & 54.000 & 206.000 & 135.000 & 0.568 & 0.345 & 0.429 & 4.500 & scikit\_learn \\
-\bottomrule
-\end{tabular}

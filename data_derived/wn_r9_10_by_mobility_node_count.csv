@@ -1,0 +1,10 @@
+scope,mobility,n_nodes,runs,trajectory_groups,minutes,events,warnable_events,true_alerts,false_alerts,alerts,missed_events,event_recall,event_precision,false_alerts_per_minute,within_budget
+mobility_node_count,rwp,10,20,5,6.666666666666667,181,176,24,17,41,157,0.13259668508287292,0.5853658536585366,2.55,False
+mobility_node_count,rwp,20,20,5,6.666666666666667,113,111,0,1,1,113,0.0,0.0,0.15,True
+mobility_node_count,rwp,30,20,5,6.666666666666667,11,11,0,0,0,11,0.0,,0.0,True
+mobility_node_count,gm,10,20,5,6.666666666666667,205,198,92,39,131,113,0.44878048780487806,0.7022900763358778,5.85,False
+mobility_node_count,gm,20,20,5,6.666666666666667,205,202,25,10,35,180,0.12195121951219512,0.7142857142857143,1.5,True
+mobility_node_count,gm,30,20,5,6.666666666666667,55,55,0,0,0,55,0.0,,0.0,True
+mobility_node_count,mission,10,20,5,6.666666666666667,213,209,42,21,63,171,0.19718309859154928,0.6666666666666666,3.15,False
+mobility_node_count,mission,20,20,5,6.666666666666667,115,111,0,0,0,115,0.0,,0.0,True
+mobility_node_count,mission,30,20,5,6.666666666666667,16,15,0,0,0,16,0.0,,0.0,True

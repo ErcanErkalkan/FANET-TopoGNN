@@ -1,0 +1,266 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=24mm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{mathptmx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{amsmath,amssymb}
+\urlstyle{same}
+
+\begin{document}
+\title{Evaluating False-Alarm Budgets for Fragmentation Warnings in Simulated Flying Ad Hoc Networks}
+
+% Author identities and declarations are pending author confirmation.
+\author{Author details pending confirmation}
+
+\maketitle
+\begin{abstract}
+Flying ad hoc network (FANET) fragmentation warnings must balance event detection and false-alarm burden. We audit whether a fixed warning threshold transfers across mobility regimes, network sizes and development blocks in a two-dimensional FANET simulator. A graph-neural model trained to estimate the future component count and calibrated for fragmentation at a six-step endpoint was evaluated on five development blocks excluded from training, calibration and threshold selection. Forty-five trajectory groups provided 180 paired radio/graph runs and 60 simulated minutes. At threshold 0.15, 88 false alarms yielded 1.47 per minute, below the stipulated analytical budget of two. Nevertheless, six of 15 block-by-mobility cells exceeded the budget. The system matched 183 of 1,114 fragmentation onsets (16.4\% recall, event $F_1=0.264$). Gauss--Markov runs generated 2.45 false alarms per minute, whereas 30-node runs emitted no alarms and missed all 82 events. Median lead time among matched warnings was 0.2 seconds. With a hypothetical 0.3-second alert-to-effective-action delay, only 58 events had sufficient warning, without simulating an intervention. A retrospectively defined history-only reference matched 381 events but exceeded the budget (2.25 false alarms per minute). These results expose both over-budget subgroups and apparently compliant but silent monitoring. They describe simulated graph connectivity, not independent model superiority, packet-delivery improvement or a deployable warning policy.
+
+\end{abstract}
+\noindent\textbf{Keywords:} Flying ad hoc networks; network fragmentation; early warning; false-alarm budget; simulation benchmark
+
+
+\section{Introduction}\label{sec:intro}
+
+A flying ad hoc network (FANET) depends on wireless links between moving nodes. Changes in spacing and link availability can split a connected topology, interrupting a multi-hop connection even when the nodes themselves still operate \cite{BEKMEZCI20131254}. Work on cooperative multicast treats those changing topologies as a communications problem \cite{cocoma2024}. An early-warning module addresses a different question from routing or trajectory control. It flags an imminent split. It neither chooses a new path nor prevents the split. Its usefulness therefore depends both on the events it detects and on the false warnings that a monitoring system must process.
+
+A threshold evaluated over all scenarios can appear to meet an operational budget while missing it in a particular mobility condition. Pooled compliance is an average over simulated exposure, not a guarantee for each condition represented in that exposure. Furthermore, a threshold may appear favorable if the same observations were used to select and assess it. Applying it to separate groups without refitting separates threshold selection from subsequent development performance.
+
+We ask whether one FANET-TopoGNN warning threshold, selected under a pooled budget of two false alarms per simulated minute, remains within that budget across mobility conditions, network sizes and blocks not used in fitting, calibration or threshold selection. We report one fixed operating point and do not search for a different rule after inspecting the outcomes. Our contribution is an event-level evaluation with paired scenarios and explicit exposure, and an auditable comparison of pooled and subgroup performance that distinguishes low false-alarm rates from useful event coverage. Specifically, we (i) separate the reference full-time false-alarm budget from conditional decision exposure, (ii) show how both mobility and network-size strata can fail for opposite reasons (too many alarms or no useful alarms), and (iii) preserve the original decision stream when evaluating event-duration sensitivity. These are protocol and reporting contributions rather than evidence of a new superior predictor. A post-hoc history-only reference offers a limited within-dataset contrast but does not validate GNN necessity. The design supports a descriptive budget audit, not a model-superiority or deployment claim.
+
+
+\section{Related work and evaluation gap}\label{sec:related}
+
+Research on FANET communication commonly treats topology dynamics as an input to \emph{network control}. COCOMA develops a cooperative UAV communication protocol for surveillance and monitoring \cite{cocoma2024}, while a digital-twin study jointly designs FANET routing and mobility with model-based reinforcement learning and assesses quality-of-service indicators \cite{elbasioni2025digital}. A 2026 systematic review summarizes mobility models and routing protocols and their unresolved stability challenges \cite{kaur2026fanet}. These works provide networking context, but they answer different questions from whether a \emph{fixed event-warning threshold} meets a stipulated false-alarm rate in each prespecified scenario subgroup.
+
+Prediction-aware work is a closer comparison. Kalman-filter-assisted location and velocity prediction has been used to maintain clustering under high mobility \cite{zhang2023location}, while a temporal-graph approach has been applied to cluster-head selection in large FANETs \cite{fan2026tgn}. Both studies aim to improve network organization; neither supplies matched pre-fragmentation event-warning counts or a fixed false-alarm budget under our event protocol. FINT combines programmable FANET telemetry with AI-assisted wireless-link failure forecasting and recovery \cite{ismail2024fint}. Its link-level telemetry and recovery objective differs from the present whole-graph fragmentation-onset event and one-to-one alarm matching. UAV-enabled software-defined sensor-network data collection has also investigated reacting to changes in network topology \cite{karegar2025uav}; its data-collection objective does not make it an event-warning budget study. A relevant early-warning precedent in wireless networking is the Ornstein--Uhlenbeck link prediction and triggering (OU-LPT) method of Chin et al.\ \cite{chin2014oulpt}. OU-LPT models received-signal-strength dynamics to anticipate degradation of individual wireless-mesh links and examines false triggering against a linear-regression predictor using measured signal traces; the authors also report an embedded real-time implementation. This prior work establishes that link-warning reliability and false-trigger evaluation are not new problems. However, its false-trigger percentages are based on its link-trigger protocol and cannot be compared numerically with our false alarms per simulated minute or matched whole-network fragmentation-onset recall. Our distinct, narrower question is the subgroup stability of one frozen fragmentation-warning operating point under a stipulated simulation-time budget. We do not implement or benchmark OU-LPT on the present FANET traces and claim no comparative improvement.\par
+
+Table~\ref{tab:journal_comparison} locates our evaluation beside three published wireless-networking studies. The comparison is at the level of research questions, observation units and reported evidence; it is \emph{not} a common-protocol performance ranking. In particular, link-level false-trigger percentages cannot be converted to whole-graph false alarms per simulated minute without the original triggers, observation windows and event-matching rules.
+
+These published methods are \emph{not} reproduced here. We neither infer their alarm budgets nor claim to outperform them. The distinct contribution is an auditable analysis of subgroup alarm-burden transfer and event coverage for one already selected operating point, rather than a new routing, data-collection or link-prediction algorithm.
+
+\begin{table}[htbp]
+\caption{Research objectives and evidence in three related wireless-networking studies and the present work. Outcomes are not directly comparable across study designs.}\label{tab:journal_comparison}
+\centering
+\small
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{1.13}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.25\linewidth}>{\raggedright\arraybackslash}p{0.34\linewidth}>{\raggedright\arraybackslash}p{0.34\linewidth}@{}}
+\toprule
+Study and objective & Reported evaluation evidence & Relation to this study \\
+\midrule
+COCOMA \cite{cocoma2024}. UAV multicast routing & Simulation versus SP-GMRF: energy, delay, hops, throughput and packet delivery & Network-control protocol rather than onset-warning budget \\
+\addlinespace[3pt]
+Karegar et al.\ \cite{karegar2025uav}. UAV-assisted ground WSN collection & Four simulators; energy, packet delivery and communication time & Network reorganization and data collection rather than onset alarms \\
+\addlinespace[3pt]
+OU-LPT \cite{chin2014oulpt}. Wireless-mesh link prediction & False-trigger comparison with linear prediction; real-time testbed & Link-level trigger fractions, not whole-graph false alarms/min \\
+\addlinespace[3pt]
+This study. Whole-FANET onset warning audit & 45 trajectory groups and 180 paired runs: event recall, false alarms/full simulated minute, exploratory History-4 & No routing intervention, packet delivery evaluation or field test \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Experimental design and methods}\label{sec:methods}
+
+\subsection{Simulated trajectories and development roles}
+
+The frozen simulator operates in a \emph{two-dimensional} $1000\times1000$~m square; it does not simulate altitude or three-dimensional aerial motion. The simulation plan considered three mobility regimes: random waypoint, Gauss--Markov and mission-based mobility. Each development block contained nine trajectory groups, crossing the three regimes with swarm sizes of 10, 20 and 30. Random waypoint uses a nominal speed range of 10--30~m/s; the Gauss--Markov configuration uses $\alpha=0.8$, mean speed 20~m/s and noise parameter 5; mission-based motion uses three geographical regions. Each group was replayed with four paired combinations of radio condition (nominal or degraded) and graph policy (fixed or adaptive). A run contains 200 frames at 0.1-second intervals. For false-alarm exposure, we count 200 sampled 0.1-second slots as 20 simulated seconds per run under the frozen protocol; the final frame has time index 199 (19.9 seconds after index 0). Radio and graph variants of a group share the movement realization and are not independent replicates.
+
+The \emph{fixed/adaptive} choice refers to a simulation link-radius policy, \emph{not} to a routing algorithm: the fixed distance cap is 420~m; the adaptive cap is $420\times1.35=567$~m only if the simulator's spatial-density statistic exceeds $2\times10^{-5}$, otherwise it remains 420~m. Both policies use the same sampled physical received-power field within a variant. The physical link abstraction uses path loss, temporally correlated shadowing and Rayleigh fading, antenna gains and node-chain asymmetry; a bidirectional edge requires that both directed received-power values meet the receiver sensitivity and the distance cap. Nominal and degraded settings modify the path-loss exponent, shadowing deviation and receiver-sensitivity cutoff as shown in Table~\ref{tab:protocol}. No packet-level routing, MAC scheduling, interference-based SINR or measured packet delivery is part of this experiment. The scenario setup is \emph{not} equivalent to a field-calibrated UAV radio testbed.
+
+\begin{table}[htbp]
+\caption{Frozen network and model parameters checked against the simulator configuration and model source. The adaptive cap applies only when the density condition holds.}\label{tab:protocol}
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{.31\linewidth}p{.61\linewidth}}
+\toprule
+Setting & Frozen implementation \\
+\midrule
+Motion and sampling & 2-D $1000\times1000$~m; 10/20/30 nodes; 200 frames at $\Delta t=0.1$~s; RWP, Gauss--Markov, mission \\
+Graph link policy & Physical received-power links; bidirectional thresholding; 420~m fixed cap or density-triggered 567~m adaptive cap \\
+Nominal radio & Path-loss exponent 2.35; shadowing SD 3.0~dB; receiver sensitivity $-96$~dBm \\
+Degraded radio & Path-loss exponent 2.65; shadowing SD 4.5~dB; receiver sensitivity $-92$~dBm \\
+Shared radio parameters & TX 20~dBm; antenna gains 5/5~dBi; system loss 2~dB; margin 10~dB; Rayleigh fading \\
+Model and training & Two GCN layers, 64 hidden units; 16$\times$16 persistence image; gated fusion; 2 CPU epochs; batch size 64 \\
+Forecast and alert & Endpoint component count at $t+6$; six-step matching; six-step cooldown; cutoff 0.15 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The frozen plan separates training, early stopping, calibration and threshold selection by trajectory group and seed. The model and its operating point were obtained from the first block of the corresponding roles. This assessment uses only blocks 2--6 of the plan's threshold-selection role, which were not used to choose the frozen operating point. These remain development blocks, not a blind test. The verifier checks the identities of all 180 evaluated runs against the frozen plan. The evaluation comprises five blocks, 45 distinct trajectory groups and 60 simulated minutes.
+
+\subsection{What the connectivity graph does and does not represent}
+
+For these frozen runs the configured \texttt{link\_model} is \texttt{physical}. At each snapshot, a binary undirected edge between nodes $i$ and $j$ is retained only if the planar separation lies within the fixed or adaptive cap \emph{and} the simulated received power meets receiver sensitivity \emph{in both directions}. Received power includes distance-dependent path loss, temporally correlated shadowing, Rayleigh fading, gains and per-node radio-chain asymmetry. Thus this is more specific than a pure geometric disk graph; nevertheless the thresholded adjacency is a \emph{link-availability proxy}, not a validated packet reception event. The alternative SINR function and SimPy packet-traffic simulator present in the broader source tree were \emph{not} used to generate the R9.10 scored decision stream. Source-to-claim details are documented in Online Resource~1, Section~K.
+
+The outcome $\beta_0(t)>1$ signifies that the \emph{modeled threshold graph} is disconnected at that frame. A connected graph does not ensure application-level reachability or successful packet delivery: contention, interferers, retransmissions, route discovery, queues and the duration of link changes can affect realized service even when a snapshot contains a multi-hop path. Likewise, a modeled graph split cannot be identified with observed packet loss or an actual airborne network outage. The experiment includes no 3-D altitude, terrain obstruction or field-calibrated channel measurements. It measures neither packet-delivery ratio (PDR), throughput, end-to-end delay nor routing recovery. Consequently, the reported event recall and false alerts concern \emph{simulated graph fragmentation} only, not achieved communication reliability \cite{cocoma2024,karegar2025uav}.
+
+A future service-level validation would preserve the already frozen warning policy and event protocol, replay matched 3-D/trace-based mobility in a documented packet-network environment, define traffic and routing protocols in advance, and separately report graph-event agreement, PDR, latency and reconvergence. Such experiments have \emph{not} been performed or inferred from the present CSV exports.
+
+\subsection{Fixed score and warning threshold}
+
+At frame \(t\), the simulation constructs a graph of active communication links. Let \(\beta_0(t)\) be the number of connected components. The graph is connected when \(\beta_0=1\). The forecast targets \(\beta_0(t+6)\), corresponding to 0.6 seconds after the decision frame. At each eligible decision, four features per node comprise normalized planar position and scaled planar velocity. A two-layer graph convolutional network encodes the \emph{current} adjacency and these node features \cite{kipf2017semi}; a 16$\times$16 persistence image is constructed from planar point geometry using a zero-dimensional minimum-spanning-tree filtration and encoded separately \cite{adams2017persistence}. A learned sigmoid gate blends the two 64-dimensional representations before regression to the future component count. This \emph{FANET-TopoGNN instance consumes a single snapshot per decision}; it is not a five-snapshot temporal GNN. The five-frame warm-up restricts the first eligible decision to $t=4$ but does not create an additional temporal input for this model. We reconstructed the model using the recorded seed and a two-epoch CPU training limit, batch size 64, learning rate 0.001, and weight decay 0.0001. This short bounded training is an engineering pilot, not evidence that training was optimized. The study does not examine variability across model fits.
+
+The logistic calibration maps the regression prediction to a score for the binary label \(Y_{\mathrm{state}}(t)=\mathbf{1}\{\beta_0(t+6)>1\}\), indicating whether the graph is fragmented at exactly 0.6 seconds \cite{guo2017calibration}. We used the recorded platform-specific coefficients and kept the threshold \(\tau=0.15\). Neither was adjusted on the evaluation blocks. This score was not calibrated against event onset within the warning window.
+
+
+\subsection{Frozen threshold selection and exposure conventions}
+
+The reference budget of at most two false alarms per full simulated minute is a prespecified analytical criterion for this benchmark; it is not an empirically established operator workload limit. In the separately grouped threshold-selection role of the first development block (36 runs; 12 full simulated minutes), the frozen R9.9 code evaluated 19 candidate cutoffs $\{0.05,0.10,\ldots,0.95\}$. For each cutoff, it computed event-level scores under the same six-frame alert-matching window and cooldown. It retained candidates with at most two false alarms per \emph{full} simulated minute and selected the highest event $F_1$, breaking ties by lower false-alarm rate, higher recall and then lower cutoff. Seventeen candidates met the numerical budget; ten feasible candidates matched at least one event. The selected $\tau=0.15$ matched 22 of 159 events while generating 24 false alarms over 12 minutes ($F_1=0.215$, 2.00 false alarms/min). These threshold-role values are \emph{in-sample selection diagnostics}, not validation results; they are excluded from all subsequent pooled estimates. Neither the cutoff nor the calibrator was changed for blocks 2--6.
+
+The primary exposure is the full 200-frame duration of each run, including initial warm-up frames, disconnected periods and frames for which no future decision can be scored. Thus the 180 evaluation runs provide $180\times 200\times 0.1/60=60$ simulated minutes. The false-alarm numerator comprises unmatched emitted alerts. As a secondary denominator sensitivity, we use only observed decision frames $t=4,\ldots,193$ at which the graph is \emph{connected} ($\beta_0(t)=1$); one such frame contributes 0.1 simulated seconds. These are exposure conventions, not alternative trained models or different alarms. Applying the same numerical reference of two/minute to this shorter denominator is solely a sensitivity comparison, not evidence that the operational budget was defined in that way. We do not optimize a new threshold for either denominator.
+
+\subsection{Exploratory history-only reference}
+
+We add an explicitly \emph{post-hoc descriptive comparator} to contextualize the frozen TopoGNN warning stream. Unlike the TopoGNN predictor, this deterministic History-4 rule does not learn model weights or use node geometry: for decision frame $t$ it computes $s_{\mathrm{H4}}(t)=\frac{1}{4}\sum_{k=1}^{4}\mathbf{1}\{\beta_0(t-k)>1\}$, the fraction of the preceding four observed frames in which the network was fragmented. This look-back uses $t-4,\ldots,t-1$ only; it does not inspect future labels. We apply the original connected-state eligibility gate, decisions $t=4,\ldots,193$, leading-edge alarm definition, six-frame cooldown, one-to-one event matching and 200-frame exposure denominator. Thus both systems are evaluated on exactly the same 180 runs, eligible decision instants and event labels.
+
+We rebuilt \emph{only} the 36-run threshold-selection development block~1 from the original simulator and verified its $t+6$ labels against the frozen R9.9 TopoGNN selection export. The History-4 cutoff was chosen over the same 19 candidates ($0.05$--$0.95$) by maximising event $F_1$ subject to at most two false alarms per full simulated minute; ties followed the frozen TopoGNN rule. The selected History-4 cutoff was $0.30$ (43/159 events matched, 21 false alerts in 12 simulated minutes). We then held it fixed over evaluation blocks 2--6. TopoGNN retained its original $0.15$ cutoff and calibrated decision scores; rerunning the alert matcher reproduced all 180 published run-level counts. \emph{Critically}, History-4 was designed after the original R9.10 evaluation outcomes had already been inspected. Consequently blocks 2--6 are \emph{not prospective blind tests} for this newly defined heuristic. The comparison is a diagnostic of budget transfer and the value of including a simple reference, not a preregistered paired superiority experiment. The two methods have the same \emph{selection-stage budget criterion}, not a guarantee of equal observed false-alarm rates in evaluation.
+
+\subsection{Event definition, alert matching and metrics}
+
+A fragmentation event is a transition from one connected component at frame \(t-1\) to more than one at frame \(t\). A run contributes ground truth over frames 0--199 and scored decisions over frames 4--193. The first four frames are excluded by the protocol warm-up. The last six frames cannot supply a complete future target. We retain all observed transitions in the event denominator, including events near the boundaries. An event is potentially warnable if at least one eligible connected decision falls in the prior six frames. For a connected decision at \(t\), the window contains an onset if \(\beta_0(t+j-1)=1\) and \(\beta_0(t+j)>1\) for some \(j\in\{1,\ldots,6\}\). This can occur even when \(Y_{\mathrm{state}}(t)=0\), for example if the network splits at \(t+2\) and is connected again at \(t+6\). Event matching therefore evaluates the timing of transitions, not calibration for the endpoint state \cite{tatbul2018precision}.
+
+Alerts can be emitted only when the graph is connected and the calibrated score reaches or exceeds \(\tau\). An alert is emitted on the leading frame of an eligible above-threshold episode, subject to at least six frames since the previous emitted alert. We process emitted alerts chronologically. Each is matched to the earliest still-unmatched transition occurring one to six frames later in the same run. Each event and alert can enter at most one match. Unmatched alerts are false alarms and unmatched events are misses. Lead time is the elapsed simulated time from the alert to its matched transition and is summarized only over matched alerts.
+
+Event recall is the fraction of observed events matched by an alert. Event precision is the fraction of emitted alerts that match an event. It is undefined when no alarms are emitted, while recall is zero if events occurred but none were matched. We compute event \(F_1\) as twice the number of matched warnings divided by the sum of event and alert counts. For each reporting group, we compute the false-alarm rate by dividing its total false alarms by full simulated exposure, not only by decision-eligible connected time. We apply a budget of at most two false alarms per simulated minute.
+
+\subsection{Hypothetical action-latency sensitivity}
+
+To distinguish warning detection from an actionable time window, we count the original matched alarm--onset pairs with enough temporal lead for a hypothetical post-alert action. For a matched alarm at frame $a$ and onset at frame $e$, the observed lead is $(e-a)\Delta t$ with $\Delta t=0.1$~s. At assumed alert-to-effective-action latency $L$, define the potential-on-time count $N_{\mathrm{timely}}(L)=\sum_{(a,e)\in\mathcal{M}}\mathbf{1}\{(e-a)\Delta t\geq L\}$, where $\mathcal{M}$ is the \emph{original frozen} one-to-one matching. We report hypothetical values $L=0.1,\ldots,0.6$~s on the exact sampled ticks, with equality treated optimistically as sufficient. Latency here encompasses whatever receipt, communication, computation, decision and actuation delays would follow a recorded alarm, but none of these delays was actually measured. This is an \emph{upper bound on temporal opportunity conditional on the assumed latency}, not the number of prevented disconnections; intervention success, physical reachability and downstream networking effects were not simulated. The event denominator, emitted alarms, false-alarm classification, cutoff and cooldown remain unchanged. The History-4 analysis uses its own frozen matched pairs and does not equalize realized false-alarm burdens. Online Resource~1 reports the distributions and counts.
+
+\subsection{Sensitivity to event duration}
+
+The primary event definition includes every observed onset. As a separate sensitivity analysis, we require two or three consecutive observed disconnected frames starting at the onset. If the record ends before the required count while the graph is still disconnected, eligibility is unknown. We exclude those onsets from the sensitivity recall denominator. We replay the same emitted alarms, using the same chronological one-to-one matching and six-frame window, against confirmed qualifying onsets. An unmatched alarm with an onset of unknown duration status in its window is unresolved. Other unmatched alarms are false relative to the duration-specific target. Rates still use full simulated exposure. This changes which events qualify, not the alarm rule or the threshold.
+
+\subsection{Independent verification and assessment levels}
+
+The analysis reports pooled, per-mobility, per-block and block-by-mobility summaries. We additionally stratify the frozen evaluation by node count and by mobility crossed with node count. These are descriptive subgroup summaries of the same records, not independent experiments or a new threshold search. Each block-by-mobility cell covers three trajectory groups and four simulated minutes. We use these cells to show where the pooled rate does and does not describe observed behavior, not to estimate population-level compliance. We do not treat decision frames, paired variants or different platform outputs as independent observations.
+
+The verifier matches each exported run to the frozen scenario plan, checks its complete per-frame component-count and decision-index series, and checks the logistic calibration against the exported probabilities. It then independently replays alerts and event matching and recomputes all metrics. The tests include altered metric values, wrong scenario labels and inconsistent protocol status. The original Linux and Windows records and a clean rerun on Linux provide reproducibility evidence. The rerun uses the same deterministic design and is not a new cohort. A separate audit compares endpoint labels with observed onsets for warnable events and for emitted alarms with a match.
+
+\section{Results}\label{sec:results}
+
+The system matched 183 of 1,114 observed fragmentation events (16.4\% recall), issued 88 false alarms and missed 931 events. Event precision was 67.5\%, and event \(F_1\) was 0.264. Of all observed events, 1,088 had at least one eligible connected decision in the warning window. Only 26 events lacked such a decision. Of the 1,088 potentially warnable events, 102 (9.4\%) had a connected endpoint at \(t+6\) for every eligible decision \(t\) in their warning window. For 89 of the 183 matched alerts (48.6\%), the graph was connected at \(t+6\) measured from the alert itself. The first count is over events with an eligible decision, the second over matched alerts. Median lead time was 0.2 seconds among matched warnings, and 125 of 183 (68.3\%) preceded onset by at most 0.2 seconds. Under a hypothetical post-alert action latency of 0.2~s, 98 of the 183 matched warnings (8.8\% of all 1,114 events) had at least that much lead; at 0.3~s this fell to 58 (5.2\% of all events). At 0.6~s only seven matched pairs had a sufficient temporal window. These are potential opportunities under an optimistic timing assumption, not achieved mitigations; full tick-level results and the exploratory History-4 reference are in Online Resource~1.
+
+\begin{table}[ht]
+\caption{Event performance and false-alarm rates at threshold 0.15. Exposure uses full simulated time. Bold indicates a rate above the two-per-minute budget.}\label{tab:main}
+\centering
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{lrrrrrr}
+\toprule
+Mobility & Events & Matched & Recall (\%) & False alarms & Minutes & False/min \\
+\midrule
+% BEGIN VERIFIED R9.10 TABLE
+All runs & 1114 & 183 & 16.4 & 88 & 60 & 1.47 \\
+Random waypoint (RWP) & 305 & 24 & 7.9 & 18 & 20 & 0.90 \\
+Gauss--Markov (GM) & 465 & 117 & 25.2 & 49 & 20 & \textbf{2.45} \\
+Mission-based & 344 & 42 & 12.2 & 21 & 20 & 1.05 \\
+% END VERIFIED R9.10 TABLE
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:main} shows that the pooled rate was 1.47 false alarms per minute, which met the budget. At the mobility level, random waypoint and mission-based mobility also met the budget, at 0.90 and 1.05 respectively. Gauss--Markov exceeded it at 2.45 false alarms per minute. It also had the highest descriptive recall (25.2\%). These findings must be read together. A higher capture rate does not establish that the operating point is acceptable under the budget. Random waypoint had the lowest overall false-alarm rate but matched only 7.9\% of observed events.
+
+Table~\ref{tab:size} shows that the 10-node runs exceeded the budget at 3.85 false alarms per minute, while the 20-node runs met it at 0.55 but matched only 25 of 433 events. The 30-node runs also met the budget, but emitted no alarms and matched none of their 82 events. Precision in this last group is undefined, not zero. Among the 11,285 eligible connected decision frames for 30-node runs, the largest fixed calibrated score was 0.1160, below the 0.15 cutoff; none crossed the threshold. This explains the absence of emitted alarms at this fixed operating point, but not the cause of the low scores. The 10-node runs accounted for 77 of all 88 false alarms and 39 of the 49 Gauss--Markov false alarms. These counts describe concentration within the simulated scenarios and do not identify a causal effect of network size or mobility.
+
+\begin{table}[htbp]
+\caption{Event performance by node count at the same fixed threshold. Each row represents 15 trajectory groups and 20 minutes of full simulated time. A dash indicates undefined precision because no alarms were emitted. Bold indicates a rate above two false alarms per simulated minute.}\label{tab:size}
+\centering
+\setlength{\tabcolsep}{3.4pt}
+\begin{tabular}{rrrrrrrr}
+\toprule
+Nodes & Runs & Events & Matched & False alarms & Recall (\%) & Precision (\%) & False/min \\
+\midrule
+% BEGIN VERIFIED R9.10 BY NODE COUNT
+10 & 60 & 599 & 158 & 77 & 26.4 & 67.2 & \textbf{3.85} \\
+20 & 60 & 433 & 25 & 11 & 5.8 & 69.4 & 0.55 \\
+30 & 60 & 82 & 0 & 0 & 0.0 & -- & 0.00 \\
+% END VERIFIED R9.10 BY NODE COUNT
+\bottomrule
+\end{tabular}
+\end{table}
+
+Six of the 15 block-by-mobility cells exceeded the budget. Some exceedances occurred in classes that met it when pooled across the five blocks. Online Resource~1 gives counts and exposure for all 15 cells and the nine mobility-by-node-count groups.
+
+
+
+\begin{table}[htbp]
+\caption{Development-block variability at the same fixed threshold. Each block comprises nine trajectory groups, 36 runs and 12 full simulated minutes. The event denominator and alarm counts are summed within block. Bold denotes a budget exceedance.}\label{tab:blocks}
+\centering
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{rrrrrrr}
+\toprule
+Block & Events & Matched & False alarms & Min & Recall (\%) & False/min \\
+\midrule
+% BEGIN VERIFIED BLOCK VARIABILITY
+2 & 171 & 37 & 19 & 12 & 21.6 & 1.58 \\
+3 & 171 & 18 & 8 & 12 & 10.5 & 0.67 \\
+4 & 274 & 17 & 10 & 12 & 6.2 & 0.83 \\
+5 & 269 & 47 & 19 & 12 & 17.5 & 1.58 \\
+6 & 229 & 64 & 32 & 12 & 27.9 & \textbf{2.67} \\
+% END VERIFIED BLOCK VARIABILITY
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:blocks} shows that pooled compliance is not replicated in all development blocks. False-alarm rates range from 0.67/min in block~3 to 2.67/min in block~6, where 32 false alarms occurred in 12 simulated minutes. These are distinct prespecified development blocks, but only five block realizations and 45 underlying trajectory groups support this comparison. In a seeded, scenario-stratified trajectory-group bootstrap, the exploratory 2.5th--97.5th percentile range was 0.87--2.10 false alarms per full simulated minute for the pooled rate and 9.6--23.8\% for pooled event recall. These conditional resampling percentiles are not independent validation or deployment guarantees (Online Resource~1).
+
+
+Across the 34,200 scored decision frames, 28,301 were connected and decision-eligible (47.17 equivalent simulated minutes). Reusing the same 88 unmatched alarms gives 1.87 false alarms per connected decision minute, rather than the primary full-exposure rate of 1.47/min. The corresponding sensitivity rates are 1.07/min for random waypoint, 3.47/min for Gauss--Markov and 1.30/min for mission-based mobility. With the \emph{same numerical two/min reference}, eight of the 15 block-by-mobility cells exceed it under the connected-decision denominator, compared with six under the primary denominator. The additional exceedances arise in block 2 mission-based mobility and block 3 Gauss--Markov. Online Resource~1 reports the exact connected-frame counts and both rate definitions. This is not a second budget qualification test, because the reference budget was defined for full trajectory exposure.
+
+Of the 1,114 onsets, 592 consisted of exactly one disconnected frame before reconnection, and seven had only one disconnected frame observed before the record ended. Holding the 271 emitted alarms fixed, the two-frame minimum yielded 136 matches among 515 confirmed events (26.4\% recall) and 2.25 false alarms per minute. The three-frame minimum yielded 105 matches among 317 events (33.1\%) and 2.77 false alarms per minute. The record ended too early to classify seven and eight onsets, respectively. No alarms remained unresolved. Median lead time stayed at 0.2 seconds for both variants. Online Resource~1 reports the duration distribution and full sensitivity counts.\par\noindent\textbf{Supplementary material.} Online Resource~1 (\texttt{ESM\_1.pdf}): verified block and subgroup event counts, duration and exposure sensitivity, leave-one-block-out summaries, trajectory-group resampling and source-linked method details.
+
+\subsection{Post-hoc history-only reference comparison}
+
+Table~\ref{tab:h4} compares the frozen TopoGNN scores with the deterministic four-frame history rule on the \emph{same} 180 development evaluation runs. Both cutoffs met the 2/min selection-stage budget on the same 36-run development selection block. On evaluation, the history rule matched more events (381 versus 183) and had higher event $F_1$ (0.467 versus 0.264), but its 135 false alerts exceeded the full-exposure budget (2.25/min), whereas TopoGNN's 88 false alerts gave 1.47/min. The higher F1 therefore did \emph{not} imply a feasible transferred operating point. The history rule also crossed the two/min reference in all three mobility regimes (Online Resource~1). Conversely, TopoGNN's pooled compliance did not mean adequate event coverage or subgroup compliance. Because this comparator was introduced after inspection of the R9.10 results and no independent blind cohort exists, neither F1 difference is a confirmatory model comparison nor can either method be declared superior.
+
+\begin{table}[htbp]
+\caption{Exploratory post-hoc paired comparison on evaluation development blocks 2--6. Both cutoffs were selected only on development selection block 1 under the same 2/min reference. The observed evaluation rate of History-4 exceeds that reference; bold indicates budget exceedance. This is not blind external validation.}\label{tab:h4}
+\centering
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrrrr}
+\toprule
+Warning rule & Cutoff & Matched & False & Recall (\%) & Event $F_1$ & False/min \\
+\midrule
+TopoGNN & 0.15 & 183 & 88 & 16.4 & 0.264 & 1.47 \\
+History-4 & 0.30 & 381 & 135 & 34.2 & 0.467 & \textbf{2.25} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Discussion and limitations}\label{sec:discussion}
+
+The fixed threshold passed a pooled criterion yet exceeded the same budget in specific conditions. The cutoff was selected with 24 false alarms over 12 minutes, exactly the allowed count on its selection block, and so there was no selection-block margin in the false-alarm count. When only connected, decision-eligible exposure is counted, the numerical rate increases in every mobility regime; this is a denominator change rather than deterioration after retraining. It underscores why a numerical alarm budget must be accompanied by a precise definition of monitored time. The silent 30-node runs illustrate a different limitation: a false-alarm budget alone imposes no minimum event coverage. This distinction matters if a monitoring system spends more time in one regime than the pooled benchmark assigns to it or if it is intended to meet the budget in each regime. We recommend reporting the numerator, exposure and event recall alongside each rate. Otherwise, a threshold can appear suitable despite unreported subgroups or appear attractive merely because it emits few alerts and misses relevant events.
+
+The endpoint-label audit shows why a score calibrated for a future state should not be read as a probability of onset anywhere in the window. It does not isolate how much this target choice contributed to low recall. An onset-trained or onset-calibrated comparator would be needed to measure that effect. Requiring longer episodes raised recall while reducing the absolute number of matches and moving the pooled false-alarm rate above budget. This reflects a change in the target and denominator, not an improvement in detection. The results describe one fitted model and one cutoff. The paired radio and graph variants within each trajectory do not identify a cause of the Gauss--Markov outcome. The analysis does not isolate the effects of model initialization, calibration choice, graph policy or radio quality. A comparative study would require the same decision frames and event protocol for each model, operating points fixed on development data, and a separate evaluation set with adequate simulated exposure per mobility regime.
+
+The exploratory history-only reference demonstrates a second way in which an in-sample budget-qualified cutoff can fail when transferred to other development blocks: a higher event F1 may accompany more false alerts than the stipulated budget allows. It does not demonstrate GNN utility, since the reference has a different input representation and was introduced after the original results were known. Any superiority claim would require a locked comparator design and an untouched, independently evaluated cohort.\par
+
+The 180 runs are not independent observations for uncertainty estimation: each of 45 trajectory groups supplies four correlated radio/graph variants, and repeated frames within a run also correlate. To show sampling sensitivity without pseudoreplication, we resampled \emph{trajectory groups} (all four variants together), keeping five groups in each of the nine mobility-by-node-count strata, with replacement in 12,000 seeded draws. The pooled false-alarm rate had an exploratory 2.5th--97.5th resampling percentile interval reported in Online Resource~1. This conditional resampling fixes the scenario composition and model parameters and does \emph{not} account for dependence across development blocks, variability across model fits, threshold selection or distribution shift. It is not a confirmatory confidence interval for real FANET operation. The five-block structure is also too small to support a convincing between-mobility significance test or reliable prospective power estimate without specifying an effect and variance model in advance. We therefore make no significance or population-generalization claims. A leave-one-block-out analysis is presented in the supplement only as a robustness diagnostic, not a held-out estimate; each omitted block helped define the reported descriptive analysis even though it was not used for threshold selection.
+
+An alert associated with an onset does not automatically permit an effective response. The 85 one-tick leads leave only 0.1~s from warning to onset. Assuming an action requires 0.3~s after warning, only 58 matched TopoGNN warnings (31.7\% of matched warnings and 5.2\% of all observed onsets) have sufficient lead, even before accounting for uncertainty in measured timing. History-4 has 132 such pairs but its fixed operating point fails the false-alarm budget; this post-hoc comparator does not establish a preferable intervention policy. No sensing-to-alarm latency, inference runtime distribution, message propagation, routing reconvergence or controller actuation time was measured. This analysis therefore cannot establish that any of the potentially timely warnings would prevent or shorten a fragmentation episode.\par
+
+Each block-by-mobility cell covers four simulated minutes from three trajectory groups, so small count changes matter. The model has a received-power-based radio \emph{proxy} but not a measured service model: modeled binary edges omit protocol-level contention and routing, and the recorded R9.10 run contains no packet traffic or delivery outcomes. A graph split is therefore an event \emph{within the simulation abstraction}, not a demonstrated real-world outage. Planar movement, no altitude or terrain, and unvalidated link-to-service correspondence limit external validity. Lead time describes matched graph events only. The methodological contribution is limited to a transparent \emph{audit of one frozen decision policy}; it does not present a routing method, an independently established alarm-budget requirement, a packet-service improvement or evidence of predictor superiority.
+
+\section{Conclusion}
+
+At the threshold selected using full-exposure event $F_1$ and a two-per-minute budget, the pooled evaluation rate was below the reference while Gauss--Markov, 10-node runs and six block-by-mobility cells exceeded it. The connected-decision exposure sensitivity identified eight cells above the same numerical reference, without altering the alarms. The 30-node runs met it without a single alarm for 82 events. Five blocks varied from 0.67 to 2.67 false alarms per minute; balanced trajectory-group resampling provides only descriptive conditional sensitivity, not independent generalization. These failures cannot be diagnosed from the pooled alarm rate alone; subgroup false-alarm counts must be interpreted alongside exposure and event coverage. The post-hoc History-4 comparator captured more onsets but violated the pooled false-alarm budget at its selection-stage cutoff. At an assumed 0.3-second alert-to-effective-action delay, only 58 of the 1,114 original onsets had sufficient measured lead under TopoGNN; actual intervention feasibility was not tested. These development results concern a thresholded simulated connectivity graph, not measured packet delivery or a field FANET, and establish neither deployment readiness nor model superiority.
+
+\section*{Data and code availability}
+
+The author-review archive includes the frozen plan, simulator and trajectory-generation code, per-frame component-count ground truth (\texttt{evaluation\_full\_truth.csv}), decision scores (\texttt{evaluation\_scores.csv}), run summaries and verification scripts for the frozen Linux and Windows records and the matching Linux rerun. The exported evaluation CSVs do \emph{not} contain per-node coordinate trajectories; these must be regenerated using the frozen simulator if required. Online Resource~1 reports subgroup and sensitivity analyses, including the post-hoc four-frame reference comparison and hypothetical effective-action-latency sensitivity. The auxiliary rule and its development-only selection script are included with the author-review archive. No blind test data were used. A stable, permission-verified repository or reviewer-access link has \emph{not yet been assigned}; a persistent access location must be verified before any external distribution that requires reproducibility access.
+
+% Funding, competing interests, author contributions and any applicable
+% AI-use disclosure must be confirmed by the authors. They are intentionally
+% not asserted in this provisional research draft. Please see the project README for research status and release caveats.
+\bibliographystyle{unsrt}
+\bibliography{references}
+\end{document}

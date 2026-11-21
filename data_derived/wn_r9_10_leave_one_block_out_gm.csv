@@ -1,0 +1,6 @@
+removed_block,trajectory_groups,runs,events,true_alerts,false_alerts,minutes,event_recall,false_alerts_per_minute,within_budget
+2,12,48,409,92,39,16.0,0.22493887530562348,2.4375,False
+3,12,48,397,102,43,16.0,0.25692695214105793,2.6875,False
+4,12,48,365,104,40,16.0,0.28493150684931506,2.5,False
+5,12,48,342,83,39,16.0,0.24269005847953215,2.4375,False
+6,12,48,347,87,35,16.0,0.2507204610951009,2.1875,False

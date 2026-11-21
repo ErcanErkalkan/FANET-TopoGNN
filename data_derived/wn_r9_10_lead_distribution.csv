@@ -1,0 +1,13 @@
+method,lead_ticks,lead_seconds,matched_alerts
+TopoGNN,1,0.1,85
+TopoGNN,2,0.2,40
+TopoGNN,3,0.3,25
+TopoGNN,4,0.4,13
+TopoGNN,5,0.5,13
+TopoGNN,6,0.6,7
+History-4,1,0.1,170
+History-4,2,0.2,79
+History-4,3,0.3,40
+History-4,4,0.4,40
+History-4,5,0.5,24
+History-4,6,0.6,28

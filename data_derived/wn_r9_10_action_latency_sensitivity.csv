@@ -1,0 +1,15 @@
+method,assumed_effective_action_latency_seconds,matched_alerts,potentially_timely_matched_alerts,fraction_of_matched_pct,fraction_of_all_events_pct,events_total,false_alerts_unchanged
+TopoGNN,0.0,183,183,100.0,16.4,1114,88
+TopoGNN,0.1,183,183,100.0,16.4,1114,88
+TopoGNN,0.2,183,98,53.6,8.8,1114,88
+TopoGNN,0.3,183,58,31.7,5.2,1114,88
+TopoGNN,0.4,183,33,18.0,3.0,1114,88
+TopoGNN,0.5,183,20,10.9,1.8,1114,88
+TopoGNN,0.6,183,7,3.8,0.6,1114,88
+History-4,0.0,381,381,100.0,34.2,1114,135
+History-4,0.1,381,381,100.0,34.2,1114,135
+History-4,0.2,381,211,55.4,18.9,1114,135
+History-4,0.3,381,132,34.6,11.8,1114,135
+History-4,0.4,381,92,24.1,8.3,1114,135
+History-4,0.5,381,52,13.6,4.7,1114,135
+History-4,0.6,381,28,7.3,2.5,1114,135

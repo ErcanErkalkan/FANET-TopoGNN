@@ -1,0 +1,4 @@
+min_observed_frames,confirmed_events,right_censored_unconfirmed_events,confirmed_shorter_events,emitted_alarms,matched_events,unmatched_resolved_alarms,unresolved_alarms,missed_confirmed_events,simulated_minutes,recall,precision_resolved_alarms,unmatched_resolved_alarms_per_minute,median_lead_seconds,matched_at_most_two_frames_ahead
+1,1114,0,0,271,183,88,0,931,60.0,0.16427289048473967,0.6752767527675276,1.4666666666666666,0.2,125
+2,515,7,592,271,136,135,0,379,60.0,0.26407766990291265,0.5018450184501845,2.25,0.2,86
+3,317,8,789,271,105,166,0,212,60.0,0.3312302839116719,0.3874538745387454,2.7666666666666666,0.2,59
