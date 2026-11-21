@@ -15,6 +15,7 @@ output.mkdir(parents=True, exist_ok=False)
 inputs = ("main.tex", "references.bib", "ESM_1.tex")
 for name in inputs:
     shutil.copyfile(root / "manuscript" / name, output / name)
+shutil.copytree(root / "manuscript" / "figures", output / "figures")
 latex = ["pdflatex", "-interaction=nonstopmode", "-halt-on-error", "main.tex"]
 bibtex = shutil.which("bibtex") or shutil.which("bibtex8")
 if bibtex is None:

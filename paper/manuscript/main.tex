@@ -16,6 +16,8 @@
 \usepackage{setspace}
 \doublespacing
 \usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{placeins}
 \usepackage{array}
 \usepackage{url}
 \usepackage{amsmath,amssymb}
@@ -127,6 +129,15 @@ At frame \(t\), the simulation constructs a graph of active communication links.
 The logistic calibration maps the regression prediction to a score for the binary label \(Y_{\mathrm{state}}(t)=\mathbf{1}\{\beta_0(t+6)>1\}\), indicating whether the graph is fragmented at exactly 0.6 seconds \cite{guo2017calibration}. We used the recorded platform-specific coefficients and kept the threshold \(\tau=0.15\). Neither was adjusted on the evaluation blocks. This score was not calibrated against event onset within the warning window.
 
 
+Fig.~\ref{fig:pipeline} summarizes the source-verified predictor and alert stages; the endpoint calibration target should not be conflated with the onset-based event matcher.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig1_warning_pipeline.pdf}
+\caption{FANET-TopoGNN frozen warning and audit pipeline. The GCN and persistence-image branches use the current snapshot; the binary calibration label is the state at $t+6$. Emitted alerts are subsequently assessed against fragmentation onsets within the six-frame window. This is a source-based method diagram, not a measured network-service result.}
+\label{fig:pipeline}
+\end{figure}
+
 \subsection{Frozen threshold selection and exposure conventions}
 
 The reference budget of at most two false alarms per full simulated minute is a prespecified analytical criterion for this benchmark; it is not an empirically established operator workload limit. In the separately grouped threshold-selection role of the first development block (36 runs; 12 full simulated minutes), the frozen R9.9 code evaluated 19 candidate cutoffs $\{0.05,0.10,\ldots,0.95\}$. For each cutoff, it computed event-level scores under the same six-frame alert-matching window and cooldown. It retained candidates with at most two false alarms per \emph{full} simulated minute and selected the highest event $F_1$, breaking ties by lower false-alarm rate, higher recall and then lower cutoff. Seventeen candidates met the numerical budget; ten feasible candidates matched at least one event. The selected $\tau=0.15$ matched 22 of 159 events while generating 24 false alarms over 12 minutes ($F_1=0.215$, 2.00 false alarms/min). These threshold-role values are \emph{in-sample selection diagnostics}, not validation results; they are excluded from all subsequent pooled estimates. Neither the cutoff nor the calibrator was changed for blocks 2--6.
@@ -146,6 +157,15 @@ A fragmentation event is a transition from one connected component at frame \(t-
 Alerts can be emitted only when the graph is connected and the calibrated score reaches or exceeds \(\tau\). An alert is emitted on the leading frame of an eligible above-threshold episode, subject to at least six frames since the previous emitted alert. We process emitted alerts chronologically. Each is matched to the earliest still-unmatched transition occurring one to six frames later in the same run. Each event and alert can enter at most one match. Unmatched alerts are false alarms and unmatched events are misses. Lead time is the elapsed simulated time from the alert to its matched transition and is summarized only over matched alerts.
 
 Event recall is the fraction of observed events matched by an alert. Event precision is the fraction of emitted alerts that match an event. It is undefined when no alarms are emitted, while recall is zero if events occurred but none were matched. We compute event \(F_1\) as twice the number of matched warnings divided by the sum of event and alert counts. For each reporting group, we compute the false-alarm rate by dividing its total false alarms by full simulated exposure, not only by decision-eligible connected time. We apply a budget of at most two false alarms per simulated minute.
+
+Fig.~\ref{fig:targets} illustrates why an onset anywhere in the window can disagree with the calibrated endpoint-state target. The example is schematic and was not selected from evaluation traces.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.94\linewidth]{figures/fig2_target_mismatch_schematic.pdf}
+\caption{Conceptual example of endpoint-state versus within-window onset targets. A network can split at $t+2$ and reconnect by $t+4$, giving a connected endpoint label at $t+6$ despite an onset in the warning window. This is an explanatory schematic, \emph{not} an observed experiment trace.}
+\label{fig:targets}
+\end{figure}
 
 \subsection{Hypothetical action-latency sensitivity}
 
@@ -204,9 +224,16 @@ Nodes & Runs & Events & Matched & False alarms & Recall (\%) & Precision (\%) & 
 \end{tabular}
 \end{table}
 
-Six of the 15 block-by-mobility cells exceeded the budget. Some exceedances occurred in classes that met it when pooled across the five blocks. Online Resource~1 gives counts and exposure for all 15 cells and the nine mobility-by-node-count groups.
+Figure~\ref{fig:size_mobility} shows the same nine mobility-by-node-count cells using false-alarm rates and event recall in matched panels. Six of the 15 block-by-mobility cells exceeded the budget. Some exceedances occurred in classes that met it when pooled across the five blocks. Online Resource~1 gives counts and exposure for all 15 cells and the nine mobility-by-node-count groups.
 
 
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig3_mobility_node_heatmaps.pdf}
+\caption{Frozen TopoGNN operating point ($\tau=0.15$) by mobility and swarm size: (a) false alarms per full simulated minute and (b) event recall. Every cell contains five trajectory groups and 20 paired runs (6.67 simulated minutes). Asterisks mark cells above the analytical 2/min reference. At 30 nodes no alarms were emitted and recall was zero; precision is undefined, as reported in Table~\ref{tab:size}.}
+\label{fig:size_mobility}
+\end{figure}
 
 \begin{table}[htbp]
 \caption{Development-block variability at the same fixed threshold. Each block comprises nine trajectory groups, 36 runs and 12 full simulated minutes. The event denominator and alarm counts are summed within block. Bold denotes a budget exceedance.}\label{tab:blocks}
@@ -230,6 +257,15 @@ Block & Events & Matched & False alarms & Min & Recall (\%) & False/min \\
 Table~\ref{tab:blocks} shows that pooled compliance is not replicated in all development blocks. False-alarm rates range from 0.67/min in block~3 to 2.67/min in block~6, where 32 false alarms occurred in 12 simulated minutes. These are distinct prespecified development blocks, but only five block realizations and 45 underlying trajectory groups support this comparison. In a seeded, scenario-stratified trajectory-group bootstrap, the exploratory 2.5th--97.5th percentile range was 0.87--2.10 false alarms per full simulated minute for the pooled rate and 9.6--23.8\% for pooled event recall. These conditional resampling percentiles are not independent validation or deployment guarantees (Online Resource~1).
 
 
+Figure~\ref{fig:blocks} visualizes the block-by-mobility rates that give rise to the six observed budget exceedances.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.91\linewidth]{figures/fig4_block_mobility_budget.pdf}
+\caption{False alarms per full simulated minute for each evaluation block and mobility regime under the unchanged TopoGNN threshold. Dashed outlines and asterisks identify six of 15 cells above the 2/min reference. Cells share three trajectory groups and four simulated minutes, so the display is descriptive rather than a statistical test of subgroup differences.}
+\label{fig:blocks}
+\end{figure}
+
 Across the 34,200 scored decision frames, 28,301 were connected and decision-eligible (47.17 equivalent simulated minutes). Reusing the same 88 unmatched alarms gives 1.87 false alarms per connected decision minute, rather than the primary full-exposure rate of 1.47/min. The corresponding sensitivity rates are 1.07/min for random waypoint, 3.47/min for Gauss--Markov and 1.30/min for mission-based mobility. With the \emph{same numerical two/min reference}, eight of the 15 block-by-mobility cells exceed it under the connected-decision denominator, compared with six under the primary denominator. The additional exceedances arise in block 2 mission-based mobility and block 3 Gauss--Markov. Online Resource~1 reports the exact connected-frame counts and both rate definitions. This is not a second budget qualification test, because the reference budget was defined for full trajectory exposure.
 
 Of the 1,114 onsets, 592 consisted of exactly one disconnected frame before reconnection, and seven had only one disconnected frame observed before the record ended. Holding the 271 emitted alarms fixed, the two-frame minimum yielded 136 matches among 515 confirmed events (26.4\% recall) and 2.25 false alarms per minute. The three-frame minimum yielded 105 matches among 317 events (33.1\%) and 2.77 false alarms per minute. The record ended too early to classify seven and eight onsets, respectively. No alarms remained unresolved. Median lead time stayed at 0.2 seconds for both variants. Online Resource~1 reports the duration distribution and full sensitivity counts.\par\noindent\textbf{Supplementary material.} Online Resource~1 (\texttt{ESM\_1.pdf}): verified block and subgroup event counts, duration and exposure sensitivity, leave-one-block-out summaries, trajectory-group resampling and source-linked method details.
@@ -252,6 +288,16 @@ History-4 & 0.30 & 381 & 135 & 34.2 & 0.467 & \textbf{2.25} \\
 \end{tabular}
 \end{table}
 
+The original warning lead-time distribution and the action-latency thought experiment are contrasted in Fig.~\ref{fig:lead}; the latter is not evidence of actual mitigation.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig5_lead_action_latency.pdf}
+\caption{(a) Recorded lead-time distribution for 183 matched TopoGNN warnings, and (b) count of these pairs with lead $\geq L$ under a hypothetical effective-action latency $L$. These are timing opportunities, not simulated or measured intervention successes. The 1,114-event denominator and 88 false-alarm count are unchanged.}
+\label{fig:lead}
+\end{figure}
+
+\FloatBarrier
 \section{Discussion and limitations}\label{sec:discussion}
 
 The fixed threshold passed a pooled criterion yet exceeded the same budget in specific conditions. The cutoff was selected with 24 false alarms over 12 minutes, exactly the allowed count on its selection block, and so there was no selection-block margin in the false-alarm count. When only connected, decision-eligible exposure is counted, the numerical rate increases in every mobility regime; this is a denominator change rather than deterioration after retraining. It underscores why a numerical alarm budget must be accompanied by a precise definition of monitored time. The silent 30-node runs illustrate a different limitation: a false-alarm budget alone imposes no minimum event coverage. This distinction matters if a monitoring system spends more time in one regime than the pooled benchmark assigns to it or if it is intended to meet the budget in each regime. We recommend reporting the numerator, exposure and event recall alongside each rate. Otherwise, a threshold can appear suitable despite unreported subgroups or appear attractive merely because it emits few alerts and misses relevant events.

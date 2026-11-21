@@ -39,7 +39,14 @@
     "pdf": "paper/manuscript/FANET_TopoGNN_Manuscript_Preprint.pdf",
     "supplement": "paper/manuscript/ESM_1.pdf",
     "format": "Journal-specific manuscript presentation; details in paper/manuscript/FORMAT_REQUIREMENTS.md",
-    "layout_check": "10pt_double_spaced_20_page_body_limit_PASS_FONT_APPROVAL_PENDING"
+    "layout_check": "10pt_double_spaced_20_page_body_limit_PASS_FONT_APPROVAL_PENDING",
+    "figures": [
+      "paper/manuscript/figures/fig1_warning_pipeline.pdf",
+      "paper/manuscript/figures/fig2_target_mismatch_schematic.pdf",
+      "paper/manuscript/figures/fig3_mobility_node_heatmaps.pdf",
+      "paper/manuscript/figures/fig4_block_mobility_budget.pdf",
+      "paper/manuscript/figures/fig5_lead_action_latency.pdf"
+    ]
   },
   "sha256": {
     ".gitignore": "4a0bce4583b77c89404cf945960db0fd985b90c3100efc60b29af9a4e57ac95f",
@@ -58,6 +65,7 @@
     "audit/reference_windows/fixed_threshold_20261116T161416_063392Z/evaluation_full_truth.csv": "45603c5c17096f42f9033733444555bf81bd62c4c63e5de1ecb0ac2595f49c5c",
     "audit/reference_windows/fixed_threshold_20261116T161416_063392Z/evaluation_scores.csv": "b169b79796b8f558617d5d2909786f6492f384e1c8296c07aa397277c4c2a459",
     "audit/reference_windows/fixed_threshold_20261116T161416_063392Z/run_counts.csv": "72c24a0a3e127e74a6912117b29f192903b420f1a243f9dbace13603bffa810e",
+    "audit/tests/test_current_figures.py": "17be5b3a6fd66a7de9d0efb6b36a8b97c218297bb39ae28235089eb8072572a6",
     "audit/tests/test_strict_r9_10.py": "d3dcfc1d65b39c90c2fcc3cab4e1a070c565a14d100bc5460a35ddb0c2898d7b",
     "audit/tests/test_wn_budget_exposure.py": "2bc3428c9ed09450e5aa880d5c6622cb1abd975311511059e6292eff95991e2a",
     "audit/tests/test_wn_duration_sensitivity.py": "d16d519926f51037768524bcb3ca3c20d7f6db766412c68735ecead9317637c2",
@@ -202,16 +210,29 @@
     "frozen/r9_7_training_pilot.py": "aa777da9bda63f2e16eb71c072fa74d3e7eb93ef54471378e578d1c7d844a31d",
     "frozen/r9_8_shared_pilot.py": "b8dcd73a54fd1a158620440a1e8adce378abfc16ba9ceab0d84160fca5514f05",
     "frozen/r9_9_calibration_alert.py": "a9cae766b82dd8e8c493205efdd167641ad9d49beef6454818938f15513cf250",
-    "paper/build_manuscript.py": "d39ea246df7ea6c6ff1a22cd8f0698465cba0277adec79ce76888009781bc583",
-    "paper/manuscript/ESM_1.pdf": "da7e83c4bab8dc85f693fb397b4f8207e84c651d904622d7804e9c1dcf3d403b",
+    "paper/FIGURE_PROVENANCE.md": "e523a175f9a0b268392dea6e44d51914e1876825dde75f5e01330065268b897d",
+    "paper/build_manuscript.py": "f27ee17e056fe798efafb89e92d2428093edc0cb573e944263efffaecae864bd",
+    "paper/make_figures.py": "c5053093d941d24451638331ea214b195597127877af704f89faa81f06a8ea3a",
+    "paper/manuscript/ESM_1.pdf": "c70a230e5638bf8ef03732b99fb865157e9f390dba121c354b8cdd3e1e088880",
     "paper/manuscript/ESM_1.tex": "19c69245d3d1a839a5f585a626ead2766d32656ddbf7ca21a3968c42cd53688c",
-    "paper/manuscript/FANET_TopoGNN_Manuscript_Preprint.pdf": "43a887ee6b124d38fdd68d0c7c5029956c014918d34943819f60b06552af974a",
-    "paper/manuscript/main.tex": "b7263f28523a2eed3544f45b9bff699bac74f921d05bb2ba5e3a2880906b3b8e",
+    "paper/manuscript/FANET_TopoGNN_Manuscript_Preprint.pdf": "e232b1547b267548d39cbe1b9b259c9e2cc8529c4f07ee8cac9d90d94565cb8b",
+    "paper/manuscript/FORMAT_REQUIREMENTS.md": "159e107f5d6f34a3d8866c58071fc01c8d12a12ea79ca23c57bf4c2a4a0f6065",
+    "paper/manuscript/figures/fig1_warning_pipeline.pdf": "3eb3b3c7d556a16bba5754be52debb9962b7bef920fd3c940f28d5c975e6696a",
+    "paper/manuscript/figures/fig1_warning_pipeline.png": "9065554e97c50812fddb14008b6a51e864642a3dfd2f7e14d190ca540025b468",
+    "paper/manuscript/figures/fig2_target_mismatch_schematic.pdf": "1564abc125c0f6012c4f583ddc6ab24607db5584b1ece0c1b768620f2ee3ff57",
+    "paper/manuscript/figures/fig2_target_mismatch_schematic.png": "515c38799a743b9a41ccc236f56a9437a8123b72dbdf6a8fccd0cfb72f7e2d23",
+    "paper/manuscript/figures/fig3_mobility_node_heatmaps.pdf": "dcd2ff2ef209f5466677cd1a521ddbfd8dec60b7fedd6129210463c51cb7fca4",
+    "paper/manuscript/figures/fig3_mobility_node_heatmaps.png": "ad4c9e5d636b35480b184e52eeec515e213986b325381ef78430ae1cce788566",
+    "paper/manuscript/figures/fig4_block_mobility_budget.pdf": "53dcb713061d99705586670c0230a72950fd14837089ea809d090b13c84c0b2e",
+    "paper/manuscript/figures/fig4_block_mobility_budget.png": "616ac65468816c35a2257cc029431e4192e88702c75f572342695244768dc74c",
+    "paper/manuscript/figures/fig5_lead_action_latency.pdf": "719642a0fbd0f93e0dcb6fef807242df7452ee0f9a2ea6b0039cefd37a5e95f1",
+    "paper/manuscript/figures/fig5_lead_action_latency.png": "c5d84e1414937cd5ec2c81407cc88cd3fd67965eef65b598ddac873bae28f3ef",
+    "paper/manuscript/main.tex": "4d22969cb5ed9f7b61e83527a9cc5c9c43d1f273dffc4eaec8aac3c09da876a5",
     "paper/manuscript/references.bib": "b76bb473894a5b6fc53e598af6bd0395191d4942c979830af7b0faf8ede79c23",
-    "run.py": "ebfab9464f36df5cc0b841315511f609cb1bb1a367b568fc9767c356fb2e5e3e",
-    "paper/manuscript/FORMAT_REQUIREMENTS.md": "159e107f5d6f34a3d8866c58071fc01c8d12a12ea79ca23c57bf4c2a4a0f6065"
+    "run.py": "ebfab9464f36df5cc0b841315511f609cb1bb1a367b568fc9767c356fb2e5e3e"
   },
   "integrity_note": "Reproducible source/data hash manifest excludes generated Python __pycache__ and .pyc interpreter artifacts; these are not scientific evidence.",
   "notes": "Only one active research snapshot. Frozen experiment stage records are provenance, not versions. The scientific research and repository remain venue-neutral; publication layout rules live exclusively under paper/manuscript/.",
-  "snapshot": "CURRENT_SINGLE_ACTIVE_NEUTRAL"
+  "snapshot": "CURRENT_SINGLE_ACTIVE_NEUTRAL",
+  "figure_note": "Five source-verifiable figures; two explanatory schematics and three displays of the unchanged recorded development analysis."
 }
